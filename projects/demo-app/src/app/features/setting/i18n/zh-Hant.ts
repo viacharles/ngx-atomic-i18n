@@ -1,0 +1,9 @@
+const zh_TW = {
+    setting: "設定",
+    greeting: "歡迎",
+    items: "有物件",
+    gender: "性別",
+    範例程式碼: "範例程式碼",
+}
+
+export default zh_TW;

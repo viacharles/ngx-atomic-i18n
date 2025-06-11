@@ -1,0 +1,14 @@
+{
+    "welcome": "Welcome",
+    "language": "Language",
+    "home": "Home",
+    "about": "About",
+    "lazy": "Lazy Load",
+    "greeting": "Hello, {{name}}",
+    "items": "{count, plural, one {# item} other {# items}}",
+    "gender": "{gender, select, male {he} female {she} other {they}}",
+    "template": {
+        "title": "Translation Test",
+        "content": "This is a test content"
+    }
+}

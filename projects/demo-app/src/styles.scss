@@ -1,0 +1,22 @@
+// @use '@angular/material' as mat;
+// @use './styles/theme' as theme;
+
+// @include mat.core();
+
+// 套用 light theme 到整體 app（html/root）
+html {
+    // @include mat.all-component-themes(theme.$light-theme);
+}
+
+// 套用 dark theme，搭配 CSS class 切換
+.dark-theme {
+    // @include mat.all-component-themes(theme.$dark-theme);
+}
+
+// 全域樣式
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}

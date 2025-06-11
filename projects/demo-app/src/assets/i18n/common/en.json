@@ -1,0 +1,15 @@
+{
+  "welcome": "Welcome to ngx-atomic-i18n",
+  "language": "Language",
+  "switchLanguage": "Switch Language",
+  "home": "Home",
+  "about": "About",
+  "lazy": "Lazy Load",
+  "items": "{count, plural, one {{{count}} item} other {{{count}} items}}",
+  "gender": "{gender, select, male {he} female {she} other {they}}",
+  "greeting": "Hello, {{name}}!",
+  "template": {
+    "title": "Template Translation Test",
+    "content": "This is a translation test using *ngTemplateOutlet"
+  }
+}
