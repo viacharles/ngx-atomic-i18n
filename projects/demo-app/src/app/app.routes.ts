@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+    { path: '', redirectTo: 'setting', pathMatch: 'full' },
     {
-        path: '',
+        path: 'setting',
         loadComponent: () => import('./features/setting/setting.component').then(m => m.SettingComponent)
     },
     {

@@ -59,4 +59,7 @@ import { TranslationPipe } from 'ngx-atomic-i18n';
   \`
 })
 export class ExampleComponent {}`;
+  constructor() {
+    console.log('aa-SettingComponent constructor')
+  }
 } 

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { TranslationService } from 'ngx-atomic-i18n';
+import { TRANSLATION_CONTEXT, TranslationService } from 'ngx-atomic-i18n';
 import { TranslationPipe } from 'ngx-atomic-i18n';
 import { TranslationTestComponent } from './shared/components/translation-test/translation-test.component';
 import { NgTemplateOutlet } from '@angular/common';
@@ -14,6 +14,7 @@ import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
   imports: [RouterOutlet, TranslationPipe, TranslationTestComponent, NgTemplateOutlet, CodeBlockComponent, ToastComponent],
   providers: [provideTranslation('common')],
   template: `
+  @if (ctx.ready?.()) {
     <div class="app-container">
       <header>
         <div>
@@ -57,6 +58,8 @@ import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
     </ng-template>
 
     <app-toast></app-toast>
+  }
+
   `,
   styles: [`
     .app-container {
@@ -150,7 +153,11 @@ export class AppComponent {
     welcome: '<h1>{{ "welcome" | t }}</h1>'
   }
 
-  constructor(private translationService: TranslationService, private router: Router) {
+  ctx = inject(TRANSLATION_CONTEXT);
+  constructor(
+    private translationService: TranslationService,
+    private router: Router,
+  ) {
     // this.currentLang = this.translationService.currentLang;
   }
 
