@@ -1,3 +1,5 @@
+import { Signal } from "@angular/core";
+
 export interface TranslationConfig {
     supportedLangs: string[];
     fallbackLang: string;
@@ -8,7 +10,7 @@ export interface TranslationConfig {
 
 export interface TranslationContext {
     namespace: string;
-    lazyLoader: LazyLoader;
+    ready?: Signal<boolean>;
 }
 
 export type LazyLoader = Record<Lang, () => Promise<Translations>>;
