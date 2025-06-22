@@ -55,9 +55,11 @@ function walk(dir, filelist = []) {
 }
 
 function cleanOutputDirs(outputRoot) {
-  if (fs.existsSync(outputRoot)) {
-    console.log(`[i18n] Cleaning output directory: ${outputRoot}`);
-    fs.rmSync(outputRoot, { recursive: true, force: true });
+  if (!fs.existsSync(outputRoot)) return;
+  const entries = fs.readdirSync(outputRoot);
+  for (const entry of entries) {
+    const fullPath = path.join(outputRoot, entry);
+    fs.rmSync(fullPath, { recursive: true, force: true });
   }
 }
 
@@ -71,68 +73,77 @@ function compileTsFile(inputPath, outputPath) {
   });
 }
 
-// This new function will recursively search for i18n directories and process them.
-async function processTranslations(dir, outputRoot) {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+async function compileDir(i18nDir, outputRoot, sourceRoot) {
+  console.log('[i18n] Compiling dir:', i18nDir);
+  const files = fs.readdirSync(i18nDir);
+  for (const file of files) {
+    const filePath = path.join(i18nDir, file);
+    const stat = fs.statSync(filePath);
+    if (!stat.isFile()) continue;
 
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
+    const lang = path.basename(file, path.extname(file));
+    const namespace = path.basename(path.dirname(i18nDir));
+    const outDir = path.join(outputRoot, namespace);
+    const outFile = path.join(outDir, `${lang}.json`);
 
-    // Skip node_modules and the output assets directory to avoid infinite loops
-    if (entry.isDirectory() && (entry.name === 'node_modules' || fullPath === outputRoot || entry.name === 'assets')) {
-      continue;
-    }
+    fs.mkdirSync(outDir, { recursive: true });
 
-    // If we find an i18n directory, process its namespaces
-    if (entry.isDirectory() && entry.name === 'i18n') {
-      console.log(`[i18n] Found i18n source directory: ${fullPath}`);
-      const namespaces = fs.readdirSync(fullPath, { withFileTypes: true })
-        .filter(ns => ns.isDirectory())
-        .map(ns => ns.name);
-
-      for (const namespace of namespaces) {
-        const namespaceDir = path.join(fullPath, namespace);
-        const langFiles = fs.readdirSync(namespaceDir).filter(f => f.endsWith('.ts') || f.endsWith('.json'));
-
-        for (const langFile of langFiles) {
-          const langFilePath = path.join(namespaceDir, langFile);
-          if (!fs.statSync(langFilePath).isFile()) continue;
-
-          const lang = path.basename(langFile, path.extname(langFile));
-          const outDir = path.join(outputRoot, namespace);
-          const outFile = path.join(outDir, `${lang}.json`);
-          fs.mkdirSync(outDir, { recursive: true });
-
-          if (langFile.endsWith('.ts')) {
-            const tempOutJs = langFilePath.replace(/\.ts$/, '.mjs');
-            compileTsFile(langFilePath, tempOutJs);
-            try {
-              const mod = await import(pathToFileURL(tempOutJs).href);
-              fs.writeFileSync(outFile, JSON.stringify(mod.default, null, 2));
-              fs.unlinkSync(tempOutJs);
-              console.log(`✓ Compiled ${langFilePath} -> ${outFile}`);
-            } catch (err) {
-              console.error(`[i18n] Failed to import ${langFilePath}:`, err);
-            }
-          } else if (langFile.endsWith('.json')) {
-            fs.copyFileSync(langFilePath, outFile);
-            console.log(`✓ Copied ${langFilePath} -> ${outFile}`);
-          }
-        }
+    if (file.endsWith('.ts')) {
+      const tempOutJs = filePath.replace(/\.ts$/, '.mjs');
+      compileTsFile(filePath, tempOutJs);
+      try {
+        const mod = await import(pathToFileURL(tempOutJs).href);
+        const jsonContent = JSON.stringify(mod.default, null, 2);
+        fs.writeFileSync(outFile, jsonContent);
+        fs.unlinkSync(tempOutJs);
+        console.log(`✓ Compiled ${filePath} -> ${outFile}`);
+      } catch (err) {
+        console.error(`[i18n] Failed to import ${filePath}:`, err);
       }
-      // Once an i18n dir is processed, we don't need to look for nested i18n dirs inside it.
-      continue;
-    }
-
-    if (entry.isDirectory()) {
-      await processTranslations(fullPath, outputRoot);
+    } else if (file.endsWith('.json')) {
+      fs.copyFileSync(filePath, outFile);
+      console.log(`✓ Copied ${filePath} -> ${outFile}`);
     }
   }
 }
 
+function findI18nDirs(rootDir) {
+  const result = [];
+
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (!entry.isDirectory()) continue;
+
+      if (entry.name === 'i18n') {
+        // 檢查這個 i18n 資料夾底下是否含有 ts/json 檔
+        const files = fs.readdirSync(fullPath);
+        const hasTranslationFiles = files.some(f => f.endsWith('.ts') || f.endsWith('.json'));
+
+        if (hasTranslationFiles) {
+          result.push(fullPath);
+        } else {
+          // 否則還是要繼續往下找（因為可能有 nested i18n）
+          walk(fullPath);
+        }
+      } else {
+        walk(fullPath);
+      }
+    }
+  }
+
+  walk(rootDir);
+  return result;
+}
+
 (async function main() {
   cleanOutputDirs(outputRoot);
-  console.log(`[i18n] Starting translation scan from: ${sourceRoot}`);
-  await processTranslations(sourceRoot, outputRoot);
+  const i18nDirs = findI18nDirs(sourceRoot);
+  console.log('[i18n] Found i18n directories:', i18nDirs);
+  for (const dir of i18nDirs) {
+    await compileDir(dir, outputRoot, sourceRoot);
+  }
   console.log('[i18n] ✅ All translations compiled.');
 })();
