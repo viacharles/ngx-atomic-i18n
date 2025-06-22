@@ -1,4 +1,4 @@
-{
+export default {
     "welcome": "Welcome to ngx-atomic-i18n",
     "language": "Language",
     "home": "Home",
@@ -41,4 +41,4 @@
         "title": "Translation Test",
         "content": "This is a test content"
     }
-}
+} 

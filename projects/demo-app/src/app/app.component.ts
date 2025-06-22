@@ -1,12 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { TRANSLATION_CONTEXT, TranslationService } from 'ngx-atomic-i18n';
 import { TranslationPipe } from 'ngx-atomic-i18n';
 import { TranslationTestComponent } from './shared/components/translation-test/translation-test.component';
 import { NgTemplateOutlet } from '@angular/common';
 import { CodeBlockComponent } from './shared/components/code-block/code-block.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
+import { TranslationService } from 'ngx-atomic-i18n/translation.service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +14,7 @@ import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
   imports: [RouterOutlet, TranslationPipe, TranslationTestComponent, NgTemplateOutlet, CodeBlockComponent, ToastComponent],
   providers: [provideTranslation('common')],
   template: `
-  @if (ctx.ready?.()) {
+  @if (this.translationService.ready()) {
     <div class="app-container">
       <header>
         <div>
@@ -45,6 +45,7 @@ import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
         <a (click)="changeTab('')">{{ 'setting' | t }}</a>
         <a  (click)="changeTab('about')">{{ 'about' | t }}</a>
         <a (click)="changeTab('lazy')">{{ 'lazy' | t }}</a>
+        <a (click)="changeTab('test')">{{ 'test' | t }}</a>
       </nav>
 
       <main>
@@ -153,9 +154,8 @@ export class AppComponent {
     welcome: '<h1>{{ "welcome" | t }}</h1>'
   }
 
-  ctx = inject(TRANSLATION_CONTEXT);
   constructor(
-    private translationService: TranslationService,
+    public translationService: TranslationService,
     private router: Router,
   ) {
     // this.currentLang = this.translationService.currentLang;

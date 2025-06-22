@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TranslationPipe } from 'ngx-atomic-i18n';
+import { TranslationPipe, TranslationService } from 'ngx-atomic-i18n';
 import { CodeBlockComponent } from '../../shared/components/code-block/code-block.component';
 import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
 
@@ -9,6 +9,7 @@ import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
   imports: [TranslationPipe, CodeBlockComponent],
   providers: [provideTranslation('setting')],
   template: `
+   @if (this.translationService.readySignal()) {
     <div class="home">
       <h2>{{ 'setting' | t }}</h2>
       <div>
@@ -26,6 +27,8 @@ import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
         [code]="exampleCode"
       ></app-code-block>
     </div>
+   }
+  
   `,
   styles: [`
     .home {
@@ -59,7 +62,9 @@ import { TranslationPipe } from 'ngx-atomic-i18n';
   \`
 })
 export class ExampleComponent {}`;
-  constructor() {
+  constructor(
+    public translationService: TranslationService,
+  ) {
     console.log('aa-SettingComponent constructor')
   }
 } 

@@ -1,55 +1,96 @@
-import { computed, inject, Injectable, Signal, signal } from "@angular/core";
-import { TRANSLATION_CONFIG, TRANSLATION_CONTEXT } from "./translate.token";
-import { Params, TranslationContext, Translations } from "./translate.type";
-import { detectPreferredLang, parseICU, toObservable } from "./translate.util";
+import { computed, effect, Inject, inject, Injectable, Signal, signal, WritableSignal } from "@angular/core";
+import { TRANSLATION_CONFIG, TRANSLATION_NAMESPACE } from "./translate.token";
+import { Params, Translations } from "./translate.type";
+import { parseICU, toObservable } from "./translate.util";
 import { HttpClient } from "@angular/common/http";
 import { catchError, firstValueFrom, of } from "rxjs";
 import { FIFOCache } from "./FIFO.model";
+import { TranslationCoreService } from "./translation-core.service";
 
-@Injectable({ providedIn: 'root' })
+const MAX_CACHE_SIZE = 30;
+@Injectable()
 export class TranslationService {
     private readonly config = inject(TRANSLATION_CONFIG);
-    private readonly http = inject(HttpClient);
-    private readonly context = inject<TranslationContext>(TRANSLATION_CONTEXT, { optional: true });
-
-    private readonly _lang = signal<string>((typeof this.config.initialLang === 'string' ? this.config.initialLang : this.config.initialLang?.()) ?? this.config.fallbackLang);
-    private _readyMap = new Map<string, Signal<boolean>>();
-    private _readySetter = new Map<string, (isReady: boolean) => void>();
-
-    private _cache = new Map<string, Map<string, string>>(); // ${lang}:${ns} => ${key} => value | signal
+    private _readyMap = new Map<string, WritableSignal<boolean>>();
+    private _cacheMap = new Map<string, Map<string, string>>(); // ${lang}:${ns} => ${key} => value | signal
     private _computedCache = new Map<string, FIFOCache<string, Signal<string>>>;
-    private readonly maxloaded = 30;
-
-    readonly onLangChange = toObservable(this._lang.asReadonly());
+    readonly onLangChange = toObservable(this.currentLang);
 
     get currentLang(): Signal<string> {
-        return this._lang.asReadonly();
+        return computed(() => this.core.currentLang());
     }
     get supportedLangs(): string[] {
         return this.config.supportedLangs;
     }
+    get getCache(): Signal<Map<string, string>> | undefined {
+        const nsKey = this.getNskey;
+        const cache = this._cacheMap.get(nsKey);
+        return cache ? signal(cache) : undefined;
+    }
 
-    getReadySignal(lang: string, ns: string): Signal<boolean> {
-        const key = `${lang}:${ns}`;
-        if (!this._readyMap.has(key)) {
-            const s = signal(false);
-            this._readyMap.set(key, s.asReadonly());
-            this._readySetter.set(key, s.set.bind(s));
+    get getNskey(): string {
+        return `${this.currentLang()}:${this.namespace}`
+    }
+
+    constructor(
+        @Inject(TRANSLATION_NAMESPACE) public readonly namespace: string,
+        private readonly core: TranslationCoreService,
+        private readonly http: HttpClient
+    ) {
+        effect(() => {
+            this.core.lang();
+            this.ensureLoaded();
+        })
+    }
+
+    instant(key: string, params?: Params): string {
+        const result = this.translateSignal(key, params)();
+
+        // 添加調試日誌
+        if (key === 'test.items' || key === 'test.custom_message') {
+            console.log(`🔍 [TranslationService] instant called - key: ${key}, params:`, params);
+            console.log(`🔍 [TranslationService] result: ${result}`);
+            console.log(`🔍 [TranslationService] current lang: ${this.currentLang()}`);
+            console.log(`🔍 [TranslationService] namespace: ${this.namespace}`);
+            console.log(`🔍 [TranslationService] cache:`, this._cacheMap);
         }
+
+        return result;
+    }
+
+    ready(): boolean {
+        return this.readySignal()();
+    }
+
+    readySignal(): Signal<boolean> {
+        const key = this.getNskey;
+        if (!this._readyMap.has(key)) {
+            this._readyMap.set(key, signal(false));
+        }
+        console.log('aa-readySignal', key, this._readyMap.get(key)!())
         return this._readyMap.get(key)!;
     }
 
-    getReady(ns: string): Signal<boolean> {
-        return this.getReadySignal(this._lang(), ns);
+    setLang(lang: string): void {
+        this.core.setLang(lang);
     }
 
-    async ensureLoaded(lang: string, ns?: string): Promise<void> {
-        console.log('aa-ensureLoaded', lang, ns)
-        if (!ns) return;
-        const nsKey = `${lang}:${ns}`;
-        const existing = this._cache.get(nsKey);
-        if (existing) {
-            this._readySetter.get(nsKey)?.(true);
+    // private static async preloadNamespaces(
+    //     namespaces: string[],
+    //     lang: string,
+    // ): Promise<void> {
+    //     const i18nRoot = this.core.config.i18nRoot
+    //     for (const ns of namespaces) {
+    //         const path = `assets/${i18nRoot}/${lang}/${ns}.json`
+    //     }
+    // }
+
+    async ensureLoaded(): Promise<void> {
+        console.log('aa-ensureLoaded -', this.currentLang(), this.namespace)
+        if (!this.namespace) return;
+        const nsKey = this.getNskey;
+        if (this._cacheMap.has(nsKey)) {
+            console.log(`🔍 [TranslationService] Cache already exists for ${nsKey}`);
             return;
         }
         const roots = Array.isArray(this.config.i18nRoot)
@@ -58,7 +99,8 @@ export class TranslationService {
         const map = new Map<string, string>();
         const results = await Promise.all(
             roots.map(root => {
-                const path = `assets/${root}/${ns}/${lang}.json`;
+                const path = `assets/${root}/${this.namespace}/${this.currentLang()}.json`;
+                console.log(`🔍 [TranslationService] Loading from path: ${path}`);
                 return firstValueFrom(
                     this.http.get<Translations>(path).pipe(
                         catchError(err => {
@@ -72,20 +114,26 @@ export class TranslationService {
         console.log('aa-ensureLoaded result', results)
         for (const res of results) {
             if (res) {
-                for (const [k, v] of Object.entries(res)) {
+                console.log(`🔍 [TranslationService] Loaded translations:`, res);
+                const flattened = this.flatten(res);
+                for (const [k, v] of Object.entries(flattened)) {
                     map.set(k, v); // 覆蓋策略：後面的會蓋前面的 key
                 }
             }
         }
-        this._cache.set(nsKey, map);
-        console.log('aa-ensureLoaded  this._cache', this._cache)
-        this._readySetter.get(nsKey)?.(true);
-        console.log('aa-ensureLoaded map', map, '_cache.size', this._cache.size)
-        if (this._cache.size > this.maxloaded) {
-            const oldest = this._cache.keys().next().value;
+        this._cacheMap.set(nsKey, map);
+        if (!this._readyMap.has(nsKey)) {
+            this._readyMap.set(nsKey, signal(true));
+        } else {
+            this._readyMap.get(nsKey)?.set(true);
+        }
+        console.log('aa-ensureLoaded  this._cacheMap', this._cacheMap)
+        console.log('aa-ensureLoaded map', map, '_cacheMap.size', this._cacheMap.size)
+        if (this._cacheMap.size > MAX_CACHE_SIZE) {
+            const oldest = this._cacheMap.keys().next().value;
             if (oldest) {
-                this._cache.delete(oldest);
-                console.log('aa-ensureLoaded _cache.delete', this._cache)
+                this._cacheMap.delete(oldest);
+                console.log('aa-ensureLoaded _cacheMap.delete', this._cacheMap)
                 for (const key of this._computedCache.keys()) {
                     if (key.startsWith(oldest)) {
                         this._computedCache.delete(key);
@@ -96,21 +144,27 @@ export class TranslationService {
         console.log(`[i18n] loaded ${nsKey}`);
     }
 
-    translate(key: string, params?: Params): Signal<string> {
-        const ctx = inject(TRANSLATION_CONTEXT, { optional: true })
-        const lang = this._lang;
-        // const ctx = this.context;
-        if (key === 'welcome') {
-            console.log('aa-translate ctx', ctx)
-        }
+    private flatten(obj: any, path: string[] = []): Record<string, string> {
+        return Object.keys(obj).reduce((acc, key) => {
+            const newPath = path.length > 0 ? `${path.join('.')}.${key}` : key;
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                Object.assign(acc, this.flatten(obj[key], newPath.split('.')));
+            } else {
+                acc[newPath] = obj[key];
+            }
+            return acc;
+        }, {} as Record<string, string>);
+    }
+
+    translateSignal(key: string, params?: Params): Signal<string> {
         return computed(() => {
-            const nsKey = `${lang()}:${ctx?.namespace}`;
-            const translations = this._cache.get(nsKey);
-            if (key === 'welcome') {
-                console.log('aa-translate translations', this._cache, nsKey)
+            const nsKey = `${this.currentLang()}:${this.namespace}`;
+            const translations = this._cacheMap.get(nsKey);
+            if (key === 'setting') {
+                console.log('aa-translate translations', this._cacheMap, translations, translations?.get(key), key, nsKey)
             }
             const raw = translations?.get(key) ?? key;
-            if (key === 'welcome') {
+            if (key === 'setting') {
                 console.log('aa-translate raw', raw)
             }
             if (!params) return raw;
@@ -118,7 +172,7 @@ export class TranslationService {
             const paramKey = `${key}:${JSON.stringify(params)}`;
             let fifo = this._computedCache.get(nsKey);
             if (!fifo) {
-                fifo = new FIFOCache(this.maxloaded);
+                fifo = new FIFOCache(MAX_CACHE_SIZE);
                 this._computedCache.set(nsKey, fifo);
             }
             if (fifo.has(paramKey)) {
@@ -130,27 +184,6 @@ export class TranslationService {
             fifo.set(paramKey, computedSignal);
             return computedSignal();
         })
-    }
-
-    async setLang(lang: string): Promise<void> {
-        const currentLang = lang ?? detectPreferredLang(this.config);
-        if (!this.config.supportedLangs.includes(currentLang)) {
-            console.warn(`[i18n] Unsupported language: ${currentLang}`);
-            return;
-        }
-        if (this._lang() !== currentLang) {
-            this._lang.set(currentLang);
-            console.log('aa-setLang', this._lang())
-            const isBroswer = typeof window !== 'undefined';
-            if (isBroswer) {
-                try {
-                    localStorage.setItem('lang', this._lang());
-                } catch (err) {
-                    console.warn('[i18n] Failed to write to localStorage', err);
-                }
-            }
-        }
-
     }
 
 }

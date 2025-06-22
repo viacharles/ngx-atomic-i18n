@@ -1,18 +1,14 @@
-const zh_TW = {
+export default {
     "welcome": "歡迎使用 ngx-atomic-i18n",
     "language": "語言",
-    "switchLanguage": "切換語言",
     "home": "首頁",
     "about": "關於",
     "lazy": "延遲載入",
-    "items": "{count, plural, one {{count}} 個項目} other {{count}} 個項目}}",
-    "gender": "{gender, select, male {他} female {她} other {他們}}",
+    "setting": "設定",
+    "test": "測試",
     "greeting": "你好，{{name}}！",
-    "template": {
-        "title": "模板翻譯測試",
-        "content": "這是一個使用 *ngTemplateOutlet 的翻譯測試"
-    },
-    "testaaa": 'testaaa',
+    "items": "{count, plural, one {# 個項目} other {# 個項目}}",
+    "gender": "{gender, select, male {他} female {她} other {他們}}",
     "nav": {
         "home": "首頁",
         "lazy": "延遲載入",
@@ -41,6 +37,4 @@ const zh_TW = {
         "show_info": "顯示資訊通知",
         "custom_message": "歡迎 {{user}}！您有 {count, plural, one {# 個項目} other {# 個項目}} 需要處理。"
     }
-}
-
-export default zh_TW;
+}; 

@@ -13,5 +13,9 @@ export const routes: Routes = [
     {
         path: 'lazy',
         loadChildren: () => import('./features/lazy/lazy.routes').then(m => m.LAZY_ROUTES)
+    },
+    {
+        path: 'test',
+        loadComponent: () => import('./features/test/test.component').then(m => m.TestComponent)
     }
 ];

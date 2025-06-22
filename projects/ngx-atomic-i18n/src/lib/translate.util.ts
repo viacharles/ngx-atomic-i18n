@@ -1,8 +1,8 @@
-import { effect, inject, Provider, Signal } from "@angular/core";
-import { TRANSLATION_CONFIG, TRANSLATION_CONTEXT } from "./translate.token";
-import { Params, TranslationConfig, TranslationContext } from "./translate.type";
-import { TranslationService } from "ngx-atomic-i18n";
+import { effect, Provider, Signal } from "@angular/core";
+import { TRANSLATION_CONFIG, TRANSLATION_NAMESPACE } from "./translate.token";
+import { Params, TranslationConfig } from "./translate.type";
 import { Observable } from "rxjs";
+import { TranslationService } from "./translation.service";
 
 export function detectPreferredLang(config: TranslationConfig): string {
     const { supportedLangs, fallbackLang, staticLang } = config;
@@ -17,35 +17,32 @@ export function detectPreferredLang(config: TranslationConfig): string {
     return fallbackLang;
 }
 
-export function provideTranslationConfig(config: Partial<TranslationConfig>): Provider {
-    return {
-        provide: TRANSLATION_CONFIG,
-        useValue: {
-            supportedLangs: ['en', 'zh-Hant'],
-            fallbackLang: 'zh-Ho',
-            initialLang: 'zh-Hant',
-            i18nRoot: 'i18n',
-            ...config,
-        },
+export function provideTranslationConfig(config: Partial<TranslationConfig>): Provider[] {
+    const finalConfig = {
+        supportedLangs: ['en', 'zh-Hant'],
+        fallbackLang: 'zh-Hant',
+        initialLang: 'zh-Hant',
+        i18nRoot: 'i18n',
+        ...config,
     };
+    return [{
+        provide: TRANSLATION_CONFIG,
+        useValue: finalConfig,
+    },
+    ...provideTranslation('common')
+    ];
 }
 
 export function provideTranslation(namespace: string): Provider[] {
     console.log('aa-provideTranslation', namespace)
     return [
         {
-            provide: TRANSLATION_CONTEXT,
-            useFactory: () => {
-                console.log('aa-provideTranslation useFactory', namespace)
-                const ts = inject(TranslationService);
-                const lang = ts.currentLang();
-                ts.ensureLoaded(lang, namespace);
-                const ready = ts.getReadySignal(lang, namespace);
-                return {
-                    namespace,
-                    ready,
-                } satisfies TranslationContext;
-            }
+            provide: TRANSLATION_NAMESPACE,
+            useValue: namespace,
+        },
+        {
+            provide: TranslationService,
+            useClass: TranslationService
         }
     ]
 }
@@ -105,7 +102,13 @@ export function parseICU(templateText: string, params?: Params): string {
         const body = icuBlock.slice(match[0].length, -1);
         const options = parseOptions(body);
         const val = strParams[varName] ?? '';
-        const chosen = options[`=${val}`] || options[val] || options['other'] || '';
+        let chosen = options[`=${val}`] || options[val] || options['other'] || '';
+
+        // Handle the # placeholder for plurals
+        if (type === 'plural') {
+            chosen = chosen.replace(/#/g, val);
+        }
+
         const interpolated = chosen.replace(/\{\{(\w+)\}\}/g, (_, k) => strParams[k] ?? '');
         result += interpolated;
         i = end;
