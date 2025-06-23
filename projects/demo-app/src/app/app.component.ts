@@ -45,7 +45,7 @@ import { TranslationService } from 'ngx-atomic-i18n/translation.service';
         <a (click)="changeTab('')">{{ 'setting' | t }}</a>
         <a  (click)="changeTab('about')">{{ 'about' | t }}</a>
         <a (click)="changeTab('lazy')">{{ 'lazy' | t }}</a>
-        <a (click)="changeTab('test')">{{ 'test' | t }}</a>
+        <a (click)="changeTab('test')">{{ 'test.tab-name' | t }}</a>
       </nav>
 
       <main>

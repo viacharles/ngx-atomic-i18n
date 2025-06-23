@@ -10,12 +10,14 @@ const en: typeof zh_TW = {
     "items": "{count, plural, one {{{count}} item} other {{{count}} items}}",
     "gender": "{gender, select, male {he} female {she} other {they}}",
     "greeting": "Hello, {{name}}!",
+    "setting": "Setting",
     "nav": {
         "home": "Home",
         "lazy": "Lazy Load",
         "translation": "Translation Test"
     },
     "test": {
+        "tab-name": "Test",
         "title": "Translation Test Page",
         "pipe_lifecycle": "Pipe Lifecycle Test",
         "dynamic_params": "Dynamic Parameters Test",

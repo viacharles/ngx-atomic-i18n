@@ -1,11 +1,21 @@
 {
   "welcome": "Welcome to ngx-atomic-i18n",
   "language": "Language",
+  "switchLanguage": "Switch Language",
   "home": "Home",
   "about": "About",
   "lazy": "Lazy Load",
-  "setting": "Settings",
+  "items": "{count, plural, one {{{count}} item} other {{{count}} items}}",
+  "gender": "{gender, select, male {he} female {she} other {they}}",
+  "greeting": "Hello, {{name}}!",
+  "setting": "Setting",
+  "nav": {
+    "home": "Home",
+    "lazy": "Lazy Load",
+    "translation": "Translation Test"
+  },
   "test": {
+    "tab-name": "Test",
     "title": "Translation Test Page",
     "pipe_lifecycle": "Pipe Lifecycle Test",
     "dynamic_params": "Dynamic Parameters Test",
@@ -28,16 +38,9 @@
     "show_info": "Show Info",
     "custom_message": "Welcome {{user}}! You have {count, plural, one {# item} other {# items}} to process."
   },
-  "greeting": "Hello, {{name}}!",
-  "items": "{count, plural, one {# item} other {# items}}",
-  "gender": "{gender, select, male {he} female {she} other {they}}",
-  "nav": {
-    "home": "Home",
-    "lazy": "Lazy Load",
-    "translation": "Translation Test"
-  },
   "template": {
     "title": "Translation Test",
     "content": "This is a test content"
-  }
+  },
+  "testaaa": "testaaa"
 }

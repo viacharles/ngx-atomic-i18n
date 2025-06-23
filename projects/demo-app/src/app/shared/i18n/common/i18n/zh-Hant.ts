@@ -8,6 +8,7 @@ const zh_TW = {
     "items": "{count, plural, one {{count}} 個項目} other {{count}} 個項目}}",
     "gender": "{gender, select, male {他} female {她} other {他們}}",
     "greeting": "你好，{{name}}！",
+    "setting": "設定",
     "template": {
         "title": "模板翻譯測試",
         "content": "這是一個使用 *ngTemplateOutlet 的翻譯測試"
@@ -19,6 +20,7 @@ const zh_TW = {
         "translation": "翻譯測試"
     },
     "test": {
+        "tab-name": "測試",
         "title": "翻譯測試頁面",
         "pipe_lifecycle": "Pipe 生命週期測試",
         "dynamic_params": "動態參數測試",
