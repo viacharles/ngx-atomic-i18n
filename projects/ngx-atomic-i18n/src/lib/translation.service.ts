@@ -165,7 +165,7 @@ export class TranslationService {
             if (nsKey === 'zh-Hant:setting' && params) {
                 console.log(`aa-[${this.id}]translate translations`, this._cacheMap, translations, translations?.get(key), key, nsKey)
             }
-            let raw = translations?.get(key) ?? 'key';
+            let raw = translations?.get(key);
             if (raw === undefined || raw === null) {
                 const behovior = this.config.missingTranslationBehavior ?? 'show-key';
                 switch (behovior) {
@@ -198,8 +198,9 @@ export class TranslationService {
                 }
                 return fifo.get(paramKey)!();
             }
-            const isICU = typeof raw === 'string' && /{\s*\w+\s*,\s*(plural|select)\s*,/.test(raw);
-            if (!isICU) return raw;
+            // const isICU = typeof raw === 'string' && /{\s*\w+\s*,\s*(plural|select)\s*,/.test(raw);
+            // if (!isICU) return raw;
+            if (typeof raw !== 'string') return String(raw);
             const computedSignal = computed(() =>
                 parseICU(raw, paramsObject)
             )

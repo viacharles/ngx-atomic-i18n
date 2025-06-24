@@ -1,6 +1,6 @@
 import { effect, Provider, Signal } from "@angular/core";
 import { TRANSLATION_CONFIG, TRANSLATION_NAMESPACE } from "./translate.token";
-import { MissingTranslationBehavior, Params, TranslationConfig } from "./translate.type";
+import { MissingTranslationBehavior, TranslationConfig } from "./translate.type";
 import { Observable } from "rxjs";
 import { TranslationService } from "./translation.service";
 
@@ -48,70 +48,106 @@ export function provideTranslation(namespace: string): Provider[] {
     ]
 }
 
-export function parseICU(templateText: string, params?: Params): string {
+export function parseICU(templateText: string, params?: Record<string, string | number>): string {
     if (!params) return templateText;
-    const strParams = Object.fromEntries(
-        Object.entries(params).map(([k, v]) => [k, String(v)])
-    );
 
-    function parseICUBlock(s: string, start: number): [string, number] {
+    const paramMap: Record<string, string> = {};
+    for (const [key, val] of Object.entries(params)) {
+        paramMap[key] = String(val);
+    }
+
+    function extractBlock(text: string, startIndex: number): [string, number] {
         let depth = 0;
-        let i = start;
-        while (i < s.length) {
-            if (s[i] === '{') depth++;
-            else if (s[i] === '}') {
+        let i = startIndex;
+        while (i < text.length) {
+            if (text[i] === '{') {
+                if (depth === 0) startIndex = i;
+                depth++;
+            } else if (text[i] === '}') {
                 depth--;
-                if (depth === 0) return [s.slice(start, i + 1), i + 1];
+                if (depth === 0) return [text.slice(startIndex, i + 1), i + 1];
             }
             i++;
         }
-        return ['', start];
+        return ['', i];
     }
 
-    function parseOptions(body: string): Record<string, string> {
+    function extractOptions(body: string): Record<string, string> {
         const options: Record<string, string> = {};
         let i = 0;
         while (i < body.length) {
             while (body[i] === ' ') i++;
+
             let key = '';
-            while (body[i] !== '{' && body[i] !== ' ' && i < body.length) key += body[i++];
-            while (body[i] !== '{' && i < body.length) i++;
+            while (i < body.length && body[i] !== '{' && body[i] !== ' ') {
+                key += body[i++];
+            }
+
+            while (i < body.length && body[i] !== '{') i++;
             if (body[i] !== '{') continue;
-            const [block, next] = parseICUBlock(body, i);
-            options[key] = block.slice(1, -1); // remove outer {}
+
+            const [block, next] = extractBlock(body, i);
+            options[key] = block.slice(1, -1);
             i = next;
         }
         return options;
     }
 
-    let result = '';
-    let i = 0;
-    while (i < templateText.length) {
-        const icuStart = templateText.indexOf('{', i);
-        if (icuStart === -1) break;
+    function resolveICU(text: string): string {
+        text = text.replace(/\{\{(\w+)\}\}/g, (_, key) => paramMap[key] ?? '');
+        let result = '';
+        let cursor = 0;
 
-        result += templateText.slice(i, icuStart);
-        const [icuBlock, end] = parseICUBlock(templateText, icuStart);
-        const match = icuBlock.match(/^\{(\w+),\s*(plural|select),/);
-        if (!match) {
-            result += icuBlock;
-            i = end;
-            continue;
+        while (cursor < text.length) {
+            const start = text.indexOf('{', cursor);
+            if (start === -1) {
+                result += text.slice(cursor);
+                break;
+            }
+
+            result += text.slice(cursor, start);
+
+            const [block, nextIndex] = extractBlock(text, start);
+            const match = block.match(/^\{(\w+),\s*(plural|select),/);
+            if (!match) {
+                result += block;
+                cursor = nextIndex;
+                continue;
+            }
+
+            const [, varName, type] = match;
+            const rawVal = paramMap[varName] ?? '';
+            const numVal = Number(rawVal);
+            const body = block.slice(match[0].length, -1);
+            const options = extractOptions(body);
+
+            const selected =
+                options[`=${rawVal}`] ||
+                (type === 'plural' && numVal === 1 && options['one']) ||
+                options[rawVal] ||
+                options['other'] ||
+                '';
+
+            // 遞迴處理巢狀 ICU
+            let resolved = resolveICU(selected);
+
+            // `#` 替代符：僅在 plural 使用
+            if (type === 'plural') {
+                resolved = resolved.replace(/#/g, rawVal);
+            }
+
+            // `{{var}}` 插值
+            result += resolved;
+            cursor = nextIndex;
         }
 
-        const [, varName, type] = match;
-        const body = icuBlock.slice(match[0].length, -1);
-        const options = parseOptions(body);
-        const val = strParams[varName] ?? '';
-        const chosen = options[`=${val}`] || options[val] || options['other'] || '';
-        const interpolated = chosen.replace(/\{\{(\w+)\}\}/g, (_, k) => strParams[k] ?? '');
-        result += interpolated;
-        i = end;
+        return result;
     }
 
-    result += templateText.slice(i);
-    return result.replace(/\{\{(\w+)\}\}/g, (_, k) => strParams[k] ?? '').trim();
+    const resolved = resolveICU(templateText);
+    return resolved.replace(/\{\{(\w+)\}\}/g, (_, k) => paramMap[k] ?? '').trim();
 }
+
 
 export function toObservable<T>(signal: Signal<T>): Observable<T> {
     return new Observable(subscribe => {
