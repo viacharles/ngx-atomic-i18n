@@ -5,7 +5,7 @@ const zh_TW = {
     "home": "首頁",
     "about": "關於",
     "lazy": "延遲載入",
-    "items": "{count, plural, one {{count}} 個項目} other {{count}} 個項目}}",
+    "items": "{count, plural, one {{count}} 個項目 other {{count}} 個項目}",
     "gender": "{gender, select, male {他} female {她} other {他們}}",
     "greeting": "你好，{{name}}！",
     "setting": "設定",

@@ -7,7 +7,7 @@ const en: typeof zh_TW = {
     "home": "Home",
     "about": "About",
     "lazy": "Lazy Load",
-    "items": "{count, plural, one {{{count}} item} other {{{count}} items}}",
+    "items": "{count, plural, one {{count}} item other {{count}} items}",
     "gender": "{gender, select, male {he} female {she} other {they}}",
     "greeting": "Hello, {{name}}!",
     "setting": "Setting",

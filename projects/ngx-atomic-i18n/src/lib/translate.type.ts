@@ -6,6 +6,7 @@ export interface TranslationConfig {
     staticLang?: string;
     initialLang?: () => string | string;
     i18nRoot: string;
+    missingTranslationBehavior?: MissingTranslationBehavior;
 }
 
 export interface TranslationContext {
@@ -17,6 +18,11 @@ export type LazyLoader = Record<Lang, () => Promise<Translations>>;
 export type Params = Record<string, any>;
 export type Translations = Record<string, string>;
 export type Lang = string
+export enum MissingTranslationBehavior {
+    SHOW_KEY = 'show-key',
+    EMPTY = 'empty',
+    THROW = 'throw'
+}
 
 
 

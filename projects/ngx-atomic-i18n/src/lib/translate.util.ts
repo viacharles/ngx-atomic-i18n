@@ -1,6 +1,6 @@
 import { effect, Provider, Signal } from "@angular/core";
 import { TRANSLATION_CONFIG, TRANSLATION_NAMESPACE } from "./translate.token";
-import { Params, TranslationConfig } from "./translate.type";
+import { MissingTranslationBehavior, Params, TranslationConfig } from "./translate.type";
 import { Observable } from "rxjs";
 import { TranslationService } from "./translation.service";
 
@@ -23,6 +23,7 @@ export function provideTranslationConfig(config: Partial<TranslationConfig>): Pr
         fallbackLang: 'zh-Hant',
         initialLang: 'zh-Hant',
         i18nRoot: 'i18n',
+        missingTranslationBehavior: MissingTranslationBehavior.SHOW_KEY,
         ...config,
     };
     return [{
@@ -102,13 +103,7 @@ export function parseICU(templateText: string, params?: Params): string {
         const body = icuBlock.slice(match[0].length, -1);
         const options = parseOptions(body);
         const val = strParams[varName] ?? '';
-        let chosen = options[`=${val}`] || options[val] || options['other'] || '';
-
-        // Handle the # placeholder for plurals
-        if (type === 'plural') {
-            chosen = chosen.replace(/#/g, val);
-        }
-
+        const chosen = options[`=${val}`] || options[val] || options['other'] || '';
         const interpolated = chosen.replace(/\{\{(\w+)\}\}/g, (_, k) => strParams[k] ?? '');
         result += interpolated;
         i = end;

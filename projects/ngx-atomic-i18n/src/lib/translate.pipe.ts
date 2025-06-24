@@ -22,8 +22,8 @@ export class TranslationPipe implements PipeTransform, OnDestroy {
     }
 
     transform(key: string, params?: Params): string {
-        if (this.instanceId >= 30 && this.instanceId <= 40) {
-            console.log(`🧪 [Pipe ${this.instanceId}] transform method called - key: ${key}, params:`, params);
+        if (this.service.getNskey === 'zh-Hant:setting') {
+            console.log(`🧪 [Pipe ${this.instanceId}] transform method called - key: ${key}, params:`, params, this.service.translateSignal(key, params)());
         }
 
         return this.service.translateSignal(key, params)();

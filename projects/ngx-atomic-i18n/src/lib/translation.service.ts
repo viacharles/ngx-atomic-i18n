@@ -155,33 +155,58 @@ export class TranslationService {
             return acc;
         }, {} as Record<string, string>);
     }
+    id = 0;
 
     translateSignal(key: string, params?: Params): Signal<string> {
+        ++this.id;
         return computed(() => {
             const nsKey = `${this.currentLang()}:${this.namespace}`;
             const translations = this._cacheMap.get(nsKey);
-            if (key === 'setting') {
-                console.log('aa-translate translations', this._cacheMap, translations, translations?.get(key), key, nsKey)
+            if (nsKey === 'zh-Hant:setting' && params) {
+                console.log(`aa-[${this.id}]translate translations`, this._cacheMap, translations, translations?.get(key), key, nsKey)
             }
-            const raw = translations?.get(key) ?? key;
-            if (key === 'setting') {
-                console.log('aa-translate raw', raw)
+            let raw = translations?.get(key) ?? 'key';
+            if (raw === undefined || raw === null) {
+                const behovior = this.config.missingTranslationBehavior ?? 'show-key';
+                switch (behovior) {
+                    case 'throw': throw new Error(`[i18n] Missing translation for key: "${key}" in namespace "${this.namespace}"`);
+                    case 'empty': raw = ''; break;
+                    case 'show-key':
+                    default: raw = `[MISSING:${key}]`;
+                }
+            };
+            if (nsKey === 'zh-Hant:setting' && params) {
+                console.log(`aa-[${this.id}] translate raw`, raw)
             }
             if (!params) return raw;
-            const resolvedParams = Object.fromEntries(Object.entries(params).map(([k, v]) => [k, typeof v === 'function' ? v() : v]))
+            const paramsObject = Object.fromEntries(Object.entries(params).map(([k, v]) => [k, typeof v === 'function' ? v() : v]))
             const paramKey = `${key}:${JSON.stringify(params)}`;
+            if (nsKey === 'zh-Hant:setting' && params) {
+                console.log(`aa-[${this.id}] translate paramKey`, paramKey, paramsObject)
+            }
             let fifo = this._computedCache.get(nsKey);
+            if (nsKey === 'zh-Hant:setting' && params) {
+                console.log(`aa-[${this.id}]ranslate fifo`, fifo);
+            }
             if (!fifo) {
                 fifo = new FIFOCache(MAX_CACHE_SIZE);
                 this._computedCache.set(nsKey, fifo);
             }
             if (fifo.has(paramKey)) {
+                if (nsKey === 'zh-Hant:setting' && params) {
+                    console.log(`aa-[${this.id}] translate fifo(paramKey)`, fifo.get(paramKey)!());
+                }
                 return fifo.get(paramKey)!();
             }
+            const isICU = typeof raw === 'string' && /{\s*\w+\s*,\s*(plural|select)\s*,/.test(raw);
+            if (!isICU) return raw;
             const computedSignal = computed(() =>
-                parseICU(raw, resolvedParams)
+                parseICU(raw, paramsObject)
             )
             fifo.set(paramKey, computedSignal);
+            if (nsKey === 'zh-Hant:setting' && params) {
+                console.log(`aa-[${this.id}]translate computedSignal`, computedSignal())
+            }
             return computedSignal();
         })
     }
