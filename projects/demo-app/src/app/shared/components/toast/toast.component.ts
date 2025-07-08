@@ -143,7 +143,6 @@ export class ToastComponent implements OnInit {
   ngOnInit(): void {
     this.toastService.toasts$.subscribe(toasts => {
       this.toasts = toasts;
-      console.log('aa-toasts', this.toasts)
     });
   }
 

@@ -1,11 +1,9 @@
-import { effect, Provider, Signal } from "@angular/core";
-import { TRANSLATION_CONFIG, TRANSLATION_NAMESPACE } from "./translate.token";
-import { MissingTranslationBehavior, TranslationConfig } from "./translate.type";
+import { effect, Signal } from "@angular/core";
+import { TranslationConfig, Translations } from "./translate.type";
 import { Observable } from "rxjs";
-import { TranslationService } from "./translation.service";
 
-export function detectPreferredLang(config: TranslationConfig): string {
-    const { supportedLangs, fallbackLang, staticLang } = config;
+export function detectPreferredLang(config: TranslationConfig, staticLang?: string): string {
+    const { supportedLangs, fallbackLang } = config;
     const isNode = typeof window === 'undefined';
     if (isNode && staticLang && supportedLangs.includes(staticLang)) return staticLang;
     const stored = isNode ? null : localStorage.getItem('lang');
@@ -17,41 +15,10 @@ export function detectPreferredLang(config: TranslationConfig): string {
     return fallbackLang;
 }
 
-export function provideTranslationConfig(config: Partial<TranslationConfig>): Provider[] {
-    const finalConfig = {
-        supportedLangs: ['en', 'zh-Hant'],
-        fallbackLang: 'zh-Hant',
-        initialLang: 'zh-Hant',
-        i18nRoot: 'i18n',
-        missingTranslationBehavior: MissingTranslationBehavior.SHOW_KEY,
-        ...config,
-    };
-    return [{
-        provide: TRANSLATION_CONFIG,
-        useValue: finalConfig,
-    },
-    ...provideTranslation('common')
-    ];
-}
-
-export function provideTranslation(namespace: string): Provider[] {
-    console.log('aa-provideTranslation', namespace)
-    return [
-        {
-            provide: TRANSLATION_NAMESPACE,
-            useValue: namespace,
-        },
-        {
-            provide: TranslationService,
-            useClass: TranslationService
-        }
-    ]
-}
-
 export function parseICU(templateText: string, params?: Record<string, string | number>): string {
     if (!params) return templateText;
 
-    const paramMap: Record<string, string> = {};
+    const paramMap: Translations = {};
     for (const [key, val] of Object.entries(params)) {
         paramMap[key] = String(val);
     }
@@ -72,8 +39,8 @@ export function parseICU(templateText: string, params?: Record<string, string | 
         return ['', i];
     }
 
-    function extractOptions(body: string): Record<string, string> {
-        const options: Record<string, string> = {};
+    function extractOptions(body: string): Translations {
+        const options: Translations = {};
         let i = 0;
         while (i < body.length) {
             while (body[i] === ' ') i++;
@@ -146,6 +113,19 @@ export function parseICU(templateText: string, params?: Record<string, string | 
 
     const resolved = resolveICU(templateText);
     return resolved.replace(/\{\{(\w+)\}\}/g, (_, k) => paramMap[k] ?? '').trim();
+}
+
+export function flattenTranslations(obj: any, prefix = ''): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(obj)) {
+        const newKey = prefix ? `${prefix}.${key}` : key;
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            Object.assign(result, flattenTranslations(value, newKey));
+        } else {
+            result[newKey] = String(value);
+        }
+    }
+    return result;
 }
 
 

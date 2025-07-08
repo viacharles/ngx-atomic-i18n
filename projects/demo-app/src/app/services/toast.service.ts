@@ -35,7 +35,6 @@ export class ToastService {
     }
 
     success(message: string, duration?: number): void {
-        console.log('aa-success', message)
         this.show(message, 'success', duration);
     }
 

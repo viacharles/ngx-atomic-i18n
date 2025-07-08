@@ -14,7 +14,7 @@ export class TranslationDirective {
   readonly tAttr = input<string>('');
   constructor() {
     effect(() => {
-      const value = this.service.translateSignal(this.t(), this.tParams())();
+      const value = this.service.t(this.t(), this.tParams());
       if (this.tAttr()) {
         this.selfElm.setAttribute(this.tAttr(), value);
       } else {

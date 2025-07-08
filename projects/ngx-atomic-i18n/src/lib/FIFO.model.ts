@@ -1,5 +1,8 @@
 export class FIFOCache<K, V> {
     private map = new Map<K, V>();
+    get size(): number {
+        return this.map.size;
+    }
     constructor(private max: number) { }
     set(key: K, value: V): void {
         if (this.map.has(key)) {

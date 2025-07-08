@@ -5,63 +5,15 @@ import { TranslationTestComponent } from './shared/components/translation-test/t
 import { NgTemplateOutlet } from '@angular/common';
 import { CodeBlockComponent } from './shared/components/code-block/code-block.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
-import { provideTranslation } from 'ngx-atomic-i18n/translate.util';
 import { TranslationService } from 'ngx-atomic-i18n/translation.service';
+import { provideTranslation } from 'ngx-atomic-i18n/translate.provider';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, TranslationPipe, TranslationTestComponent, NgTemplateOutlet, CodeBlockComponent, ToastComponent],
   providers: [provideTranslation('common')],
-  template: `
-  @if (this.translationService.ready()) {
-    <div class="app-container">
-      <header>
-        <div>
-        <h1>{{ 'welcome' | t }}</h1>
-        <app-code-block [code]="code.welcome"  language="typescript"></app-code-block>
-        </div>
-        <div class="language-switcher">
-          <button 
-            [class.active]="currentLang === 'en'" 
-            (click)="onLanguageChange('en')"
-            class="lang-btn"
-          >
-            <span class="lang-icon">🇺🇸</span>
-            <span class="lang-text">English</span>
-          </button>
-          <button 
-            [class.active]="currentLang === 'zh-Hant'" 
-            (click)="onLanguageChange('zh-Hant')"
-            class="lang-btn"
-          >
-            <span class="lang-icon">🇹🇼</span>
-            <span class="lang-text">繁體中文</span>
-          </button>
-        </div>
-      </header>
-
-      <nav>
-        <a (click)="changeTab('')">{{ 'setting' | t }}</a>
-        <a  (click)="changeTab('about')">{{ 'about' | t }}</a>
-        <a (click)="changeTab('lazy')">{{ 'lazy' | t }}</a>
-        <a (click)="changeTab('test')">{{ 'test.tab-name' | t }}</a>
-      </nav>
-
-      <main>
-        <router-outlet></router-outlet>
-        <ng-container *ngTemplateOutlet="testTemplate"></ng-container>
-      </main>
-    </div>
-
-    <ng-template #testTemplate>
-      <app-translation-test></app-translation-test>
-    </ng-template>
-
-    <app-toast></app-toast>
-  }
-
-  `,
+  templateUrl: "./app.component.html",
   styles: [`
     .app-container {
       max-width: 1200px;

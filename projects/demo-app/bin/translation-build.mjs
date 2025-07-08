@@ -36,10 +36,6 @@ if (fs.existsSync(angularJsonPath)) {
 const sourceRoot = srcArg ? srcArg.split('=')[1] : defaultSrc;
 const outputRoot = outArg ? outArg.split('=')[1] : defaultOut;
 
-console.log('[i18n] Cleaning only i18n dirs under:', outputRoot);
-console.log('[i18n] Source:', sourceRoot);
-console.log('[i18n] Output:', outputRoot);
-
 function walk(dir, filelist = []) {
   const files = fs.readdirSync(dir);
   for (const file of files) {
@@ -96,13 +92,11 @@ async function compileDir(i18nDir, outputRoot, sourceRoot) {
         const jsonContent = JSON.stringify(mod.default, null, 2);
         fs.writeFileSync(outFile, jsonContent);
         fs.unlinkSync(tempOutJs);
-        console.log(`✓ Compiled ${filePath} -> ${outFile}`);
       } catch (err) {
         console.error(`[i18n] Failed to import ${filePath}:`, err);
       }
     } else if (file.endsWith('.json')) {
       fs.copyFileSync(filePath, outFile);
-      console.log(`✓ Copied ${filePath} -> ${outFile}`);
     }
   }
 }
@@ -141,7 +135,6 @@ function findI18nDirs(rootDir) {
 (async function main() {
   cleanOutputDirs(outputRoot);
   const i18nDirs = findI18nDirs(sourceRoot);
-  console.log('[i18n] Found i18n directories:', i18nDirs);
   for (const dir of i18nDirs) {
     await compileDir(dir, outputRoot, sourceRoot);
   }

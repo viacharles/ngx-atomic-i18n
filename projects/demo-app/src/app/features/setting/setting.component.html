@@ -1,0 +1,13 @@
+<div class="home">
+    <h2>{{ 'setting' | t }}</h2>
+    <div>
+        <p>{{ 'greeting' | t: { name: 'Home User' } }}</p>
+        <app-code-block [code]="code.greeting" language="typescript"></app-code-block>
+    </div>
+
+    <p>{{ 'items' | t: { count: 1 } }}</p>
+    <p>{{ 'items' | t: { count: 5 } }}</p>
+    <p>{{ 'gender' | t: { gender: 'female' } }}</p>
+
+    <app-code-block title="{{'範例程式碼' | t}}" language="typescript" [code]="exampleCode"></app-code-block>
+</div>
