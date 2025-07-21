@@ -2,10 +2,12 @@ import { effect, Signal } from "@angular/core";
 import { TranslationConfig, Translations } from "./translate.type";
 import { Observable } from "rxjs";
 
-export function detectPreferredLang(config: TranslationConfig, staticLang?: string): string {
+export function detectPreferredLang(config: TranslationConfig): string {
     const { supportedLangs, fallbackLang } = config;
     const isNode = typeof window === 'undefined';
-    if (isNode && staticLang && supportedLangs.includes(staticLang)) return staticLang;
+    const initialLang = typeof config.initialLang === 'function'
+        ? config.initialLang() : config.initialLang;
+    if (isNode && initialLang && supportedLangs.includes(initialLang)) return initialLang;
     const stored = isNode ? null : localStorage.getItem('lang');
     if (stored && supportedLangs.includes(stored)) return stored;
     const urlLang = isNode ? null : window.location.pathname.split('/')[1];
@@ -134,4 +136,50 @@ export function toObservable<T>(signal: Signal<T>): Observable<T> {
         const stop = effect(() => subscribe.next(signal()));
         return () => stop;
     })
+}
+
+
+export function deepMerge<T extends object, U extends object>(target: T, source: U): T & U {
+    const output = { ...target } as T & U;
+    for (const key in source) {
+        const targetValue = (target as any)[key];
+        if (
+            source.hasOwnProperty(key) &&
+            typeof source[key] === 'object' &&
+            source[key] !== null &&
+            !Array.isArray(source[key]) &&
+            typeof targetValue === 'object' &&
+            targetValue !== null &&
+            !Array.isArray(targetValue)
+        ) {
+            output[key] = deepMerge(targetValue as any, source[key] as any);
+        } else {
+            output[key] = source[key] as any;
+        }
+    }
+    return output;
+}
+
+export function filterNewKeysDeep<T extends object, U extends object>(bundle: T, existing: U): Partial<T> {
+    const result = {} as Partial<T>;
+    for (const key in bundle) {
+        const existValue = (existing as any)[key];
+        if (
+            typeof bundle[key] === 'object' &&
+            bundle[key] !== null &&
+            !Array.isArray(bundle[key]) &&
+            typeof existValue === 'object' &&
+            existValue !== null &&
+            !Array.isArray(existValue)
+        ) {
+            result[key] = filterNewKeysDeep(bundle[key], existValue) as any;
+        } else if (!(key in existing)) {
+            result[key] = bundle[key];
+        }
+    }
+    return result;
+}
+
+export function getNested(obj: any, path: string): string | undefined {
+    return path.split('.').reduce((res, key) => res?.[key], obj);
 }

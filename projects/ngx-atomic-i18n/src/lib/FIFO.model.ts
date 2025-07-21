@@ -22,6 +22,9 @@ export class FIFOCache<K, V> {
     has(key: K): boolean {
         return this.map.has(key);
     }
+    delete(k: K): void {
+        this.map.delete(k);
+    }
     clear(): void {
         this.map.clear();
     }

@@ -1,6 +1,6 @@
-import { computed, Inject, inject, Injectable, Optional, Signal, signal, WritableSignal } from '@angular/core';
-import { detectPreferredLang, parseICU, toObservable, flattenTranslations } from './translate.util';
-import { FormatResult, ICU_FORMATTER_TOKEN, STATIC_I18N_LANG, TRANSLATION_CONFIG, TRANSLATION_LOADER, TranslationConfig, Translations } from 'ngx-atomic-i18n';
+import { computed, inject, Injectable, Signal, signal } from '@angular/core';
+import { deepMerge, detectPreferredLang, filterNewKeysDeep, getNested, parseICU, toObservable } from './translate.util';
+import { FormatResult, ICU_FORMATTER_TOKEN, nsKey, TRANSLATION_CONFIG, TRANSLATION_LOADER, Translations } from 'ngx-atomic-i18n';
 import { FIFOCache } from './FIFO.model';
 
 const MAX_CACHE_SIZE = 30;
@@ -10,32 +10,28 @@ const MAX_CACHE_SIZE = 30;
 export class TranslationCoreService {
   private readonly _config = inject(TRANSLATION_CONFIG);
   private readonly _loader = inject(TRANSLATION_LOADER);
-  private readonly _ICUModel = inject(ICU_FORMATTER_TOKEN, { optional: true }) as unknown as (new (raw: string, lang: string) => FormatResult) | null
+  private readonly _ICU = inject(ICU_FORMATTER_TOKEN, { optional: true }) as unknown as (new (raw: string, lang: string) => FormatResult) | null
 
   private readonly _lang = signal(detectPreferredLang(this._config));
   readonly lang = this._lang.asReadonly();
 
-  private readonly _jsonCache = signal(new Map<string, Map<string, string>>());
-  private readonly _fifoCache = new Map<string, FIFOCache<string, FormatResult>>();
+  private readonly _jsonCache = signal(new Map<string, Map<string, Record<string, any>>>()); // lang => namespace => key 
+  private readonly _fifoCache = new FIFOCache<nsKey, FormatResult>(MAX_CACHE_SIZE);
+  private _missingKeyCache = new Set<nsKey>();
 
   readonly onLangChange = toObservable(this._lang);
   readonly fallbackLang = this._config.fallbackLang ?? 'en';
 
-  get currentLang(): Signal<string> {
-    return this._lang;
+  get currentLang(): string {
+    return this._lang.asReadonly()();
   }
 
-  constructor(
-    @Inject(TRANSLATION_CONFIG) private readonly config: TranslationConfig,
-    @Optional() @Inject(STATIC_I18N_LANG) private staticLang?: string,
-  ) { }
-
-  readySignal(nsKey: string): Signal<boolean> {
-    return computed(() => this.hasValue(this._jsonCache, nsKey));
+  readySignal(namespace: string): Signal<boolean> {
+    return computed(() => this.hasJsonCacheValue(this.lang(), namespace));
   }
 
   setLang(lang?: string): void {
-    const currentLang = lang ?? detectPreferredLang(this.config, this.staticLang);
+    const currentLang = lang ?? detectPreferredLang(this._config);
     if (!this._config.supportedLangs.includes(currentLang)) {
       console.warn(`[i18n] Unsupported language: ${currentLang}`);
       return;
@@ -54,49 +50,116 @@ export class TranslationCoreService {
   }
 
   async load(nsKey: string, fetchFn: () => Promise<Translations>): Promise<void> {
-    if (this.hasValue(this._jsonCache, nsKey)) return;
+    const [lang, namespace] = nsKey.split(':');
+    if (!!this.hasJsonCacheValue(lang, namespace)) return;
     const json = await fetchFn();
-    // 扁平化嵌套對象
-    const flattenedJson = flattenTranslations(json);
-    const newMap = new Map(this._jsonCache());
-    newMap.set(nsKey, new Map(Object.entries(flattenedJson)));
-    this._jsonCache.set(newMap);
-    this._fifoCache.delete(nsKey);
+    this.handleNewTranslations(json, lang, namespace);
   }
 
-  getFormatter(nsKey: string, key: string): FormatResult | undefined {
-    let fifo = this._fifoCache.get(nsKey);
-    if (!fifo) {
-      fifo = new FIFOCache(MAX_CACHE_SIZE);
-      this._fifoCache.set(nsKey, fifo);
-    };
-    if (fifo.has(key)) return fifo.get(key);
-    const raw = this._jsonCache().get(nsKey)?.get(key);
+  getAndCreateFormatter(nsKey: string, key: string): FormatResult | undefined {
+    const cacheKey = `${this.lang()}:${key}`;
+    if (this._fifoCache.has(cacheKey)) return this._fifoCache.get(cacheKey);
+    const [lang, namespace] = nsKey.split(':');
+    const raw = getNested(this._jsonCache().get(lang)?.get(namespace), key);
     if (raw === undefined) return;
-    const format: FormatResult = this._ICUModel ? new this._ICUModel(raw, this.lang()) : {
+    const result: FormatResult = this._ICU ? new this._ICU(raw, this.lang()) : {
       format: (p) => parseICU(raw, p)
     }
-    fifo.set(key, format);
-    return format;
+    this._fifoCache.set(key, result);
+    return result;
   }
 
-  hasValue(cache: WritableSignal<Map<string, any>>, nsKey: string): boolean {
-    return !!cache().get(nsKey)?.size;
+  findFallbackFormatter(key: string, exclude: string[]): FormatResult | undefined {
+    const cacheKey = `${this.currentLang}:${key}`;
+    if (this._missingKeyCache.has(cacheKey)) return undefined;
+    const namespaces = Array.isArray(this._config.fallbackNamespace)
+      ? this._config.fallbackNamespace
+      : [this._config.fallbackNamespace ?? '']
+    for (const namespace of namespaces) {
+      const nsKey = `${this.currentLang}:${namespace}`;
+      if (exclude.includes(nsKey)) continue;
+      const reslt = this.getAndCreateFormatter(nsKey, key);
+      if (reslt) return reslt;
+    }
+    this._missingKeyCache.add(cacheKey);
+    return undefined;
   }
 
   async preloadNamespaces(namespaces: string[], lang: string): Promise<void> {
-    const roots = Array.isArray(this.config.i18nRoots) ? this.config.i18nRoots : [this.config.i18nRoots];
-    console.log('aa-roots', roots)
-    for (const ns of namespaces) {
-      const nsKey = `${lang}:${ns}`;
-      if (this.hasValue(this._jsonCache, nsKey)) continue;
-      const json = await this._loader.load(roots, ns, lang);
-      // 扁平化嵌套對象
-      const flattenedJson = flattenTranslations(json);
-      const newMap = new Map(this._jsonCache());
-      newMap.set(nsKey, new Map(Object.entries(flattenedJson)));
-      this._jsonCache.set(newMap);
-      this._fifoCache.delete(nsKey);
+    const roots = Array.isArray(this._config.i18nRoots) ? this._config.i18nRoots : [this._config.i18nRoots];
+    for (const namespace of namespaces) {
+      if (this.hasJsonCacheValue(lang, namespace)) continue;
+      const json = await this._loader.load(roots, namespace, lang);
+      this.handleNewTranslations(json, lang, namespace);
     }
   }
+
+  private handleNewTranslations(json: Translations, lang: string, namespace: string): void {
+    const map = new Map(this._jsonCache());
+    const langMap = new Map(this._jsonCache().get(lang));
+    langMap.set(namespace, json);
+    map.set(lang, langMap);
+    this._jsonCache.set(map);
+    this._missingKeyCache.clear();
+  }
+
+  private hasJsonCacheValue(lang: string, namespace: string): boolean {
+    return this._jsonCache().get(lang)?.get(namespace) !== undefined;
+  }
+
+  addResourceBundle(lang: string, namespace: string, bundle: Translations, deep = true, overwrite = true) {
+    const map = new Map(this._jsonCache());
+    const langMap = new Map(map.get(lang));
+    const existTranslations = langMap.get(namespace) ?? {};
+    let merged: Translations;
+    if (deep) {
+      merged = overwrite
+        ? deepMerge(existTranslations, bundle)
+        : deepMerge(existTranslations, filterNewKeysDeep(bundle, existTranslations))
+    } else {
+      merged = overwrite
+        ? { ...existTranslations, ...bundle }
+        : { ...bundle }
+      if (!overwrite) {
+        for (const key in existTranslations) {
+          if (!(key in merged)) {
+            merged[key] = existTranslations[key];
+          }
+        }
+      }
+      langMap.set(namespace, merged);
+      map.set(lang, langMap);
+      this._jsonCache.set(map);
+    }
+  }
+
+  addResources(lang: string, namespace: string, obj: Translations, overwrite = true) {
+    this.addResourceBundle(lang, namespace, obj, false, overwrite);
+  }
+
+  addResource(lang: string, namespace: string, key: string, val: string, overwrite = true) {
+    this.addResources(lang, namespace, { [key]: val }, overwrite);
+  }
+
+  hasResourceBundle(lang: string, namespace: string): boolean {
+    return !!this._jsonCache().get(lang)?.has(namespace);
+  }
+
+  getResourceBundle(lang: string, namespace: string): Translations | undefined {
+    return this._jsonCache().get(lang)?.get(namespace);
+  }
+
+  removeResourceBundle(lang: string, namespace: string): void {
+    const map = new Map(this._jsonCache());
+    const langMap = new Map(map.get(lang));
+    langMap.delete(namespace)
+    map.set(lang, langMap);
+    this._jsonCache.set(map);
+    this._fifoCache.delete(`${lang}:${namespace}`)
+  }
+
+  getResource(lang: string, namespace: string, key: string): string | undefined {
+    return getNested(this._jsonCache().get(lang)?.get(namespace), key);
+  }
+
 }

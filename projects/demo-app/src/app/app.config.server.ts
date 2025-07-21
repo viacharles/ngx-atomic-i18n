@@ -11,7 +11,9 @@ const serverConfig: ApplicationConfig = {
     provideServerRendering(),
     provideRouter(routes),
     provideHttpClient(),
-    provideTranslationInit({})
+    provideTranslationInit({
+      supportedLangs: ['en', 'zh-Hant']
+    })
   ]
 };
 

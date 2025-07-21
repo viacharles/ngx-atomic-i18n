@@ -3,10 +3,11 @@ import { Signal } from "@angular/core";
 export interface TranslationConfig {
     supportedLangs: string[];
     fallbackLang: string;
-    initialLang?: () => string | string;
     i18nRoots: string[];
+    fallbackNamespace: string | string[];
+    preloadNamespaces?: string[];
+    initialLang?: () => string | string;
     missingTranslationBehavior?: MissingTranslationBehavior;
-    parserType?: ParserType;
 }
 
 export interface TranslationContext {
@@ -17,13 +18,9 @@ export interface TranslationContext {
 export type LazyLoader = Record<Lang, () => Promise<Translations>>;
 export type Params = Record<string, any>;
 export type Translations = Record<string, string>;
-export type Lang = string
-/**
- * Parser type for translation message formatting.
- * - 'lite': Fast and light built-in parser (supports only basic placeholders, no advanced ICU syntax).
- * - 'intl': Full-featured parser using `intl-messageformat` (supports complete ICU syntax, but slower and heavier).
- */
-export type ParserType = 'lite' | 'intl';
+export type Lang = string;
+/** lang:namespace */
+export type nsKey = string;
 /**
  * How the translation system should behave when a translation key is missing.
  * 

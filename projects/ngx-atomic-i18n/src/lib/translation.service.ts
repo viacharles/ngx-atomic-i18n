@@ -10,32 +10,42 @@ export class TranslationService {
     private readonly core = inject(TranslationCoreService);
     private readonly loader = inject(TRANSLATION_LOADER);
 
-    readonly onLangChange = toObservable(this.currentLang);
+    readonly onLangChange = toObservable(this.lang);
+    private namespace = '';
 
-    get currentLang(): Signal<string> {
-        return computed(() => this.core.currentLang());
+    get lang(): Signal<string> {
+        return computed(() => this.core.lang());
+    }
+
+    get currentLang(): string {
+        return this.core.currentLang;
     }
     get supportedLangs(): string[] {
         return this.config.supportedLangs;
     }
 
     get getNskey(): string {
-        return `${this.currentLang()}:${this.namespace}`
+        return `${this.lang()}:${this.namespace}`
     }
 
-    get ready(): Signal<boolean> {
-        const nsKey = this.getNskey;
-        return this.core.readySignal(nsKey);
+    get readySignal(): Signal<boolean> {
+        return this.core.readySignal(this.namespace);
     }
+
+    get ready(): boolean {
+        return this.core.readySignal(this.namespace)();
+    }
+
 
     constructor(
-        @Inject(TRANSLATION_NAMESPACE) public readonly namespace: string,
+        @Inject(TRANSLATION_NAMESPACE) public readonly namespaceInput: string | string[],
     ) {
+        const primary = Array.isArray(namespaceInput) ? namespaceInput[0] : namespaceInput as string;
+        this.namespace = primary;
         effect(() => {
             const nsKey = this.getNskey;
-            if (!this.core.readySignal(nsKey)()) {
-                console.log('aa-service efffect', this.config)
-                this.core.load(nsKey, () => this.loader.load(this.config.i18nRoots, this.namespace, this.currentLang()))
+            if (!this.ready) {
+                this.core.load(nsKey, () => this.loader.load(this.config.i18nRoots, this.namespace, this.lang()))
             }
         })
     }
@@ -46,10 +56,13 @@ export class TranslationService {
 
     t(key: string, params: Params = {}): string {
         const nsKey = this.getNskey;
-        if (!this.core.readySignal(nsKey)()) return '';
-        const formatResult = this.core.getFormatter(nsKey, key);
+        const missingResult = this.getMissingTranslation(key);
+        if (!this.ready) return missingResult;
+        const formatResult = this.core.getAndCreateFormatter(nsKey, key);
         if (formatResult) return formatResult.format(params);
-        return this.getMissingTranslation(key);
+        const fallback = this.core.findFallbackFormatter(key, []);
+        if (fallback) return fallback.format(params);
+        return missingResult;
     }
 
     private getMissingTranslation(key?: string): string | never {
@@ -61,6 +74,31 @@ export class TranslationService {
             case 'show-key':
             default: return key ?? `[MISSING:${String(key)}]`;
         }
+    }
+
+    addResourceBundle(...p: Parameters<TranslationCoreService['addResourceBundle']>) {
+        return this.core.addResourceBundle(...p);
+    }
+    addResources(...p: Parameters<TranslationCoreService['addResources']>) {
+        return this.core.addResources(...p);
+    }
+    addResource(...p: Parameters<TranslationCoreService['addResource']>) {
+        return this.core.addResource(...p);
+    }
+    hasResourceBundle(...p: Parameters<TranslationCoreService['hasResourceBundle']>) {
+        return this.core.hasResourceBundle(...p);
+    }
+    getResource(...p: Parameters<TranslationCoreService['getResource']>) {
+        return this.core.getResource(...p);
+    }
+    getResourceBundle(...p: Parameters<TranslationCoreService['getResourceBundle']>) {
+        return this.core.getResourceBundle(...p);
+    }
+    removeResourceBundle(...p: Parameters<TranslationCoreService['removeResourceBundle']>) {
+        return this.core.removeResourceBundle(...p);
+    }
+    preloadNamespaces(...p: Parameters<TranslationCoreService['preloadNamespaces']>) {
+        return this.core.preloadNamespaces(...p);
     }
 }
 

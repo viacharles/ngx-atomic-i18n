@@ -10,6 +10,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideHttpClient(),
-    provideTranslationInit({}),
+    provideTranslationInit({ supportedLangs: ['en', 'zh-Hant'] }),
   ]
 };

@@ -2,37 +2,50 @@ import { HttpClient } from "@angular/common/http";
 import { APP_INITIALIZER, Provider } from "@angular/core";
 import { TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE, TranslationConfig, TranslationService } from "ngx-atomic-i18n";
 import { HttpTranslationLoader } from "./translation.loader.csr";
-import { userTranslationConfig } from "./cli-init-config";
+import { detectPreferredLang } from "./translate.util";
 
-export function provideTranslationInit(config?: Partial<TranslationConfig>): Provider[] {
-    const finalConfig = {
-        supportedLangs: ['en', 'zh-Hant'],
-        fallbackLang: 'zh-Hant',
-        initialLang: 'zh-Hant',
+export function provideTranslationInit(userConfig?: Partial<TranslationConfig>): Provider[] {
+    const defaultCongig = {
+        supportedLangs: ['en'],
+        fallbackNamespace: 'common',
+        fallbackLang: 'en',
+        initialLang: 'en',
         i18nRoots: ['i18n'],
         missingTranslationBehavior: 'show-key',
-        parserType: 'lite',
-        ...userTranslationConfig,
-        ...config,
+    };
+    const finalConfig = {
+        ...defaultCongig,
+        ...userConfig,
     } as TranslationConfig;
-    return [{
-        provide: TRANSLATION_CONFIG,
-        useValue: finalConfig,
-    },
-    ...provideTranslationLoader(),
-    ...provideTranslation('common'),
-    {
-        provide: APP_INITIALIZER,
-        useFactory: (ts: TranslationService) => {
-            return () => ts.setLang(ts.currentLang());
+    const preferredLang = detectPreferredLang(finalConfig);
+    return [
+        {
+            provide: TRANSLATION_CONFIG,
+            useValue: {
+                ...finalConfig,
+                initialLang: preferredLang
+            },
         },
-        deps: [TranslationService],
-        multi: true
-    }
+        ...provideTranslationLoader(),
+        ...provideTranslation(finalConfig.fallbackNamespace),
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (ts: TranslationService) => {
+                return async () => {
+                    const preload = finalConfig.preloadNamespaces;
+                    if (preload?.length) {
+                        await ts.preloadNamespaces(preload, preferredLang);
+                    }
+                    ts.setLang(ts.currentLang);
+                }
+            },
+            deps: [TranslationService],
+            multi: true
+        }
     ];
 }
 
-export function provideTranslation(namespace: string): Provider[] {
+export function provideTranslation(namespace: string | string[]): Provider[] {
     return [
         {
             provide: TRANSLATION_NAMESPACE,

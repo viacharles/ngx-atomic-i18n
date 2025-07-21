@@ -5,7 +5,6 @@ import { firstValueFrom } from "rxjs";
 export class HttpTranslationLoader implements TranslationLoader {
     constructor(private http: HttpClient) { }
     async load(i18nRoots: string[], namespace: string, lang: string): Promise<Translations> {
-        console.log('aa-load', i18nRoots)
         for (const root of i18nRoots) {
             try {
                 const json = await firstValueFrom(
