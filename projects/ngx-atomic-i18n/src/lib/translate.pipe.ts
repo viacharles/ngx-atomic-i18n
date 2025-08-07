@@ -5,6 +5,6 @@ import { TranslationService } from "./translation.service";
 export class TranslationPipe implements PipeTransform {
     private readonly service = inject(TranslationService);
     transform(key: string, params?: Params): string {
-        return this.service.readySignal() ? this.service.t(key, params) : '';
+        return this.service.t(key, params);
     }
 }

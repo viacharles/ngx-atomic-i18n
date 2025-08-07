@@ -36,7 +36,6 @@ export class TranslationService {
         return this.core.readySignal(this.namespace)();
     }
 
-
     constructor(
         @Inject(TRANSLATION_NAMESPACE) public readonly namespaceInput: string | string[],
     ) {
@@ -71,8 +70,8 @@ export class TranslationService {
             case 'throw':
                 throw new Error(`[i18n] Missing translation: ${key} in ${this.namespace}`);
             case 'empty': return '';
-            case 'show-key':
-            default: return key ?? `[MISSING:${String(key)}]`;
+            case 'show-key': return key ?? '';
+            default: return mode;
         }
     }
 

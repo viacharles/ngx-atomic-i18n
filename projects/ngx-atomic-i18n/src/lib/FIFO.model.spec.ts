@@ -7,7 +7,7 @@ describe('FIFOCache', () => {
         expect(cache.get('a')).toBe(1);
     });
 
-    it('should evict oldest when max exceeded', () => {
+    it('should evict oldest when max size exceeded', () => {
         const cache = new FIFOCache<string, number>(2);
         cache.set('a', 1);
         cache.set('b', 2);
@@ -15,6 +15,14 @@ describe('FIFOCache', () => {
         expect(cache.has('a')).toBe(false);
         expect(cache.has('b')).toBe(true);
         expect(cache.has('c')).toBe(true);
+    });
+
+    it('should update value if key exists (cover line 9)', () => {
+        const cache = new FIFOCache<string, number>(2);
+        cache.set('a', 1);
+        cache.set('a', 2); // 這裡會觸發 delete 再 set
+        expect(cache.get('a')).toBe(2);
+        expect(cache.size).toBe(1);
     });
 
     it('should delete and clear', () => {

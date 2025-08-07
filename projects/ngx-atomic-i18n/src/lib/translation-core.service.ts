@@ -1,7 +1,9 @@
 import { computed, inject, Injectable, Signal, signal } from '@angular/core';
 import { deepMerge, detectPreferredLang, filterNewKeysDeep, getNested, parseICU, toObservable } from './translate.util';
-import { FormatResult, ICU_FORMATTER_TOKEN, nsKey, TRANSLATION_CONFIG, TRANSLATION_LOADER, Translations } from 'ngx-atomic-i18n';
+
 import { FIFOCache } from './FIFO.model';
+import { ICU_FORMATTER_TOKEN, TRANSLATION_CONFIG, TRANSLATION_LOADER } from './translate.token';
+import { FormatResult, nsKey, Translations } from './translate.type';
 
 const MAX_CACHE_SIZE = 30;
 @Injectable({
@@ -15,7 +17,7 @@ export class TranslationCoreService {
   private readonly _lang = signal(detectPreferredLang(this._config));
   readonly lang = this._lang.asReadonly();
 
-  private readonly _jsonCache = signal(new Map<string, Map<string, Record<string, any>>>()); // lang => namespace => key 
+  private readonly _jsonCache = signal(new Map<string, Map<string, Record<string, any>>>()); // lang => namespace => key
   private readonly _fifoCache = new FIFOCache<nsKey, FormatResult>(MAX_CACHE_SIZE);
   private _missingKeyCache = new Set<nsKey>();
 
@@ -109,7 +111,8 @@ export class TranslationCoreService {
 
   addResourceBundle(lang: string, namespace: string, bundle: Translations, deep = true, overwrite = true) {
     const map = new Map(this._jsonCache());
-    const langMap = new Map(map.get(lang));
+    const oldLangMap = map.get(lang);
+    const langMap = oldLangMap ? new Map(map.get(lang)) : new Map<string, Translations>();
     const existTranslations = langMap.get(namespace) ?? {};
     let merged: Translations;
     if (deep) {
@@ -127,10 +130,10 @@ export class TranslationCoreService {
           }
         }
       }
-      langMap.set(namespace, merged);
-      map.set(lang, langMap);
-      this._jsonCache.set(map);
     }
+    langMap.set(namespace, merged);
+    map.set(lang, langMap);
+    this._jsonCache.set(map);
   }
 
   addResources(lang: string, namespace: string, obj: Translations, overwrite = true) {

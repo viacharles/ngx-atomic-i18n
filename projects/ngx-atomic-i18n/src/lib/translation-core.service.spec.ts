@@ -1,37 +1,68 @@
 import 'jest';
 import { TranslationCoreService } from './translation-core.service';
 import { TranslationConfig } from './translate.type';
+import { TestBed } from '@angular/core/testing';
+import { DOCUMENT } from '@angular/common';
+import { ICU_FORMATTER_TOKEN, TRANSLATION_CONFIG, TRANSLATION_LOADER } from './translate.token';
+
 
 describe('TranslationCoreService', () => {
   let service: TranslationCoreService;
+  let consoleWarnSpy: jest.SpyInstance;
   let configMock: TranslationConfig;
   let loaderMock: any;
-  let consoleWarnSpy: jest.SpyInstance;
+  let icuFormatterMock: any;
 
   beforeEach(() => {
+    TestBed.resetTestingModule();
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
     configMock = {
       supportedLangs: ['en', 'zh-Hant'],
       fallbackLang: 'en',
+      initialLang: () => 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
-      missingTranslationBehavior: 'show-key'
+      missingTranslationBehavior: 'show-key',
+      langDetectionOrder: ['localStorage', 'url', 'browser', 'initialLang', 'fallback'],
     };
     loaderMock = {
       load: jest.fn().mockResolvedValue({ hello: 'world' })
     };
+    icuFormatterMock = null;
     consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
-    // Mock inject
-    jest.spyOn(require('@angular/core'), 'inject').mockImplementation((token: any) => {
-      if (token.toString().includes('TRANSLATION_CONFIG')) return configMock;
-      if (token.toString().includes('TRANSLATION_LOADER')) return loaderMock;
-      return null;
+    TestBed.configureTestingModule({
+      providers: [
+        TranslationCoreService,
+        { provide: TRANSLATION_CONFIG, useValue: configMock },
+        { provide: TRANSLATION_LOADER, useValue: loaderMock },
+        { provide: ICU_FORMATTER_TOKEN, useValue: icuFormatterMock },
+        { provide: DOCUMENT, useValue: {} },
+      ]
     });
-    service = new TranslationCoreService();
+    service = TestBed.inject(TranslationCoreService);
   });
 
   afterEach(() => {
     consoleWarnSpy.mockRestore();
   });
+
+  describe('constructor', () => {
+    it('should instantiate with ICU formatter provided (cover 23-34)', () => {
+      const ICUFake = jest.fn();
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: ICU_FORMATTER_TOKEN, useValue: ICUFake },
+          { provide: TRANSLATION_CONFIG, useValue: configMock },
+          { provide: TRANSLATION_LOADER, useValue: loaderMock },
+          { provide: DOCUMENT, useValue: {} },
+          TranslationCoreService,
+        ]
+      });
+      const instance = TestBed.inject(TranslationCoreService);
+      expect(instance).toBeInstanceOf(TranslationCoreService);
+    });
+  })
 
   describe('lang', () => {
     it('should return current language signal', () => {
@@ -47,14 +78,38 @@ describe('TranslationCoreService', () => {
 
   describe('setLang', () => {
     it('should set language if supported', () => {
+      const service = TestBed.inject(TranslationCoreService);
       service.setLang('zh-Hant');
       expect(service.currentLang).toBe('zh-Hant');
     });
 
     it('should not set unsupported language', () => {
+      const service = TestBed.inject(TranslationCoreService);
+      service.setLang('en');
+      expect(service.currentLang).toBe('en');
       service.setLang('fr');
       expect(service.currentLang).toBe('en');
       expect(consoleWarnSpy).toHaveBeenCalled();
+    });
+
+    it('should warn if localStorage write fails (cover line 46)', () => {
+      const orig = global.localStorage;
+      Object.defineProperty(global, 'localStorage', {
+        value: {
+          setItem: jest.fn(() => { throw new Error('Simulated localStorage write failure'); }),
+          getItem: jest.fn(),
+          removeItem: jest.fn(),
+        },
+        configurable: true,
+      });
+      consoleWarnSpy.mockClear();
+      service.setLang('zh-Hant');
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      const callArgs = consoleWarnSpy.mock.calls[0];
+      expect(callArgs[0]).toBe('[i18n] Failed to write to localStorage');
+      expect(callArgs[1]).toBeInstanceOf(Error);
+
+      Object.defineProperty(global, 'localStorage', { value: orig, configurable: true });
     });
   });
 
@@ -75,14 +130,10 @@ describe('TranslationCoreService', () => {
   describe('getAndCreateFormatter', () => {
     it('should return formatter for existing key', () => {
       // Mock internal cache
-      const mockCache = new Map();
-      mockCache.set('en', new Map());
-      mockCache.get('en').set('test', { hello: 'world' });
-      Object.defineProperty(service, '_jsonCache', {
-        value: { get: () => mockCache }
-      });
+      service.addResourceBundle('en', 'test', { hello: 'world' });
       const formatter = service.getAndCreateFormatter('en:test', 'hello');
       expect(formatter).toBeDefined();
+      expect(formatter?.format({})).toBe('world');
     });
 
     it('should return undefined for missing key', () => {
@@ -93,8 +144,84 @@ describe('TranslationCoreService', () => {
 
   describe('findFallbackFormatter', () => {
     it('should find fallback formatter', () => {
+      service.setLang('en');
+      service.addResourceBundle('en', 'common', { key: 'value' });
       const formatter = service.findFallbackFormatter('key', []);
       expect(formatter).toBeDefined();
+    });
+
+    it('should add missing key to cache (cover line 84-85)', () => {
+      // 先確保 cache 沒有
+      const key = 'notfound';
+      // 觸發 missing key
+      service.findFallbackFormatter(key, []);
+      // 再次呼叫會直接 return undefined
+      expect(service.findFallbackFormatter(key, [])).toBeUndefined();
+    });
+
+    it('should return undefined if key is in _missingKeyCache (cover line 65)', () => {
+      const key = 'misskey';
+      (service as any)._missingKeyCache.add(`en:${key}`);
+      service.setLang('en');
+      expect(service.findFallbackFormatter(key, [])).toBeUndefined();
+    });
+
+    it('should skip all namespaces in findFallbackFormatter when excluded', () => {
+      // 先 reset
+      TestBed.resetTestingModule();
+      // 先 override
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: TRANSLATION_CONFIG, useValue: {
+              ...configMock,
+              fallbackNamespace: ['common', 'extra']
+            }
+          },
+          TranslationCoreService,
+          { provide: TRANSLATION_LOADER, useValue: loaderMock },
+          { provide: ICU_FORMATTER_TOKEN, useValue: icuFormatterMock },
+          { provide: DOCUMENT, useValue: {} },
+        ]
+      });
+
+      // 再 inject
+      const service = TestBed.inject(TranslationCoreService);
+
+      service.addResourceBundle('en', 'common', { a: '1' });
+      service.addResourceBundle('en', 'extra', { a: '2' });
+
+      const result = service.findFallbackFormatter('a', ['en:common', 'en:extra']);
+      expect(result).toBeUndefined();
+      expect(service.findFallbackFormatter('a', ['en:common', 'en:extra'])).toBeUndefined();
+    });
+  });
+
+  describe('getAndCreateFormatter 分支測試', () => {
+    it('should return cached formatter if present in fifoCache', () => {
+      const cacheKey = 'en:cached';
+      const fakeFormatter = { format: () => 'cached!' };
+      (service as any)._fifoCache.set('en:cached', fakeFormatter);
+      // 把 lang() 設定成 'en'
+      jest.spyOn(service, 'lang').mockReturnValue('en');
+      const result = service.getAndCreateFormatter('en:test', 'cached');
+      expect(result).toBe(fakeFormatter);
+    });
+
+    it('should return undefined if raw is undefined', () => {
+      // 保證 cache 沒有且 jsonCache 沒資料
+      expect(service.getAndCreateFormatter('en:test', 'notfound')).toBeUndefined();
+    });
+
+    it('should use ICU if provided', () => {
+      // 模擬 _ICU 存在
+      const ICUFake = jest.fn().mockImplementation((raw, lang) => ({
+        format: () => 'ICU'
+      }));
+      Object.defineProperty(service, '_ICU', { value: ICUFake, configurable: true });
+      service.addResourceBundle('en', 'test', { icu: '{count, plural, one {1 apple} other {# apples}}' });
+      const formatter = service.getAndCreateFormatter('en:test', 'icu');
+      expect(formatter?.format({ count: 2 })).toBe('ICU');
     });
   });
 
@@ -102,6 +229,22 @@ describe('TranslationCoreService', () => {
     it('should preload namespaces', async () => {
       await service.preloadNamespaces(['test'], 'en');
       expect(loaderMock.load).toHaveBeenCalled();
+    });
+
+    it('should skip preload if namespace is already loaded (cover 75-80)', async () => {
+      // 手動加一個已經存在的 namespace
+      service.addResourceBundle('en', 'loaded', { hi: 'hi' });
+      // 應只呼叫 loader 一次
+      await service.preloadNamespaces(['loaded', 'test'], 'en');
+      expect(loaderMock.load).toHaveBeenCalledTimes(1);
+      expect(loaderMock.load).toHaveBeenCalledWith(['i18n'], 'test', 'en');
+    });
+
+    it('should skip already loaded namespace in preloadNamespaces', async () => {
+      service.addResourceBundle('en', 'test', { x: '1' });
+      // loaderMock.load 不該被呼叫
+      await service.preloadNamespaces(['test'], 'en');
+      expect(loaderMock.load).not.toHaveBeenCalled();
     });
   });
 
@@ -111,6 +254,20 @@ describe('TranslationCoreService', () => {
       service.addResourceBundle('en', 'test', bundle);
       expect(service.hasResourceBundle('en', 'test')).toBe(true);
     });
+
+    it('should preserve old keys if overwrite=false (cover 125-127)', () => {
+      service.addResourceBundle('en', 'test', { a: '1', b: '2' });
+      service.addResourceBundle('en', 'test', { b: '3' }, true, false);
+      const bundle = service.getResourceBundle('en', 'test');
+      expect(bundle).toEqual({ a: '1', b: '2' });
+    });
+
+    it('should preserve all old keys if deep=false and overwrite=false (cover 125-127)', () => {
+      service.addResourceBundle('en', 'test', { a: '1', b: '2', c: 'old' });
+      service.addResourceBundle('en', 'test', { b: '3' }, false, false);
+      const bundle = service.getResourceBundle('en', 'test');
+      expect(bundle).toEqual({ b: '3', a: '1', c: 'old' });
+    });
   });
 
   describe('addResources', () => {
@@ -118,6 +275,14 @@ describe('TranslationCoreService', () => {
       const resources = { key: 'value' };
       service.addResources('en', 'test', resources);
       expect(service.hasResourceBundle('en', 'test')).toBe(true);
+    });
+
+    it('should clear _missingKeyCache when handleNewTranslations is called', () => {
+      (service as any)._missingKeyCache.add('en:test:key');
+      service.addResourceBundle('en', 'test', { hi: 'hi' });
+      // 再加一筆新 json
+      (service as any).handleNewTranslations({ foo: 'bar' }, 'en', 'test');
+      expect((service as any)._missingKeyCache.size).toBe(0);
     });
   });
 
@@ -156,6 +321,95 @@ describe('TranslationCoreService', () => {
     it('should get resource by key', () => {
       service.addResource('en', 'test', 'key', 'value');
       expect(service.getResource('en', 'test', 'key')).toBe('value');
+    });
+  });
+
+  describe('Edge cases for uncovered branches', () => {
+    it('should use default fallbackLang when config.fallbackLang is undefined (line 23)', () => {
+      TestBed.resetTestingModule();
+      const configWithoutFallback = {
+        ...configMock,
+        fallbackLang: undefined as any
+      };
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: TRANSLATION_CONFIG, useValue: configWithoutFallback },
+          { provide: TRANSLATION_LOADER, useValue: loaderMock },
+          { provide: ICU_FORMATTER_TOKEN, useValue: icuFormatterMock },
+          { provide: DOCUMENT, useValue: {} },
+          TranslationCoreService,
+        ]
+      });
+      const service = TestBed.inject(TranslationCoreService);
+      expect(service.fallbackLang).toBe('en');
+    });
+
+    it('should use detectPreferredLang when lang parameter is undefined in setLang (line 34)', () => {
+      service.setLang(undefined);
+      expect(service.currentLang).toBe('en'); // 應該使用 detectPreferredLang 的結果
+    });
+
+    it('should return early when cache already exists in load method (line 54)', async () => {
+      // 先加載一次
+      await service.load('en:test', () => Promise.resolve({ key: 'value' }));
+
+      // 清除 loader mock 的呼叫記錄
+      loaderMock.load.mockClear();
+
+      // 再次加載相同的 nsKey，應該早期返回
+      await service.load('en:test', () => Promise.resolve({ key: 'new_value' }));
+
+      // loader 不應該被呼叫
+      expect(loaderMock.load).not.toHaveBeenCalled();
+    });
+
+    it('should use default empty string when fallbackNamespace is undefined (line 77)', () => {
+      TestBed.resetTestingModule();
+      const configWithoutFallbackNamespace = {
+        ...configMock,
+        fallbackNamespace: undefined as any
+      };
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: TRANSLATION_CONFIG, useValue: configWithoutFallbackNamespace },
+          { provide: TRANSLATION_LOADER, useValue: loaderMock },
+          { provide: ICU_FORMATTER_TOKEN, useValue: icuFormatterMock },
+          { provide: DOCUMENT, useValue: {} },
+          TranslationCoreService,
+        ]
+      });
+      const service = TestBed.inject(TranslationCoreService);
+
+      // 添加一個空字串 namespace 的資源
+      service.addResourceBundle('en', '', { fallback_key: 'fallback_value' });
+
+      // 測試 findFallbackFormatter 會使用空字串作為 fallback namespace
+      const formatter = service.findFallbackFormatter('fallback_key', []);
+      expect(formatter).toBeDefined();
+      expect(formatter?.format({})).toBe('fallback_value');
+    });
+
+    it('should handle i18nRoots as non-array in preloadNamespaces (line 89)', async () => {
+      TestBed.resetTestingModule();
+      const configWithStringRoots = {
+        ...configMock,
+        i18nRoots: 'single-root' as any // 不是陣列
+      };
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: TRANSLATION_CONFIG, useValue: configWithStringRoots },
+          { provide: TRANSLATION_LOADER, useValue: loaderMock },
+          { provide: ICU_FORMATTER_TOKEN, useValue: icuFormatterMock },
+          { provide: DOCUMENT, useValue: {} },
+          TranslationCoreService,
+        ]
+      });
+      const service = TestBed.inject(TranslationCoreService);
+
+      await service.preloadNamespaces(['test'], 'en');
+
+      // 應該將字串轉換為陣列並傳遞給 loader
+      expect(loaderMock.load).toHaveBeenCalledWith(['single-root'], 'test', 'en');
     });
   });
 });

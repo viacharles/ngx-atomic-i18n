@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "test": "jest"
+  },
   "name": "ngx-atomic-i18n",
   "version": "0.0.1",
   "peerDependencies": {
@@ -8,5 +11,9 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "memfs": "^4.35.0"
+  }
 }

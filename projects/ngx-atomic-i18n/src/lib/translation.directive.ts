@@ -1,6 +1,6 @@
 import { Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { Params } from 'ngx-atomic-i18n';
 import { TranslationService } from './translation.service';
+import { Params } from './translate.type';
 
 @Directive({
   selector: '[t]',

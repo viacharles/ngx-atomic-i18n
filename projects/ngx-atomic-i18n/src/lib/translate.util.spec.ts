@@ -1,107 +1,407 @@
 import {
-    detectPreferredLang,
-    parseICU,
-    flattenTranslations,
-    toObservable,
-    deepMerge,
-    filterNewKeysDeep,
-    getNested
+  detectPreferredLang,
+  parseICU,
+  flattenTranslations,
+  toObservable,
+  deepMerge,
+  filterNewKeysDeep,
+  getNested
 } from './translate.util';
 import { TranslationConfig } from './translate.type';
-import { signal } from '@angular/core';
+import { EnvironmentInjector, runInInjectionContext, signal } from '@angular/core';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+
+describe('translate.util (pure functions)', () => {
+  describe('detectPreferredLang', () => {
+    it('should return initialLang if supported and langDetectionOrder is initialLang', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en', 'zh-Hant'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'zh-Hant',
+        langDetectionOrder: ['initialLang', 'localStorage', 'url', 'browser', 'fallback'],
+      };
+      localStorage.clear()
+      expect(detectPreferredLang(config)).toBe('zh-Hant');
+    });
+    it('should fallback to fallbackLang if no match', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'fr',
+        langDetectionOrder: ['localStorage', 'url', 'browser', 'initialLang', 'fallback'],
+      };
+      expect(detectPreferredLang(config)).toBe('en');
+    });
+    it('should return fallbackLang if found lang is not supported', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'fr',
+        langDetectionOrder: ['initialLang'],
+      };
+      // lang=fr, supportedLangs=['en']，會進入 if，但不 return，所以最後走到 return fallbackLang
+      expect(detectPreferredLang(config)).toBe('en');
+    });
+    it('should detect language from localStorage', () => {
+      Object.defineProperty(global, 'window', { value: {}, configurable: true }); // 模擬有 window
+      Object.defineProperty(global, 'localStorage', {
+        value: {
+          getItem: jest.fn().mockReturnValue('en'),
+          setItem: jest.fn(),
+          removeItem: jest.fn(),
+        },
+        configurable: true,
+      });
+      const config: TranslationConfig = {
+        supportedLangs: ['en', 'zh-Hant'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'zh-Hant',
+        langDetectionOrder: ['localStorage', 'initialLang'],
+      };
+      expect(detectPreferredLang(config)).toBe('en');
+      // 恢復原 window、localStorage
+      delete (global as any).window;
+      delete (global as any).localStorage;
+    });
+    it('should detect language from url', () => {
+      Object.defineProperty(global, 'window', {
+        value: { location: { pathname: '/zh-Hant/foo/bar' } },
+        configurable: true,
+      });
+      const config: TranslationConfig = {
+        supportedLangs: ['en', 'zh-Hant'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'en',
+        langDetectionOrder: ['url', 'initialLang'],
+      };
+      expect(detectPreferredLang(config)).toBe('zh-Hant');
+      delete (global as any).window;
+    });
+    it('should detect language from browser', () => {
+      Object.defineProperty(global, 'navigator', {
+        value: { language: 'zh-Hant-TW' },
+        configurable: true,
+      });
+      const config: TranslationConfig = {
+        supportedLangs: ['en', 'zh-Hant'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'en',
+        langDetectionOrder: ['browser', 'initialLang'],
+      };
+      expect(detectPreferredLang(config)).toBe('zh-Hant');
+      delete (global as any).navigator;
+    });
+    it('should detect language from initialLang', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en', 'zh-Hant'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'zh-Hant',
+        langDetectionOrder: ['initialLang', 'fallback'],
+      };
+      expect(detectPreferredLang(config)).toBe('zh-Hant');
+    });
+  });
+
+  describe('parseICU', () => {
+    it('should interpolate params', () => {
+      expect(parseICU('Hello {{name}}!', { name: '世界' })).toBe('Hello 世界!');
+    });
+    it('should handle plural', () => {
+      const template = '{count, plural, one {1 apple} other {# apples}}';
+      expect(parseICU(template, { count: 1 })).toBe('1 apple');
+      expect(parseICU(template, { count: 5 })).toBe('5 apples');
+    });
+    it('should handle select', () => {
+      const template = '{gender, select, male {He} female {She} other {They}}';
+      expect(parseICU(template, { gender: 'male' })).toBe('He');
+      expect(parseICU(template, { gender: 'female' })).toBe('She');
+      expect(parseICU(template, { gender: 'other' })).toBe('They');
+    });
+    it('should return template if no params', () => {
+      expect(parseICU('No params')).toBe('No params');
+    });
+    it('should handle extractBlock not found', () => {
+      // 觸發 extractBlock return ['', i]
+      const template = '{a, select,}';
+      expect(parseICU(template, { a: 'other' })).toBe('{a, select,}');
+    });
+    it('should handle extractOptions with no {', () => {
+      // 觸發 extractOptions 的 continue
+      const template = '{a, select, male He female She other They}';
+      expect(parseICU(template, { a: 'male' })).toContain('He');
+    });
+    it('should handle resolveICU with no match', () => {
+      // 觸發 resolveICU 的 if (!match)
+      const template = '{a, unknown, ...}';
+      expect(parseICU(template, { a: 'x' })).toContain('{a, unknown, ...}');
+    });
+    it('should handle nested ICU', () => {
+      const template = '{count, plural, one {1 apple} other {{count} apples}}';
+      expect(parseICU(template, { count: 2 })).toBe('2 apples');
+    });
+
+    it('should continue when block is empty', () => {
+      // 這行會觸發 line97-98
+      expect(parseICU('Test {}', {})).toBe('Test');
+    });
+    it('should return rest string when block is not closed', () => {
+      // 應該回傳原始未關閉的 block
+      expect(parseICU('{abc', { abc: 1 })).toBe('{abc');
+    });
+    it('should interpolate params in deeply nested ICU', () => {
+      const template = '{count, plural, one {{name} has one apple} other {{name} has # apples}}';
+      expect(parseICU(template, { count: 2, name: 'Tom' })).toBe('Tom has 2 apples');
+    });
+  });
+
+  describe('flattenTranslations', () => {
+    it('should flatten nested objects', () => {
+      const obj = { a: { b: { c: 'd' } }, e: 'f' };
+      expect(flattenTranslations(obj)).toEqual({ 'a.b.c': 'd', e: 'f' });
+    });
+    it('should handle array values as string', () => {
+      const obj = { list: [1, 2, 3] };
+      expect(flattenTranslations(obj)).toEqual({ 'list': '1,2,3' });
+    });
+  });
+
+  describe('deepMerge', () => {
+    it('should deeply merge objects', () => {
+      const a = { a: 1, b: { c: 2 } };
+      const b = { b: { d: 3 } };
+      expect(deepMerge(a, b)).toEqual({ a: 1, b: { c: 2, d: 3 } });
+    });
+  });
+
+  describe('filterNewKeysDeep', () => {
+    it('should filter only new keys', () => {
+      const bundle = { a: 1, b: { c: 2, d: 3 } };
+      const existing = { a: 1, b: { c: 2 } };
+      expect(filterNewKeysDeep(bundle, existing)).toEqual({ b: { d: 3 } });
+    });
+  });
+
+  describe('getNested', () => {
+    it('should get nested value by path', () => {
+      const obj = { a: { b: { c: 'd' } } };
+      expect(getNested(obj, 'a.b.c')).toBe('d');
+    });
+    it('should return undefined for missing path', () => {
+      const obj = { a: { b: { c: 'd' } } };
+      expect(getNested(obj, 'a.b.x')).toBeUndefined();
+    });
+  });
+});
+
+describe('translate.util (injection context)', () => {
+  let injector: EnvironmentInjector;
+
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({});
+    injector = TestBed.inject(EnvironmentInjector);
+  });
+
+  describe('toObservable', () => {
+    it('should emit signal value', fakeAsync(() => {
+      runInInjectionContext(injector, () => {
+        const s = signal(1);
+        const obs = toObservable(s);
+        const values: number[] = [];
+        const sub = obs.subscribe(v => {
+          values.push(v);
+        });
+        s.set(2);
+        tick();
+        expect(values).toEqual([1, 2]);
+        sub.unsubscribe();
+      });
+    }));
+  });
+})
 
 describe('translate.util', () => {
-    describe('detectPreferredLang', () => {
-        it('should return initialLang if supported', () => {
-            const config: TranslationConfig = {
-                supportedLangs: ['en', 'zh-Hant'],
-                fallbackLang: 'en',
-                i18nRoots: ['i18n'],
-                fallbackNamespace: 'common',
-                initialLang: () => 'zh-Hant',
-            };
-            expect(detectPreferredLang(config)).toBe('zh-Hant');
-        });
-        it('should fallback to fallbackLang if no match', () => {
-            const config: TranslationConfig = {
-                supportedLangs: ['en'],
-                fallbackLang: 'en',
-                i18nRoots: ['i18n'],
-                fallbackNamespace: 'common',
-                initialLang: () => 'fr',
-            };
-            expect(detectPreferredLang(config)).toBe('en');
-        });
+  describe('detectPreferredLang (extra branches)', () => {
+    it('should log and return browser lang if supported', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['zh'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'en',
+        langDetectionOrder: ['browser'],
+      };
+      const origNavigator = global.navigator;
+      Object.defineProperty(global, 'navigator', {
+        value: { language: 'zh-TW' },
+        configurable: true,
+      });
+      expect(detectPreferredLang(config)).toBe('zh');
+      Object.defineProperty(global, 'navigator', { value: origNavigator, configurable: true });
     });
+    it('should return fallbackLang if nothing matched', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        initialLang: () => 'fr',
+        langDetectionOrder: ['initialLang', 'fallback'],
+      };
+      expect(detectPreferredLang(config)).toBe('en');
+    });
+  });
+});
 
-    describe('parseICU', () => {
-        it('should interpolate params', () => {
-            expect(parseICU('Hello {{name}}!', { name: '世界' })).toBe('Hello 世界!');
-        });
-        it('should handle plural', () => {
-            const template = '{count, plural, one {1 apple} other {# apples}}';
-            expect(parseICU(template, { count: 1 })).toBe('1 apple');
-            expect(parseICU(template, { count: 5 })).toBe('5 apples');
-        });
-        it('should handle select', () => {
-            const template = '{gender, select, male {He} female {She} other {They}}';
-            expect(parseICU(template, { gender: 'male' })).toBe('He');
-            expect(parseICU(template, { gender: 'female' })).toBe('She');
-            expect(parseICU(template, { gender: 'other' })).toBe('They');
-        });
-        it('should return template if no params', () => {
-            expect(parseICU('No params')).toBe('No params');
-        });
-    });
+describe('detectPreferredLang (SSR scenarios)', () => {
+  it('should handle localStorage in SSR environment (window undefined)', () => {
+    const originalWindow = global.window;
+    delete (global as any).window;
 
-    describe('flattenTranslations', () => {
-        it('should flatten nested objects', () => {
-            const obj = { a: { b: { c: 'd' } }, e: 'f' };
-            expect(flattenTranslations(obj)).toEqual({ 'a.b.c': 'd', e: 'f' });
-        });
-    });
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      langDetectionOrder: ['localStorage', 'fallback'],
+    };
 
-    describe('toObservable', () => {
-        it('should emit signal value', (done) => {
-            const s = signal(1);
-            const obs = toObservable(s);
-            const values: number[] = [];
-            const sub = obs.subscribe(v => {
-                values.push(v);
-                if (values.length === 2) {
-                    expect(values).toEqual([1, 2]);
-                    sub.unsubscribe();
-                    done();
-                }
-            });
-            s.set(2);
-        });
-    });
+    expect(detectPreferredLang(config)).toBe('en');
 
-    describe('deepMerge', () => {
-        it('should deeply merge objects', () => {
-            const a = { a: 1, b: { c: 2 } };
-            const b = { b: { d: 3 } };
-            expect(deepMerge(a, b)).toEqual({ a: 1, b: { c: 2, d: 3 } });
-        });
-    });
+    if (originalWindow) {
+      (global as any).window = originalWindow;
+    }
+  });
 
-    describe('filterNewKeysDeep', () => {
-        it('should filter only new keys', () => {
-            const bundle = { a: 1, b: { c: 2, d: 3 } };
-            const existing = { a: 1, b: { c: 2 } };
-            expect(filterNewKeysDeep(bundle, existing)).toEqual({ b: { c: 2, d: 3 } });
-        });
-    });
+  it('should handle url detection in SSR environment (window undefined)', () => {
+    const originalWindow = global.window;
+    delete (global as any).window;
 
-    describe('getNested', () => {
-        it('should get nested value by path', () => {
-            const obj = { a: { b: { c: 'd' } } };
-            expect(getNested(obj, 'a.b.c')).toBe('d');
-        });
-        it('should return undefined for missing path', () => {
-            const obj = { a: { b: { c: 'd' } } };
-            expect(getNested(obj, 'a.b.x')).toBeUndefined();
-        });
-    });
-}); 
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      langDetectionOrder: ['url', 'fallback'],
+    };
+
+    expect(detectPreferredLang(config)).toBe('en');
+
+    if (originalWindow) {
+      (global as any).window = originalWindow;
+    }
+  });
+
+  it('should handle browser detection when navigator is undefined', () => {
+    const originalNavigator = (globalThis as any).navigator;
+    delete (globalThis as any).navigator;
+
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      langDetectionOrder: ['browser', 'fallback'],
+    };
+
+    expect(detectPreferredLang(config)).toBe('en');
+
+    if (originalNavigator) {
+      (globalThis as any).navigator = originalNavigator;
+    }
+  });
+
+  it('should handle browser detection when language is empty string', () => {
+    const originalNavigator = (globalThis as any).navigator;
+    (globalThis as any).navigator = { language: '' };
+
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      langDetectionOrder: ['browser', 'fallback'],
+    };
+
+    expect(detectPreferredLang(config)).toBe('en');
+
+    if (originalNavigator) {
+      (globalThis as any).navigator = originalNavigator;
+    }
+  });
+
+  it('should handle initialLang as string instead of function', () => {
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      initialLang: 'zh-Hant' as any, // 測試字串情況
+      langDetectionOrder: ['initialLang', 'fallback'],
+    };
+
+    expect(detectPreferredLang(config)).toBe('zh-Hant');
+  });
+
+  it('should handle initialLang as undefined', () => {
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      initialLang: undefined,
+      langDetectionOrder: ['initialLang', 'fallback'],
+    };
+
+    expect(detectPreferredLang(config)).toBe('en');
+  });
+});
+
+describe('parseICU (edge cases)', () => {
+  it('should handle missing parameter in template replacement', () => {
+    const template = 'Hello {{name}} and {{missing}}!';
+    expect(parseICU(template, { name: 'World' })).toBe('Hello World and !');
+  });
+
+  it('should handle missing variable in ICU expression', () => {
+    const template = '{missing, plural, one {1 item} other {# items}}';
+    expect(parseICU(template, {})).toBe('items');
+  });
+
+  it('should handle parameter replacement in nested ICU with missing params', () => {
+    const template = '{count, plural, one {{name} has one} other {{missing} has #}}';
+    expect(parseICU(template, { count: 2, name: 'Tom' })).toBe('has 2');
+  });
+
+  it('should handle exact value match in select', () => {
+    const template = '{value, select, =5 {exactly five} other {not five}}';
+    expect(parseICU(template, { value: '5' })).toBe('exactly five');
+  });
+
+  it('should handle no selected option found', () => {
+    const template = '{gender, select, male {He} female {She}}';
+    expect(parseICU(template, { gender: 'unknown' })).toBe('{gender, select, male {He} female {She}}');
+  });
+});
+
+describe('toObservable (error cases)', () => {
+  it('should throw error when called outside injection context', () => {
+    const s = signal(1);
+    expect(() => toObservable(s)).toThrow('inject() must be called from an injection context');
+  });
+
+});
