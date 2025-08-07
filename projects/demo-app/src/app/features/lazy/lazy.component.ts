@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TranslationPipe } from 'ngx-atomic-i18n';
+import { TranslationPipe } from '../../../../../ngx-atomic-i18n/src/public-api';
 
 @Component({
   selector: 'app-lazy',
@@ -19,4 +19,4 @@ import { TranslationPipe } from 'ngx-atomic-i18n';
     }
   `]
 })
-export class LazyComponent { } 
+export class LazyComponent { }

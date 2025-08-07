@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslationPipe } from 'ngx-atomic-i18n';
 import { ToastService } from '../../services/toast.service';
+import { TranslationPipe } from '../../../../../ngx-atomic-i18n/src/public-api';
 
 @Component({
   selector: 'app-test',
@@ -11,10 +11,10 @@ import { ToastService } from '../../services/toast.service';
   template: `
     <div class="test-container">
       <h2>{{ 'test.title' | t }}</h2>
-      
+
       <div class="test-section">
         <h3>{{ 'test.pipe_lifecycle' | t }}</h3>
-        
+
         <div class="lifecycle-test">
           <div class="test-controls">
             <button (click)="togglePipeTest()" class="btn btn-primary">
@@ -33,33 +33,33 @@ import { ToastService } from '../../services/toast.service';
               測試 Key 變動
             </button>
           </div>
-          
+
           <div class="test-display" *ngIf="showPipeTest">
             <div class="pipe-test-item">
               <h4>測試 Key: {{ testKey }}</h4>
               <p><strong>翻譯結果:</strong> {{ testKey | t: testParams }}</p>
             </div>
-            
+
             <div class="pipe-test-item">
               <h4>參數測試 (點擊「變更測試參數」查看效果)</h4>
               <p><strong>問候語:</strong> {{ 'greeting' | t: { name: testParams.name || 'World' } }}</p>
               <p><strong>數量:</strong> {{ 'test.items' | t: { count: testParams.count || 0 } }}</p>
               <p><strong>自定義訊息:</strong> {{ 'test.custom_message' | t: { user: testParams.name || 'User', count: testParams.count || 0 } }}</p>
             </div>
-            
+
             <div class="pipe-test-item">
               <h4>動態參數測試</h4>
               <p><strong>數量:</strong> {{ 'test.items' | t: { count: dynamicCount } }}</p>
               <p><strong>問候:</strong> {{ 'greeting' | t: { name: dynamicName } }}</p>
             </div>
-            
+
             <div class="pipe-test-item">
               <h4>計數器測試 (應該觸發 pipe 重新計算)</h4>
               <p><strong>計數:</strong> {{ 'test.amount' | t: { count: count } }}</p>
               <p><strong>當前計數值:</strong> {{ count }}</p>
             </div>
           </div>
-          
+
           <div class="logs-container">
             <h4>Pipe 生命週期日誌:</h4>
             <div class="logs" #logsContainer>
@@ -74,13 +74,13 @@ import { ToastService } from '../../services/toast.service';
 
       <div class="test-section">
         <h3>{{ 'test.dynamic_params' | t }}</h3>
-        
+
         <div class="param-test">
           <div class="param-display">
             <label>{{ 'test.current_value' | t }}:</label>
             <span class="value">{{ count }}</span>
           </div>
-          
+
           <div class="param-controls">
             <button (click)="decrement()" class="btn btn-secondary">
               {{ 'test.decrease' | t }}
@@ -92,7 +92,7 @@ import { ToastService } from '../../services/toast.service';
               {{ 'test.reset' | t }}
             </button>
           </div>
-          
+
           <div class="translation-result">
             <h4>{{ 'test.translation_result' | t }}:</h4>
             <div class="result-box">
@@ -106,18 +106,18 @@ import { ToastService } from '../../services/toast.service';
 
       <div class="test-section">
         <h3>{{ 'test.interpolation_test' | t }}</h3>
-        
+
         <div class="input-group">
           <label for="nameInput">{{ 'test.enter_name' | t }}:</label>
-          <input 
+          <input
             id="nameInput"
-            type="text" 
-            [(ngModel)]="userName" 
+            type="text"
+            [(ngModel)]="userName"
             placeholder="{{ 'test.name_placeholder' | t }}"
             class="form-input"
           >
         </div>
-        
+
         <div class="translation-result">
           <h4>{{ 'test.greeting_result' | t }}:</h4>
           <div class="result-box">
@@ -128,7 +128,7 @@ import { ToastService } from '../../services/toast.service';
 
       <div class="test-section">
         <h3>{{ 'test.toast_test' | t }}</h3>
-        
+
         <div class="toast-buttons">
           <button (click)="showSuccessToast()" class="btn btn-success">
             {{ 'test.show_success' | t }}
@@ -504,4 +504,4 @@ export class TestComponent implements OnInit, OnDestroy {
   testKeyChange(): void {
     this.changeTestKey();
   }
-} 
+}

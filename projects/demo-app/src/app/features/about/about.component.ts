@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { TranslationPipe } from 'ngx-atomic-i18n';
+import { TranslationPipe } from '../../../../../ngx-atomic-i18n/src/public-api';
 
 @Component({
-    selector: 'app-about',
-    standalone: true,
-    imports: [TranslationPipe],
-    template: `
+  selector: 'app-about',
+  standalone: true,
+  imports: [TranslationPipe],
+  template: `
     <div class="about">
       <h2>{{ 'about' | t }}</h2>
       <p>{{ 'greeting' | t: { name: 'About User' } }}</p>
@@ -13,7 +13,7 @@ import { TranslationPipe } from 'ngx-atomic-i18n';
       <p>{{ 'gender' | t: { gender: 'other' } }}</p>
     </div>
   `,
-    styles: [`
+  styles: [`
     .about {
       padding: 2rem;
       background-color: #f3e5f5;
@@ -21,4 +21,4 @@ import { TranslationPipe } from 'ngx-atomic-i18n';
     }
   `]
 })
-export class AboutComponent { } 
+export class AboutComponent { }

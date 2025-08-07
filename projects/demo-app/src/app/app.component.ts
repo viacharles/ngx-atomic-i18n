@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { TranslationPipe } from 'ngx-atomic-i18n';
 import { TranslationTestComponent } from './shared/components/translation-test/translation-test.component';
 import { NgTemplateOutlet } from '@angular/common';
 import { CodeBlockComponent } from './shared/components/code-block/code-block.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
-import { TranslationService } from 'ngx-atomic-i18n/translation.service';
-import { provideTranslation } from 'ngx-atomic-i18n/translate.provider';
+import { provideTranslation, TranslationPipe, TranslationService } from '../../../ngx-atomic-i18n/src/public-api';
 
 @Component({
   selector: 'app-root',

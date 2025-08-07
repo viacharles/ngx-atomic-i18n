@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { TranslationPipe, TranslationService } from 'ngx-atomic-i18n';
 import { CodeBlockComponent } from '../../shared/components/code-block/code-block.component';
-import { provideTranslation } from 'ngx-atomic-i18n/translate.provider';
+import { provideTranslation, TranslationPipe, TranslationService } from '../../../../../ngx-atomic-i18n/src/public-api';
 
 @Component({
   selector: 'app-setting',
@@ -19,8 +18,8 @@ import { provideTranslation } from 'ngx-atomic-i18n/translate.provider';
 })
 export class SettingComponent {
   code = {
-    greeting: `<p>{{ 'greeting' | t: { name: 'Home User' } }}</p> 
-    
+    greeting: `<p>{{ 'greeting' | t: { name: 'Home User' } }}</p>
+
 // zh-Hant =>  greeting: '你好，{{name}}！'
 // en => greeting: "Hello, {{name}}!",
 `,
@@ -45,4 +44,4 @@ export class ExampleComponent {}`;
     public translationService: TranslationService,
   ) {
   }
-} 
+}

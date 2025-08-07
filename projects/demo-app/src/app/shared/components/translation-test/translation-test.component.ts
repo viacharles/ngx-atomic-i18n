@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TranslationPipe } from 'ngx-atomic-i18n';
+import { TranslationPipe } from '../../../../../../ngx-atomic-i18n/src/public-api';
 
 @Component({
   selector: 'app-translation-test',
@@ -25,4 +25,4 @@ import { TranslationPipe } from 'ngx-atomic-i18n';
   `]
 })
 export class TranslationTestComponent {
-} 
+}
