@@ -1,5 +1,5 @@
 import { effect, inject, Injector, runInInjectionContext, Signal } from "@angular/core";
-import { DeepPartial, TranslationConfig } from "./translate.type";
+import { DeepPartial, PathTemplate, TranslationConfig } from "./translate.type";
 import { Observable } from "rxjs";
 
 export function detectPreferredLang(config: TranslationConfig): string {
@@ -220,3 +220,8 @@ export function filterNewKeysDeep<T extends object, U extends object>(bundle: T,
 export function getNested(obj: any, path: string): string | undefined {
   return path.split('.').reduce((res, key) => res?.[key], obj);
 }
+
+export const stripLeadingSep = (s: string) => s.replace(/^[\\/]+/, '');
+
+export const toArray = (template: PathTemplate) => Array.isArray(template) ? template : (template ? [template] : undefined);
+

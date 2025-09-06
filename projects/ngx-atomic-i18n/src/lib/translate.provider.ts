@@ -1,37 +1,36 @@
 import { HttpClient } from "@angular/common/http";
-import { APP_INITIALIZER, inject, PLATFORM_ID, Provider } from "@angular/core";
+import { APP_INITIALIZER, inject, isDevMode, PLATFORM_ID, Provider } from "@angular/core";
 import { HttpTranslationLoader } from "./translation.loader.csr";
 import { detectPreferredLang } from "./translate.util";
 import { isPlatformServer } from "@angular/common";
 import { TranslationService } from "./translation.service";
-import { TranslationConfig, TranslationLoaderOptions } from "./translate.type";
+import { TempToken, TranslationConfig, TranslationLoader, TranslationLoaderOptions } from "./translate.type";
 import { TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from "./translate.token";
 import { FsTranslationLoader } from "./translation.loader.ssr";
 
-export function provideTranslationInit(userConfig?: Partial<TranslationConfig>): Provider[] {
-  const defaultCongig = {
+export type ProvideTranslationInitOptions =
+  Partial<TranslationConfig> & {
+    loader?: TranslationLoaderOptions;
+  };
+
+export function provideTranslationInit(userConfig?: ProvideTranslationInitOptions): Provider[] {
+  const defaultConfig: TranslationConfig = {
     supportedLangs: ['en'],
     fallbackNamespace: 'common',
     fallbackLang: 'en',
-    initialLang: 'en',
+    initialLang: () => 'en',
     i18nRoots: ['i18n'],
     missingTranslationBehavior: 'show-key',
     langDetectionOrder: ['localStorage', 'url', 'browser', 'initialLang', 'fallback'],
   };
-  const finalConfig = {
-    ...defaultCongig,
-    ...userConfig,
-  } as TranslationConfig;
+  const finalConfig = { ...defaultConfig, ...(userConfig ?? {}) } as TranslationConfig;
   const preferredLang = detectPreferredLang(finalConfig);
   return [
     {
       provide: TRANSLATION_CONFIG,
-      useValue: {
-        ...finalConfig,
-        initialLang: preferredLang
-      },
+      useValue: { ...finalConfig, initialLang: preferredLang },
     },
-    ...provideTranslationLoader(),
+    ...provideTranslationLoader(userConfig?.loader),
     ...provideTranslation(finalConfig.fallbackNamespace),
     {
       provide: APP_INITIALIZER,
@@ -42,13 +41,14 @@ export function provideTranslationInit(userConfig?: Partial<TranslationConfig>):
             await ts.preloadNamespaces(preload, preferredLang);
           }
           ts.setLang(ts.currentLang);
-        }
+        };
       },
       deps: [TranslationService],
-      multi: true
-    }
+      multi: true,
+    },
   ];
 }
+
 
 export function provideTranslation(namespace: string | string[]): Provider[] {
   return [
@@ -63,20 +63,35 @@ export function provideTranslation(namespace: string | string[]): Provider[] {
   ]
 }
 
-export function provideTranslationLoader(options: TranslationLoaderOptions = { loaderOptions: { basePath: process.cwd(), assetPath: 'dist/browser/assets' } }): Provider[] {
+export function provideTranslationLoader(options: TranslationLoaderOptions = {}): Provider[] {
   return [
     {
       provide: TRANSLATION_LOADER,
-      useFactory: (platformId: Object) => {
-        const isSSR = options.force === 'ssr' || (options.force !== 'csr' && isPlatformServer(platformId));
+      useFactory: (platformId: Object): TranslationLoader => {
+        const isSSR = options.forceMode === 'ssr' || (options.forceMode !== 'csr' && isPlatformServer(platformId));
         if (isSSR) {
-          return options.ssrLoader?.() ?? new FsTranslationLoader(options.loaderOptions?.basePath, options.loaderOptions?.assetPath);
-        } else {
-          const http = inject(HttpClient);
-          return options.csrLoader?.(http) ?? new HttpTranslationLoader(http);
+          const fsBaseDir =
+            options.loaderOptions?.fsBaseDir ??
+            (typeof process !== 'undefined' ? process.cwd() : '');
+          const assetPath = options.loaderOptions?.assetPath ?? (isDevMode() ? 'src/assets' : 'dist/browser/assets');
+          return options.ssrLoader?.()
+            ?? new FsTranslationLoader({
+              fsBaseDir,
+              assetPath,
+              pathTemplates: options.loaderOptions?.pathTemplates ?? [`i18n/${TempToken.Namespace}/${TempToken.Lang}.json`, `i18n/${TempToken.Lang}/${TempToken.Namespace}.json`],
+              resolvePaths: options.loaderOptions?.resolvePaths,
+              fsModule: options.loaderOptions?.fsModule
+            });
         }
+        const http = inject(HttpClient);
+        return options.csrLoader?.(http)
+          ?? new HttpTranslationLoader(http, {
+            httpBaseUrl: options.httpOptions?.httpBaseUrl ?? '/assets',
+            pathTemplates: options.httpOptions?.pathTemplates ?? `${TempToken.Root}/${TempToken.Namespace}/${TempToken.Lang}.json`
+          });
       },
       deps: [PLATFORM_ID],
     }
   ];
 }
+

@@ -13,7 +13,6 @@
   },
   "sideEffects": false,
   "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "memfs": "^4.35.0"
+    "@types/jest": "^30.0.0"
   }
 }

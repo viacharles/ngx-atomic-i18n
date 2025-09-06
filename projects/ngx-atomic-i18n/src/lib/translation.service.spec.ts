@@ -285,7 +285,7 @@ describe('TranslationService', () => {
       expect(result).toBe('hello');
     });
 
-    it('should return empty string when key is undefined in show-key mode (line 73)', () => {
+    it('should return empty string when key is undefined in show-key forceMode (line 73)', () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [

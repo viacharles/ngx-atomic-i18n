@@ -4,19 +4,23 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
-    "types": [
-      "jest",
-      "node"
-    ],
+    "types": ["jest", "node"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "module": "commonjs",
-    "moduleResolution": "node"
+    "useDefineForClassFields": false,
+    "sourceMap": true,
+    "strict": true
   },
   "files": [
     "setup-jest.ts"
   ],
   "include": [
+    "src/**/*.ts",
     "**/*.spec.ts",
     "**/*.d.ts"
   ]

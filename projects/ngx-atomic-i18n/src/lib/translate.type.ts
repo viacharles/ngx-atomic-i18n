@@ -48,14 +48,56 @@ export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
 
+export interface FsModuleLike {
+  readFileSync(path: string, encoding: 'utf8'): string;
+  statSync(path: string): any
+}
+
+export interface FsLoaderOptions {
+  /** e.g. process.cwd() only for SSR */
+  fsBaseDir?: string;
+  /** e.g. 'projects/app/src/assets' (dev) or 'dist/app/browser/assets' (prod) */
+  assetPath?: string;
+  /** template , accept {{root}} {{lang}} {{namespace}} */
+  pathTemplates?: string[];
+  /**
+   * priority to resolve
+   */
+  resolvePaths?: (ctx: {
+    fsBaseDir: string;
+    assetPath: string;
+    root: string;
+    lang: string;
+    namespace: string;
+  }) => string[];
+  /** custom fs */
+  fsModule?: FsModuleLike;
+}
+
+export interface HttpLoaderOptions {
+  /** default '/assets' */
+  httpBaseUrl?: string;
+  /** default 'i18n/{{namespace}}/{{lang}}.json' */
+  pathTemplates?: string | string[];
+
+}
+
 export interface TranslationLoaderOptions {
-  ssrLoader?: () => TranslationLoader;
-  csrLoader?: (http: HttpClient) => TranslationLoader;
-  force?: 'ssr' | 'csr'; // optional：Force-specify
-  loaderOptions?: {
-    basePath?: string,
-    assetPath?: string
-  }
+  forceMode?: 'ssr' | 'csr';
+  ssrLoader?: () => TranslationLoader;                    // custom SSR loader
+  csrLoader?: (http: HttpClient) => TranslationLoader;    // custom CSR loader
+  loaderOptions?: FsLoaderOptions;          //options for FsTranslationLoader
+  httpOptions?: HttpLoaderOptions;         // options for HttpTranslationLoader
+}
+
+export type CacheEntry = { mtimeMs: number, data: Translations };
+
+export type PathTemplate = string | string[] | undefined;
+
+export enum TempToken {
+  Lang = '{{lang}}',
+  Namespace = '{{namespace}}',
+  Root = '{{root}}'
 }
 
 

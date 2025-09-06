@@ -65,13 +65,13 @@ export class TranslationService {
     }
 
     private getMissingTranslation(key?: string): string | never {
-        const mode = this.config.missingTranslationBehavior ?? 'show-key';
-        switch (mode) {
+        const forceMode = this.config.missingTranslationBehavior ?? 'show-key';
+        switch (forceMode) {
             case 'throw':
                 throw new Error(`[i18n] Missing translation: ${key} in ${this.namespace}`);
             case 'empty': return '';
             case 'show-key': return key ?? '';
-            default: return mode;
+            default: return forceMode;
         }
     }
 

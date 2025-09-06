@@ -405,3 +405,22 @@ describe('toObservable (error cases)', () => {
   });
 
 });
+
+describe('toArray', () => {
+  it('should return array as is when input is array', () => {
+    const { toArray } = require('./translate.util');
+    expect(toArray(['a', 'b'])).toEqual(['a', 'b']);
+  });
+
+  it('should wrap string in array', () => {
+    const { toArray } = require('./translate.util');
+    expect(toArray('single')).toEqual(['single']);
+  });
+
+  it('should return undefined for falsy values', () => {
+    const { toArray } = require('./translate.util');
+    expect(toArray(null)).toBeUndefined();
+    expect(toArray(undefined)).toBeUndefined();
+    expect(toArray('')).toBeUndefined();
+  });
+});
