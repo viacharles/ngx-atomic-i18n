@@ -1,6 +1,6 @@
 import 'jest';
 import { TranslationCoreService } from './translation-core.service';
-import { TranslationConfig } from './translate.type';
+import { TranslationConfig, Translations } from './translate.type';
 import { TestBed } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
 import { ICU_FORMATTER_TOKEN, TRANSLATION_CONFIG, TRANSLATION_LOADER } from './translate.token';
@@ -198,10 +198,10 @@ describe('TranslationCoreService', () => {
   });
 
   describe('getAndCreateFormatter 分支測試', () => {
-    it('should return cached formatter if present in fifoCache', () => {
-      const cacheKey = 'en:cached';
+    it('should return cached formatter if present in fifoCache (nsKey includes namespace and version)', () => {
+      const cacheKey = 'en:test:cached';
       const fakeFormatter = { format: () => 'cached!' };
-      (service as any)._fifoCache.set('en:cached', fakeFormatter);
+      (service as any)._fifoCache.set('en:test:cached', fakeFormatter);
       // 把 lang() 設定成 'en'
       jest.spyOn(service, 'lang').mockReturnValue('en');
       const result = service.getAndCreateFormatter('en:test', 'cached');
@@ -245,6 +245,38 @@ describe('TranslationCoreService', () => {
       // loaderMock.load 不該被呼叫
       await service.preloadNamespaces(['test'], 'en');
       expect(loaderMock.load).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('removeResourceBundle evicts formatter cache by namespace', () => {
+    it('should drop formatters for the removed namespace (all versions)', () => {
+      service.addResourceBundle('en', 'ns', { k: 'old' });
+      // create two cached formatters with different nsKey forms
+      const f1 = service.getAndCreateFormatter('en:ns', 'k');
+      const f2 = service.getAndCreateFormatter('en:ns:v1', 'k');
+      expect(f1?.format({})).toBe('old');
+      expect(f2?.format({})).toBe('old');
+
+      // remove bundle and re-add with new value
+      service.removeResourceBundle('en', 'ns');
+      service.addResourceBundle('en', 'ns', { k: 'new' });
+
+      const n1 = service.getAndCreateFormatter('en:ns', 'k');
+      const n2 = service.getAndCreateFormatter('en:ns:v1', 'k');
+      expect(n1?.format({})).toBe('new');
+      expect(n2?.format({})).toBe('new');
+    });
+  });
+
+  describe('in-flight load coalescing', () => {
+    it('should only fetch once for concurrent same nsKey', async () => {
+      const fn = jest.fn().mockImplementation(() => new Promise<Translations>((resolve) => setTimeout(() => resolve({ a: '1' }), 0)));
+      await Promise.all([
+        service.load('en:co:ver', fn),
+        service.load('en:co:ver', fn),
+        service.load('en:co:ver', fn),
+      ]);
+      expect(fn).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -410,6 +442,52 @@ describe('TranslationCoreService', () => {
 
       // 應該將字串轉換為陣列並傳遞給 loader
       expect(loaderMock.load).toHaveBeenCalledWith(['single-root'], 'test', 'en');
+    });
+  });
+
+  describe('Version-aware behavior', () => {
+    it('readySignal should respect version match/mismatch', async () => {
+      // load v1
+      await service.load('en:test:v1', () => Promise.resolve({ hello: 'v1' }));
+      const readyV1 = service.readySignal('test', 'v1');
+      const readyV2 = service.readySignal('test', 'v2');
+      expect(readyV1()).toBe(true);
+      expect(readyV2()).toBe(false);
+    });
+
+    it('load should early-return for same version and fetch for different version', async () => {
+      await service.load('en:test:v1', () => Promise.resolve({ a: '1' }));
+      const fetchSame = jest.fn().mockResolvedValue({ a: '2' });
+      await service.load('en:test:v1', fetchSame);
+      expect(fetchSame).not.toHaveBeenCalled();
+
+      const fetchDiff = jest.fn().mockResolvedValue({ a: '3' });
+      await service.load('en:test:v2', fetchDiff);
+      expect(fetchDiff).toHaveBeenCalledTimes(1);
+    });
+
+    it('missingKeyCache should be version-scoped', () => {
+      const key = 'absent_key';
+      // v1 lookup → missing
+      service.findFallbackFormatter(key, [], 'v1');
+      expect((service as any)._missingKeyCache.has(`en:v1:${key}`)).toBe(true);
+      const sizeAfterV1 = (service as any)._missingKeyCache.size;
+
+      // v2 lookup should not be blocked by v1 entry (still ends missing, but adds another record)
+      service.findFallbackFormatter(key, [], 'v2');
+      expect((service as any)._missingKeyCache.size).toBe(sizeAfterV1 + 1);
+      expect((service as any)._missingKeyCache.has(`en:v2:${key}`)).toBe(true);
+    });
+
+    it('formatter FIFO cache should separate by version (nsKey)', () => {
+      service.addResourceBundle('en', 'test', { greet: 'hello' });
+      const f1 = service.getAndCreateFormatter('en:test:v1', 'greet');
+      const f2 = service.getAndCreateFormatter('en:test:v2', 'greet');
+      expect(f1).toBeDefined();
+      expect(f2).toBeDefined();
+      expect(f1).not.toBe(f2);
+      expect(f1?.format({})).toBe('hello');
+      expect(f2?.format({})).toBe('hello');
     });
   });
 });

@@ -14,6 +14,19 @@
           "options": {
             "project": "projects/ngx-atomic-i18n/ng-package.json"
           }
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "tsConfig": "projects/ngx-atomic-i18n/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/ngx-atomic-i18n/src/favicon.ico",
+              "projects/ngx-atomic-i18n/src/assets"
+            ],
+            "scripts": [],
+            "jestConfig": "projects/ngx-atomic-i18n/jest.config.ts"
+          }
         }
       }
     },

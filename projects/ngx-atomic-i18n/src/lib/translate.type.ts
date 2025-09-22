@@ -21,7 +21,7 @@ export type LazyLoader = Record<Lang, () => Promise<Translations>>;
 export type Params = Record<string, any>;
 export type Translations = Record<string, string>;
 export type Lang = string;
-/** lang:namespace */
+/** lang:namespace:version */
 export type nsKey = string;
 /**
  * How the translation system should behave when a translation key is missing.
@@ -72,6 +72,7 @@ export interface FsLoaderOptions {
   }) => string[];
   /** custom fs */
   fsModule?: FsModuleLike;
+  cacheMax?: number;
 }
 
 export interface HttpLoaderOptions {

@@ -5,12 +5,14 @@ import { detectPreferredLang } from "./translate.util";
 import { isPlatformServer } from "@angular/common";
 import { TranslationService } from "./translation.service";
 import { TempToken, TranslationConfig, TranslationLoader, TranslationLoaderOptions } from "./translate.type";
-import { TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from "./translate.token";
+import { BUILD_VERSION, TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from "./translate.token";
 import { FsTranslationLoader } from "./translation.loader.ssr";
 
 export type ProvideTranslationInitOptions =
   Partial<TranslationConfig> & {
     loader?: TranslationLoaderOptions;
+    /** Optional global build version for SSR/CSR to align caches */
+    buildVersion?: string | null;
   };
 
 export function provideTranslationInit(userConfig?: ProvideTranslationInitOptions): Provider[] {
@@ -29,6 +31,10 @@ export function provideTranslationInit(userConfig?: ProvideTranslationInitOption
     {
       provide: TRANSLATION_CONFIG,
       useValue: { ...finalConfig, initialLang: preferredLang },
+    },
+    {
+      provide: BUILD_VERSION,
+      useValue: userConfig?.buildVersion ?? null,
     },
     ...provideTranslationLoader(userConfig?.loader),
     ...provideTranslation(finalConfig.fallbackNamespace),
@@ -94,4 +100,3 @@ export function provideTranslationLoader(options: TranslationLoaderOptions = {})
     }
   ];
 }
-

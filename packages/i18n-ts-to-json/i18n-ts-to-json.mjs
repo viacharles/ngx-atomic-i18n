@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// i18n-build.mjs
+// i18n-ts-to-json.mjs
 // Node >=18, ESM
 // 功能：將任意 <src>/**/i18n/** 下的 .ts/.json 轉成 <out>/<namespace>/<lang>.json
 // - 集中式：.../i18n/<namespace>/<lang>.ts|json  → ns = 子資料夾名稱
@@ -55,10 +55,10 @@ function parseArgs () {
   const langs = uniq(toArr(argv.lang).filter(Boolean))
 
   if (!srcs.length || !outs.length)
-    fail('[i18n-build] --src and --out are required (can repeat).')
+    fail('[i18n-ts-to-json] --src and --out are required (can repeat).')
   if (outs.length !== 1 && outs.length !== srcs.length) {
     fail(
-      '[i18n-build] Provide one --out for all --src, or one --out per --src.'
+      '[i18n-ts-to-json] Provide one --out for all --src, or one --out per --src.'
     )
   }
 
@@ -131,13 +131,15 @@ async function convertOne (srcFile, outFile, strict) {
   if (srcFile.endsWith('.json')) {
     ensureDir(path.dirname(outFile))
     fs.copyFileSync(srcFile, outFile)
-    console.log(`[i18n-build] copied  ${path.relative(process.cwd(), outFile)}`)
+    console.log(
+      `[i18n-ts-to-json] copied  ${path.relative(process.cwd(), outFile)}`
+    )
     return
   }
 
   let modPath
   try {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'i18n-build-'))
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'i18n-ts-to-json-'))
     modPath = path.join(
       tmpDir,
       path.basename(srcFile).replace(/\.ts$/i, '.mjs')
@@ -154,19 +156,21 @@ async function convertOne (srcFile, outFile, strict) {
     if (!('default' in mod)) {
       if (strict)
         fail(
-          `[i18n-build] ${srcFile} has no default export. Use "export default { ... }".`
+          `[i18n-ts-to-json] ${srcFile} has no default export. Use "export default { ... }".`
         )
       console.warn(
-        `[i18n-build] warn: ${srcFile} has no default export, skipping.`
+        `[i18n-ts-to-json] warn: ${srcFile} has no default export, skipping.`
       )
       return
     }
     const json = JSON.stringify(mod.default, null, 2) + '\n'
     ensureDir(path.dirname(outFile))
     fs.writeFileSync(outFile, json)
-    console.log(`[i18n-build] wrote   ${path.relative(process.cwd(), outFile)}`)
+    console.log(
+      `[i18n-ts-to-json] wrote   ${path.relative(process.cwd(), outFile)}`
+    )
   } catch (e) {
-    console.error(`[i18n-build] error: failed to compile ${srcFile}`, e)
+    console.error(`[i18n-ts-to-json] error: failed to compile ${srcFile}`, e)
     if (strict) process.exit(1)
   } finally {
     if (modPath) {
@@ -246,16 +250,18 @@ function computeOutFileForSource (srcFile, outRoot) {
 async function buildOnce (pairs, langs, clean, strict) {
   for (const { srcRoot, outRoot } of pairs) {
     if (!fs.existsSync(srcRoot)) {
-      console.warn(`[i18n-build] src not found: ${srcRoot}, skipping.`)
+      console.warn(`[i18n-ts-to-json] src not found: ${srcRoot}, skipping.`)
       continue
     }
     if (clean) {
-      console.log(`[i18n-build] cleaning ${outRoot}`)
+      console.log(`[i18n-ts-to-json] cleaning ${outRoot}`)
       cleanOutput(outRoot)
     }
     const i18nDirs = listI18nDirs(srcRoot)
     if (!i18nDirs.length) {
-      console.log(`[i18n-build] no "i18n" dirs under ${srcRoot}, skipping.`)
+      console.log(
+        `[i18n-ts-to-json] no "i18n" dirs under ${srcRoot}, skipping.`
+      )
       continue
     }
     for (const dir of i18nDirs) {
@@ -304,13 +310,13 @@ function createWatcher (pairs, langs, strict) {
       for (const [srcRoot, group] of bySrc.entries()) {
         const outRoot = map.get(srcRoot)
         for (const i18nDir of group) {
-          console.log(`[i18n-build] rebuild (incremental): ${i18nDir}`)
+          console.log(`[i18n-ts-to-json] rebuild (incremental): ${i18nDir}`)
           await processI18nDir(i18nDir, outRoot, langs, strict)
         }
       }
-      console.log('[i18n-build] ✅ incremental build done.')
+      console.log('[i18n-ts-to-json] ✅ incremental build done.')
     } catch (e) {
-      console.error('[i18n-build] incremental build failed:', e)
+      console.error('[i18n-ts-to-json] incremental build failed:', e)
     } finally {
       building = false
       if (queued) {
@@ -336,7 +342,7 @@ function createWatcher (pairs, langs, strict) {
     if (outFile && fs.existsSync(outFile)) {
       fs.rmSync(outFile, { force: true })
       console.log(
-        `[i18n-build] removed ${path.relative(process.cwd(), outFile)}`
+        `[i18n-ts-to-json] removed ${path.relative(process.cwd(), outFile)}`
       )
     }
     // 仍標記目錄（例如集中式下語言被刪改名）
@@ -357,12 +363,16 @@ function createWatcher (pairs, langs, strict) {
       .on('unlink', onUnlinkFile)
       .on('addDir', onFsEvent)
       .on('unlinkDir', onFsEvent)
-      .on('error', err => console.error('[i18n-build] watcher error:', err))
+      .on('error', err =>
+        console.error('[i18n-ts-to-json] watcher error:', err)
+      )
 
     watchers.push(watcher)
   }
 
-  console.log('[i18n-build] watching changes in source i18n (outputs ignored)…')
+  console.log(
+    '[i18n-ts-to-json] watching changes in source i18n (outputs ignored)…'
+  )
   return watchers
 }
 
@@ -372,13 +382,13 @@ async function main () {
 
   await buildOnce(pairs, langs, clean, strict)
   if (!watch) {
-    console.log('[i18n-build] ✅ done.')
+    console.log('[i18n-ts-to-json] ✅ done.')
     return
   }
   createWatcher(pairs, langs, strict)
 }
 
 main().catch(e => {
-  console.error('[i18n-build] unexpected error:', e)
+  console.error('[i18n-ts-to-json] unexpected error:', e)
   process.exit(1)
 })

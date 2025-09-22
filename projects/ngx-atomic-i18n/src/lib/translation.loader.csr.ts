@@ -12,7 +12,6 @@ export class HttpTranslationLoader implements TranslationLoader {
   async load(i18nRoots: string[], namespace: string, lang: string): Promise<Translations> {
     const roots = toArray(i18nRoots) ?? [];
     const baseInput = this.option.httpBaseUrl ?? '/assets';
-    console.log('HttpTranslationLoader baseInput:', baseInput);
     const base = (/^https?:\/\//i.test(baseInput)
       ? baseInput
       : (baseInput.startsWith('/') ? baseInput : '/' + baseInput)).replace(/[\\/]+$/, '');

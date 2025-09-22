@@ -8,6 +8,11 @@
       "jasmine"
     ]
   },
+  "module": "commonjs",
+  "moduleResolution": "node",
+  "target": "es2020",
+  "types": ["jest","node"],
+  "useDefineForClassFields": false,
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"

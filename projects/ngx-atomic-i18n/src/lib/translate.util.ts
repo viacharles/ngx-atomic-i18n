@@ -225,3 +225,20 @@ export const stripLeadingSep = (s: string) => s.replace(/^[\\/]+/, '');
 
 export const toArray = (template: PathTemplate) => Array.isArray(template) ? template : (template ? [template] : undefined);
 
+/**
+ * Detect current build version from injected script names (CSR only).
+ * Matches filenames like: main.<hash>.js, runtime.<hash>.js, polyfills.<hash>.js
+ */
+export function detectBuildVersion(): string | null {
+  try {
+    if (typeof document === 'undefined' || !document?.scripts) return null;
+    const regex = /\/(?:main|runtime|polyfills)\.([a-f0-9]{8,})\.[^\/]*\.js(?:\?|$)/i;
+    for (const s of Array.from(document.scripts)) {
+      const version = regex.exec((s as HTMLScriptElement).src);
+      if (version?.[1]) return version[1];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}

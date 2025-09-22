@@ -2,7 +2,7 @@ jest.mock('@angular/core', () => {
   const actual = jest.requireActual('@angular/core');
   return {
     ...actual,
-    isDevMode: jest.fn(), // ← 我們之後在各個 it 裡面再指定回傳 true/false
+    isDevMode: jest.fn(),
   };
 });
 import { APP_INITIALIZER, PLATFORM_ID } from '@angular/core';
@@ -38,10 +38,8 @@ describe('provideTranslationInit', () => {
     } as any as TranslationService;
     const providers = provideTranslationInit({ supportedLangs: ['en'], preloadNamespaces });
     const flatProviders = providers.flat ? providers.flat() : providers;
-    // 改成用嚴格等號
     const appInitProvider = flatProviders.find((p: any) => p && p.provide === APP_INITIALIZER);
     expect(appInitProvider).toBeTruthy();
-    // 執行 useFactory
     const factory = appInitProvider.useFactory;
     await factory(mockService)();
     expect(mockService.preloadNamespaces).toHaveBeenCalledWith(preloadNamespaces, 'en');
@@ -89,7 +87,6 @@ describe('provideTranslationInit', () => {
     expect(configProvider.useValue.supportedLangs).toEqual(['en', 'zh']);
     expect(configProvider.useValue.fallbackNamespace).toBe('custom');
     expect(configProvider.useValue.missingTranslationBehavior).toBe('empty');
-    // Default values should still be present
     expect(configProvider.useValue.fallbackLang).toBe('en');
     expect(configProvider.useValue.i18nRoots).toEqual(['i18n']);
   });
@@ -98,11 +95,9 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit({ supportedLangs: ['en', 'zh-Hant'] });
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider).toBeTruthy();
-    // initialLang is replaced with the result of detectPreferredLang, which should be a string
     expect(typeof configProvider.useValue.initialLang).toBe('string');
-    expect(configProvider.useValue.initialLang).toBe('en'); // default fallback
+    expect(configProvider.useValue.initialLang).toBe('en');
   });
 
   it('SSR + dev mode → assetPath = "src/assets" (no override)', () => {
@@ -110,11 +105,8 @@ describe('provideTranslationInit', () => {
     try {
       const providers = provideTranslationLoader({});
       const factory = (providers[0] as any).useFactory as (platformId: Object) => unknown;
-
-      // 傳 'server' 讓 isPlatformServer 為真 → 走 SSR 分支
       const loader = factory('server') as unknown as FsTranslationLoader;
       expect(loader).toBeInstanceOf(FsTranslationLoader);
-
       const opts = (loader as any).opts ?? (loader as any)['opts'];
       expect(opts.assetPath).toBe('src/assets');
     } finally {
@@ -127,10 +119,8 @@ describe('provideTranslationInit', () => {
     try {
       const providers = provideTranslationLoader({});
       const factory = (providers[0] as any).useFactory as (platformId: Object) => unknown;
-
       const loader = factory('server') as unknown as FsTranslationLoader;
       expect(loader).toBeInstanceOf(FsTranslationLoader);
-
       const opts = (loader as any).opts ?? (loader as any)['opts'];
       expect(opts.assetPath).toBe('dist/browser/assets');
     } finally {
@@ -139,16 +129,14 @@ describe('provideTranslationInit', () => {
   });
 
   it('SSR + loaderOptions.assetPath override → use override regardless of dev/prod', () => {
-    (core.isDevMode as jest.Mock).mockReturnValue(true); // true/false 都會被 override 蓋掉
+    (core.isDevMode as jest.Mock).mockReturnValue(true);
     try {
       const providers = provideTranslationLoader({
         loaderOptions: { assetPath: '/custom/assets' },
       });
       const factory = (providers[0] as any).useFactory as (platformId: Object) => unknown;
-
       const loader = factory('server') as unknown as FsTranslationLoader;
       expect(loader).toBeInstanceOf(FsTranslationLoader);
-
       const opts = (loader as any).opts ?? (loader as any)['opts'];
       expect(opts.assetPath).toBe('/custom/assets');
     } finally {
@@ -164,9 +152,7 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.initialLang).toBeDefined();
-    // initialLang is replaced with the result of detectPreferredLang, which is a string
     expect(typeof configProvider.useValue.initialLang).toBe('string');
   });
 
@@ -178,9 +164,7 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.initialLang).toBeDefined();
-    // initialLang is replaced with the result of detectPreferredLang, which is a string
     expect(typeof configProvider.useValue.initialLang).toBe('string');
   });
 
@@ -192,7 +176,6 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.supportedLangs).toEqual(['zh', 'en']);
     expect(configProvider.useValue.fallbackLang).toBe('zh');
   });
@@ -204,7 +187,6 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.langDetectionOrder).toEqual(['fallback', 'initialLang']);
   });
 
@@ -215,7 +197,6 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.missingTranslationBehavior).toBe('throw');
   });
 
@@ -226,7 +207,6 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.i18nRoots).toEqual(['custom-i18n', 'assets/i18n']);
   });
 
@@ -234,7 +214,6 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit({});
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.supportedLangs).toEqual(['en']);
     expect(configProvider.useValue.fallbackLang).toBe('en');
     expect(configProvider.useValue.fallbackNamespace).toBe('common');
@@ -244,7 +223,6 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(null as any);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-
     expect(configProvider.useValue.supportedLangs).toEqual(['en']);
     expect(configProvider.useValue.fallbackLang).toBe('en');
     expect(configProvider.useValue.fallbackNamespace).toBe('common');
@@ -255,10 +233,8 @@ describe('provideTranslation', () => {
   it('should provide TranslationService and namespace for single namespace', () => {
     const providers = provideTranslation('home');
     const flatProviders = providers.flat ? providers.flat() : providers;
-
     const namespaceProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_NAMESPACE);
     const serviceProvider = flatProviders.find((p: any) => p && p.provide === TranslationService);
-
     expect(namespaceProvider).toBeTruthy();
     expect(namespaceProvider.useValue).toBe('home');
     expect(serviceProvider).toBeTruthy();
@@ -268,10 +244,8 @@ describe('provideTranslation', () => {
   it('should provide TranslationService and namespace for multiple namespaces', () => {
     const providers = provideTranslation(['home', 'auth']);
     const flatProviders = providers.flat ? providers.flat() : providers;
-
     const namespaceProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_NAMESPACE);
     const serviceProvider = flatProviders.find((p: any) => p && p.provide === TranslationService);
-
     expect(namespaceProvider).toBeTruthy();
     expect(namespaceProvider.useValue).toEqual(['home', 'auth']);
     expect(serviceProvider).toBeTruthy();
@@ -284,11 +258,10 @@ describe('provideTranslationLoader (CSR)', () => {
     await TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        ...provideTranslationLoader(), // no override
+        ...provideTranslationLoader(),
         { provide: PLATFORM_ID, useValue: 'browser' }
       ]
     }).compileComponents();
-
     const loader = TestBed.inject<any>(TRANSLATION_LOADER);
     expect(loader).toBeInstanceOf(HttpTranslationLoader);
   });
@@ -333,7 +306,6 @@ describe('provideTranslationLoader (SSR)', () => {
         { provide: PLATFORM_ID, useValue: 'server' }
       ]
     }).compileComponents();
-
     const loader = TestBed.inject<any>(TRANSLATION_LOADER);
     expect(loader).toBeInstanceOf(FsTranslationLoader);
   });
@@ -342,7 +314,6 @@ describe('provideTranslationLoader (SSR)', () => {
 describe('provideTranslationLoader (custom loader)', () => {
   it('should use custom csrLoader when provided', async () => {
     const customCsrLoader = jest.fn().mockReturnValue({ __mock: true });
-
     await TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
@@ -360,7 +331,6 @@ describe('provideTranslationLoader (custom loader)', () => {
 
   it('should use custom ssrLoader when provided', async () => {
     const customSsrLoader = jest.fn().mockReturnValue({ __mock: true });
-
     await TestBed.configureTestingModule({
       providers: [
         ...provideTranslationLoader({
@@ -370,7 +340,6 @@ describe('provideTranslationLoader (custom loader)', () => {
         { provide: PLATFORM_ID, useValue: 'server' }
       ]
     }).compileComponents();
-
     const loader = TestBed.inject<any>(TRANSLATION_LOADER);
     expect(loader.__mock).toBe(true);
   });
