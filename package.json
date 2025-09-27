@@ -6,13 +6,16 @@
     "postinstall": "node ./projects/demo-app/bin/translation-init.mjs",
     "serve:ssr:demo-app": "node dist/demo-app/server/server.mjs",
     "start:csr:demo-app": "npm run i18n-init:demo-app && ng serve demo-app",
-    "i18n-init:demo-app": "node projects/demo-app/bin/translation-build.mjs --src=projects/demo-app/src --out=projects/demo-app/src/assets/i18n",
+    "i18n-init:demo-app": "echo \"No build step needed for JSON-only mode.\"",
     "watch": "ng build --watch --configuration development",
     "test:ngx-atomic-i18n": "cd projects/ngx-atomic-i18n && npm run test",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "start:demo-app": "npm run i18n-init:demo-app && ng serve demo-app"
+    "start:demo-app": "ng serve demo-app",
+    "serve:ssr:demo-app-2": "node dist/demo-app-2/server/server.mjs",
+    "i18n-init:demo-app-2": "echo \"No build step needed for JSON-only mode.\"",
+    "start:demo-app-2": "ng serve demo-app-2"
   },
   "private": true,
   "dependencies": {

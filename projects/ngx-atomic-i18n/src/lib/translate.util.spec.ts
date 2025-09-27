@@ -5,7 +5,8 @@ import {
   toObservable,
   deepMerge,
   filterNewKeysDeep,
-  getNested
+  getNested,
+  detectBuildVersion
 } from './translate.util';
 import { TranslationConfig } from './translate.type';
 import { EnvironmentInjector, runInInjectionContext, signal } from '@angular/core';
@@ -422,5 +423,62 @@ describe('toArray', () => {
     expect(toArray(null)).toBeUndefined();
     expect(toArray(undefined)).toBeUndefined();
     expect(toArray('')).toBeUndefined();
+  });
+});
+
+describe('detectBuildVersion', () => {
+  it('should return version when script src matches pattern', () => {
+    const original = (document as any).scripts;
+    Object.defineProperty(document as any, 'scripts', {
+      value: [
+        { src: 'https://cdn/app/polyfills.12345678.hash.js' },
+        { src: 'https://cdn/app/main.abcdef12.bundle.js' },
+      ],
+      configurable: true,
+    });
+    expect(detectBuildVersion()).toBe('12345678');
+    if (original !== undefined) {
+      Object.defineProperty(document as any, 'scripts', { value: original, configurable: true });
+    } else {
+      delete (document as any).scripts;
+    }
+  });
+
+  it('should return null when no matching scripts', () => {
+    const original = (document as any).scripts;
+    Object.defineProperty(document as any, 'scripts', {
+      value: [{ src: 'https://cdn/other.js' }], configurable: true,
+    });
+    expect(detectBuildVersion()).toBeNull();
+    if (original !== undefined) {
+      Object.defineProperty(document as any, 'scripts', { value: original, configurable: true });
+    } else {
+      delete (document as any).scripts;
+    }
+  });
+
+  it('should return null when scripts is missing', () => {
+    const original = (document as any).scripts;
+    Object.defineProperty(document as any, 'scripts', { value: undefined, configurable: true });
+    expect(detectBuildVersion()).toBeNull();
+    if (original !== undefined) {
+      Object.defineProperty(document as any, 'scripts', { value: original, configurable: true });
+    } else {
+      delete (document as any).scripts;
+    }
+  });
+
+  it('should return null when accessing scripts throws (catch branch)', () => {
+    const original = (document as any).scripts;
+    Object.defineProperty(document as any, 'scripts', {
+      get() { throw new Error('boom'); },
+      configurable: true,
+    });
+    expect(detectBuildVersion()).toBeNull();
+    if (original !== undefined) {
+      Object.defineProperty(document as any, 'scripts', { value: original, configurable: true });
+    } else {
+      delete (document as any).scripts;
+    }
   });
 });

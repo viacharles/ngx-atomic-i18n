@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { HttpLoaderOptions, TempToken, TranslationLoader, Translations } from "./translate.type";
 import { firstValueFrom } from "rxjs";
-import { toArray } from "./translate.util";
+import { detectBuildVersion, toArray } from "./translate.util";
 
 export class HttpTranslationLoader implements TranslationLoader {
   private templateCache?: string;
@@ -20,7 +20,11 @@ export class HttpTranslationLoader implements TranslationLoader {
     const orderedTemps = this.templateCache ? [this.templateCache, ...template.filter(t => t !== this.templateCache)] : template;
     for (const root of roots) {
       for (const temp of orderedTemps) {
-        const url = `${base}/${temp.replace(TempToken.Root, root).replace(TempToken.Lang, lang).replace(TempToken.Namespace, namespace)}`;
+        let url = `${base}/${temp.replace(TempToken.Root, root).replace(TempToken.Lang, lang).replace(TempToken.Namespace, namespace)}`;
+        const v = detectBuildVersion();
+        if (v) {
+          url += (url.includes('?') ? '&' : '?') + `v=${encodeURIComponent(v)}`;
+        }
         try {
           const json = await firstValueFrom(
             this.http.get<Translations>(url)

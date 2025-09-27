@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslationService } from './translation.service';
 import { TranslationCoreService } from './translation-core.service';
 import { signal } from '@angular/core';
-import { TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from './translate.token';
+import { BUILD_VERSION, TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from './translate.token';
 import { Translations } from './translate.type';
 
 describe('TranslationService', () => {
@@ -74,6 +74,22 @@ describe('TranslationService', () => {
   describe('getNskey', () => {
     it('should return namespace key', () => {
       expect(service.getNskey).toBe('en:test');
+    });
+    it('should include build version when provided', () => {
+      TestBed.resetTestingModule();
+      const coreServiceMock2 = { ...coreServiceMock, readySignal: jest.fn(() => signal(false)) };
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: TRANSLATION_CONFIG, useValue: configMock },
+          { provide: TRANSLATION_LOADER, useValue: loaderMock },
+          { provide: TRANSLATION_NAMESPACE, useValue: 'test' },
+          { provide: BUILD_VERSION, useValue: 'vh1' },
+          { provide: TranslationCoreService, useValue: coreServiceMock2 },
+          TranslationService
+        ]
+      });
+      const s = TestBed.inject(TranslationService);
+      expect(s.getNskey).toBe('en:test:vh1');
     });
   });
 

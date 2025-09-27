@@ -1,0 +1,21 @@
+<div class="layout {{ bg() }}">
+  @if (!layout$.isSinglePage()) {
+    <h3 [class.shrink]="!layout$.isTop()">{{ title() }}</h3>
+  }
+  <main
+    #mainElem
+    [class.expand]="!layout$.isTop()"
+    [class.full-page]="layout$.isSinglePage()"
+    [@pageSlide]="{
+      value: pageDirection.index(),
+      params: { translateY: mainStyles().y + 'px', height: mainStyles().height + 'px' },
+    }"
+  >
+    <router-outlet></router-outlet>
+  </main>
+  @if (!layout$.isSinglePage()) {
+    <footer>
+      <app-foot-navigation></app-foot-navigation>
+    </footer>
+  }
+</div>

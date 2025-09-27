@@ -1,0 +1,97 @@
+@use "colors" as c;
+@use "variables" as v;
+@use "mini_mixins" as m;
+:host {
+  height: 100%;
+  width: 100%;
+}
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  p {
+    margin-top: 2px;
+    margin-left: 1rem;
+    font-size: 18px;
+    font-weight: 600;
+    @include m.rwdByMaxWidth(small) {
+      font-size: 21px;
+    }
+  }
+  button {
+    cursor: pointer;
+    mat-icon {
+      font-size: 18px;
+      @include m.rwdByMaxWidth(small) {
+        font-size: 21px;
+      }
+    }
+  }
+}
+
+.main {
+  padding: 0.5rem 1.5rem;
+  background-color: c.$primary;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.6rem 1.2rem;
+  background-color: c.$primary;
+  p {
+    cursor: pointer;
+    font-weight: 300;
+    margin-right: 0.8rem;
+    &:hover {
+      font-weight: 400;
+    }
+  }
+  button {
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    font-size: 18px;
+    color: c.$neutral-50;
+    border-radius: 3px;
+    background: white;
+    transition: 0.2s ease;
+    &:hover {
+      color: c.$neutral-50;
+      box-shadow: unset;
+    }
+    @include m.rwdByMaxWidth(small) {
+      font-size: 21px;
+    }
+  }
+}
+
+::ng-deep .mat-mdc-dialog-surface:has(app-warning-dialog) {
+  border-radius: 9px;
+}
+
+// type
+
+.critical {
+  .main {
+    background-color: c.$error-60;
+    p {
+      font-size: 18px;
+      color: var(--white);
+      @include m.rwdByMaxWidth(small) {
+        font-size: 21px;
+      }
+    }
+  }
+  .foot {
+    background: c.$error-50;
+    p {
+      color: var(--white);
+    }
+  }
+}

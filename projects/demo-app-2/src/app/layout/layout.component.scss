@@ -1,0 +1,52 @@
+@use "colors" as c;
+@use "variables" as v;
+@use "sass:map";
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  h3 {
+    padding-top: 80px;
+    padding-bottom: 35px;
+    font-size: 1.75rem;
+    font-weight: normal;
+    color: c.$surface;
+    text-align: center;
+    transition: 0.3s;
+    &.shrink {
+      font-size: 1.2rem;
+      padding-top: 66px;
+      padding-bottom: 1rem;
+    }
+  }
+  main {
+    height: calc(100% - 143px - 96px);
+    width: 100%;
+    display: flex;
+    transition: 0.5s;
+    &.expand {
+      height: calc(100% - 110px - 87px);
+    }
+    &.full-page {
+      height: 100%;
+    }
+  }
+
+  footer {
+    position: relative;
+    z-index: map.get(v.$z-index, fixed);
+    width: 100%;
+  }
+
+  &.gradient-1 {
+    background: c.$gradient-1;
+  }
+
+  &.gradient-2 {
+    background: c.$gradient-2;
+  }
+
+  &.gradient-3 {
+    background: c.$gradient-3;
+  }
+}

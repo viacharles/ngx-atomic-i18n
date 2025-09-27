@@ -1,0 +1,10 @@
+<div class="dialog" [style.background]="backbround()">
+  <header class="{{align()}}">
+    <em class="icon-arrow-left" (click)="back()"></em>
+    <div>
+      <h3>{{ title() }}</h3>
+      <p>{{ subTitle() }}</p>
+    </div>
+  </header>
+  <ng-content></ng-content>
+</div>

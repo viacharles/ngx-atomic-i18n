@@ -1,0 +1,11 @@
+<fieldset class="field {{size()}}" [class.error]="error()" (click)="inputElem.focus()" >
+  @if(title()) {
+    <legend>{{title()}}</legend>
+  }
+  <input #inputElem type="text" [value]="valueSig()" (input)="onInput($event)" [placeholder]="placeholder()">
+  <div class="prefix">
+    <ng-content select='[prefix]'></ng-content>
+  </div>
+</fieldset>
+
+

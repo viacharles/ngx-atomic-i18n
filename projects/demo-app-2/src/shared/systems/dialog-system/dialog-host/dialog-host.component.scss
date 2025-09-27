@@ -1,0 +1,24 @@
+@use "colors" as c;
+@use "variables" as v;
+@use "sass:map";
+.backdrop {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: map.get(v.$z-index, dropdown);
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: 0.5s;
+  &.show {
+    opacity: 1;
+  }
+}
+
+.dialog-container {
+  position: relative;
+}

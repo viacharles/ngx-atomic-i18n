@@ -19,9 +19,10 @@ export class TranslationCoreService {
 
   private readonly _jsonCache = signal(new Map<string, Map<string, Record<string, any>>>()); // lang => namespace => key
   private readonly _versionMap = signal(new Map<string, Map<string, string | undefined>>()); // lang => namespace => version
-  private readonly _fifoCache = new FIFOCache<nsKey, FormatResult>(MAX_CACHE_SIZE);
+  private readonly _formatterCache = new FIFOCache<nsKey, FormatResult>(MAX_CACHE_SIZE);
   private _missingKeyCache = new Set<nsKey>();
   private _inflight = new Map<string, Promise<void>>();
+  private readonly _icuCompiledCache = new Map<string, FormatResult>();
 
   readonly onLangChange = toObservable(this._lang);
   readonly fallbackLang = this._config.fallbackLang ?? 'en';
@@ -42,6 +43,7 @@ export class TranslationCoreService {
     }
     if (this._lang() !== currentLang) {
       this._lang.set(currentLang);
+      this._icuCompiledCache.clear();
       const isBroswer = typeof window !== 'undefined';
       if (isBroswer) {
         try {
@@ -80,40 +82,63 @@ export class TranslationCoreService {
 
   getAndCreateFormatter(nsKey: string, key: string): FormatResult | undefined {
     const cacheKey = `${nsKey}:${key}`;
-    if (this._fifoCache.has(cacheKey)) return this._fifoCache.get(cacheKey);
+    if (this._formatterCache.has(cacheKey)) return this._formatterCache.get(cacheKey);
     const [lang, namespace] = nsKey.split(':');
     const raw = getNested(this._jsonCache().get(lang)?.get(namespace), key);
     if (raw === undefined) return;
-    const result: FormatResult = this._ICU ? new this._ICU(raw, this.lang()) : {
-      format: (p) => parseICU(raw, p)
+    let result: FormatResult;
+    if (this._ICU) {
+      const k = `${raw}|${this.lang()}`;
+      const exist = this._icuCompiledCache.get(k);
+      if (exist) {
+        result = exist;
+      } else {
+        result = new this._ICU(raw, this.lang());
+        this._icuCompiledCache.set(k, result);
+      }
+    } else {
+      const k = raw;
+      const exist = this._icuCompiledCache.get(k);
+      if (exist) {
+        result = exist;
+      } else {
+        result = { format: (p) => parseICU(raw, p) };
+        this._icuCompiledCache.set(k, result);
+      }
     }
-    this._fifoCache.set(cacheKey, result);
+    this._formatterCache.set(cacheKey, result);
     return result;
   }
 
   findFallbackFormatter(key: string, exclude: string[], version?: string): FormatResult | undefined {
-    const cacheKey = version ? `${this.currentLang}:${version}:${key}` : `${this.currentLang}:${key}`;
-    if (this._missingKeyCache.has(cacheKey)) return undefined;
     const namespaces = Array.isArray(this._config.fallbackNamespace)
       ? this._config.fallbackNamespace
       : [this._config.fallbackNamespace ?? '']
     for (const namespace of namespaces) {
       const nsKey = version ? `${this.currentLang}:${namespace}:${version}` : `${this.currentLang}:${namespace}`;
       if (exclude.includes(nsKey)) continue;
+      const missKey = version
+        ? `${this.currentLang}:${namespace}:${version}:${key}`
+        : `${this.currentLang}:${namespace}:${key}`;
+      if (this._missingKeyCache.has(missKey)) continue;
       const result = this.getAndCreateFormatter(nsKey, key);
       if (result) return result;
+      // mark this namespace as missing for the given key
+      this._missingKeyCache.add(missKey);
     }
-    this._missingKeyCache.add(cacheKey);
     return undefined;
   }
 
   async preloadNamespaces(namespaces: string[], lang: string): Promise<void> {
     const roots = Array.isArray(this._config.i18nRoots) ? this._config.i18nRoots : [this._config.i18nRoots];
-    for (const namespace of namespaces) {
-      if (this.hasJsonCacheValue(lang, namespace)) continue;
-      const json = await this._loader.load(roots, namespace, lang);
-      this.handleNewTranslations(json, lang, namespace, undefined);
-    }
+    const loadList = namespaces.filter(namespace => !this.hasJsonCacheValue(lang, namespace));
+    const jsonArray = await Promise.all(loadList.map(namespace => this._loader.load(roots, namespace, lang)));
+    jsonArray.forEach((json, index) => this.handleNewTranslations(json, lang, loadList[index], undefined))
+    // for (const namespace of namespaces) {
+    //   if (this.hasJsonCacheValue(lang, namespace)) continue;
+    //   const json = await this._loader.load(roots, namespace, lang);
+    //   this.handleNewTranslations(json, lang, namespace, undefined);
+    // }
   }
 
   private handleNewTranslations(json: Translations, lang: string, namespace: string, version?: string): void {
@@ -128,6 +153,10 @@ export class TranslationCoreService {
     vLangMap.set(namespace, version);
     vMap.set(lang, vLangMap);
     this._versionMap.set(vMap);
+
+    // Invalidate formatter cache for this namespace (covers with/without version)
+    const nsKey = `${lang}:${namespace}:`;
+    this._formatterCache.deleteWhere((k) => (k as unknown as string).startsWith(nsKey));
 
     this._missingKeyCache.clear();
   }
@@ -194,7 +223,43 @@ export class TranslationCoreService {
     // Evict all formatter cache entries that belong to this lang:namespace (with or without version)
     // Keys are in form `${nsKey}:${key}` where nsKey may include version
     const prefix = `${lang}:${namespace}:`;
-    this._fifoCache.deleteWhere((k) => (k as unknown as string).startsWith(prefix));
+    this._formatterCache.deleteWhere((k) => (k as unknown as string).startsWith(prefix));
+    // also clear missing-key entries for this namespace
+    for (const k of Array.from(this._missingKeyCache)) {
+      if (k.startsWith(prefix)) this._missingKeyCache.delete(k);
+    }
+  }
+
+  /** Clear everything: data, versions, formatters, missing keys, inflight */
+  clearAll(): void {
+    this._jsonCache.set(new Map());
+    this._versionMap.set(new Map());
+    this._formatterCache.clear();
+    this._missingKeyCache.clear();
+    this._inflight.clear();
+    this._icuCompiledCache.clear();
+  }
+
+  /** Clear all resources for a language */
+  clearLang(lang: string): void {
+    const map = new Map(this._jsonCache());
+    map.delete(lang);
+    this._jsonCache.set(map);
+    const vmap = new Map(this._versionMap());
+    vmap.delete(lang);
+    this._versionMap.set(vmap);
+    this._formatterCache.deleteWhere((k) => (k as unknown as string).startsWith(`${lang}:`));
+    for (const k of Array.from(this._missingKeyCache)) {
+      if (k.startsWith(`${lang}:`)) this._missingKeyCache.delete(k);
+    }
+    for (const k of Array.from(this._icuCompiledCache.keys())) {
+      if (k.endsWith(`|${lang}`)) this._icuCompiledCache.delete(k);
+    }
+  }
+
+  /** Clear a specific namespace for a language */
+  clearNamespace(lang: string, namespace: string): void {
+    this.removeResourceBundle(lang, namespace);
   }
 
   getResource(lang: string, namespace: string, key: string): string | undefined {

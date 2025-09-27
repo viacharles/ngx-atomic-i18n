@@ -150,18 +150,19 @@ describe('TranslationCoreService', () => {
       expect(formatter).toBeDefined();
     });
 
-    it('should add missing key to cache (cover line 84-85)', () => {
+    it('should add missing key to cache per namespace', () => {
       // 先確保 cache 沒有
       const key = 'notfound';
-      // 觸發 missing key
+      // 觸發 missing key（config fallbackNamespace 預設 'common'）
       service.findFallbackFormatter(key, []);
-      // 再次呼叫會直接 return undefined
+      // 再次呼叫仍會嘗試，但因為 namespace 標記為 missing 會快速跳過
       expect(service.findFallbackFormatter(key, [])).toBeUndefined();
     });
 
-    it('should return undefined if key is in _missingKeyCache (cover line 65)', () => {
+    it('should return undefined if key is in _missingKeyCache for the namespace', () => {
       const key = 'misskey';
-      (service as any)._missingKeyCache.add(`en:${key}`);
+      // 預設 fallbackNamespace 為 'common'
+      (service as any)._missingKeyCache.add(`en:common:${key}`);
       service.setLang('en');
       expect(service.findFallbackFormatter(key, [])).toBeUndefined();
     });
@@ -201,7 +202,7 @@ describe('TranslationCoreService', () => {
     it('should return cached formatter if present in fifoCache (nsKey includes namespace and version)', () => {
       const cacheKey = 'en:test:cached';
       const fakeFormatter = { format: () => 'cached!' };
-      (service as any)._fifoCache.set('en:test:cached', fakeFormatter);
+      (service as any)._formatterCache.set('en:test:cached', fakeFormatter);
       // 把 lang() 設定成 'en'
       jest.spyOn(service, 'lang').mockReturnValue('en');
       const result = service.getAndCreateFormatter('en:test', 'cached');
@@ -222,6 +223,21 @@ describe('TranslationCoreService', () => {
       service.addResourceBundle('en', 'test', { icu: '{count, plural, one {1 apple} other {# apples}}' });
       const formatter = service.getAndCreateFormatter('en:test', 'icu');
       expect(formatter?.format({ count: 2 })).toBe('ICU');
+    });
+
+    it('should hit ICU compiled cache across namespaces with same raw (exist branch)', () => {
+      const ICUFake = jest.fn().mockImplementation((raw, lang) => ({ format: () => `${raw}-${lang}` }));
+      Object.defineProperty(service, '_ICU', { value: ICUFake, configurable: true });
+      // Same raw template in two namespaces
+      service.addResourceBundle('en', 'ns1', { msg: 'hi {{name}}' });
+      service.addResourceBundle('en', 'ns2', { msg: 'hi {{name}}' });
+      const f1 = service.getAndCreateFormatter('en:ns1', 'msg');
+      const f2 = service.getAndCreateFormatter('en:ns2', 'msg');
+      expect(f1).toBeDefined();
+      expect(f2).toBeDefined();
+      // Second call should reuse compiled formatter (exist branch), so ICUFake constructed once
+      expect(ICUFake).toHaveBeenCalledTimes(1);
+      expect(f2?.format({ name: 'a' })).toBe('hi {{name}}-en');
     });
   });
 
@@ -266,6 +282,14 @@ describe('TranslationCoreService', () => {
       expect(n1?.format({})).toBe('new');
       expect(n2?.format({})).toBe('new');
     });
+
+    it('should also clear missing-key entries for that namespace', () => {
+      // inject a fake missing key for the target namespace
+      (service as any)._missingKeyCache.add('en:ns:miss');
+      expect((service as any)._missingKeyCache.has('en:ns:miss')).toBe(true);
+      service.removeResourceBundle('en', 'ns');
+      expect((service as any)._missingKeyCache.has('en:ns:miss')).toBe(false);
+    });
   });
 
   describe('in-flight load coalescing', () => {
@@ -277,6 +301,57 @@ describe('TranslationCoreService', () => {
         service.load('en:co:ver', fn),
       ]);
       expect(fn).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('clear APIs', () => {
+    it('clearAll should remove all caches and formatters', () => {
+      service.addResourceBundle('en', 'ns', { k: 'v' });
+      const f = service.getAndCreateFormatter('en:ns', 'k');
+      expect(f).toBeDefined();
+
+      service.clearAll();
+
+      expect(service.hasResourceBundle('en', 'ns')).toBe(false);
+      expect(service.getAndCreateFormatter('en:ns', 'k')).toBeUndefined();
+    });
+
+    it('clearLang should remove only specified language data and caches', () => {
+      service.addResourceBundle('en', 'a', { k: '1' });
+      service.addResourceBundle('zh-Hant', 'a', { k: '2' });
+      expect(service.hasResourceBundle('en', 'a')).toBe(true);
+      expect(service.hasResourceBundle('zh-Hant', 'a')).toBe(true);
+
+      // add some missing keys for both languages to verify namespace clearing
+      (service as any)._missingKeyCache.add('en:a:v1:miss1');
+      (service as any)._missingKeyCache.add('zh-Hant:a:v1:miss2');
+
+      service.clearLang('en');
+
+      expect(service.hasResourceBundle('en', 'a')).toBe(false);
+      expect(service.hasResourceBundle('zh-Hant', 'a')).toBe(true);
+      expect((service as any)._missingKeyCache.has('en:a:v1:miss1')).toBe(false);
+      expect((service as any)._missingKeyCache.has('zh-Hant:a:v1:miss2')).toBe(true);
+    });
+
+    it('clearNamespace should delegate to removeResourceBundle', () => {
+      service.addResourceBundle('en', 'b', { k: 'v' });
+      expect(service.hasResourceBundle('en', 'b')).toBe(true);
+      service.clearNamespace('en', 'b');
+      expect(service.hasResourceBundle('en', 'b')).toBe(false);
+    });
+
+    it('clearLang should remove ICU compiled cache entries for that language', () => {
+      // Pre-fill ICU compiled cache entries for two languages
+      (service as any)._icuCompiledCache.set('raw1|en', { format: () => 'x' });
+      (service as any)._icuCompiledCache.set('raw2|zh-Hant', { format: () => 'y' });
+      expect((service as any)._icuCompiledCache.has('raw1|en')).toBe(true);
+      expect((service as any)._icuCompiledCache.has('raw2|zh-Hant')).toBe(true);
+
+      service.clearLang('en');
+
+      expect((service as any)._icuCompiledCache.has('raw1|en')).toBe(false);
+      expect((service as any)._icuCompiledCache.has('raw2|zh-Hant')).toBe(true);
     });
   });
 
@@ -466,26 +541,25 @@ describe('TranslationCoreService', () => {
       expect(fetchDiff).toHaveBeenCalledTimes(1);
     });
 
-    it('missingKeyCache should be version-scoped', () => {
+    it('missingKeyCache should be version- and namespace-scoped', () => {
       const key = 'absent_key';
       // v1 lookup → missing
-      service.findFallbackFormatter(key, [], 'v1');
-      expect((service as any)._missingKeyCache.has(`en:v1:${key}`)).toBe(true);
+      service.findFallbackFormatter(key, [], 'v1'); // namespace 'common' by default
+      expect((service as any)._missingKeyCache.has(`en:common:v1:${key}`)).toBe(true);
       const sizeAfterV1 = (service as any)._missingKeyCache.size;
 
       // v2 lookup should not be blocked by v1 entry (still ends missing, but adds another record)
       service.findFallbackFormatter(key, [], 'v2');
       expect((service as any)._missingKeyCache.size).toBe(sizeAfterV1 + 1);
-      expect((service as any)._missingKeyCache.has(`en:v2:${key}`)).toBe(true);
+      expect((service as any)._missingKeyCache.has(`en:common:v2:${key}`)).toBe(true);
     });
 
-    it('formatter FIFO cache should separate by version (nsKey)', () => {
+    it('formatter should format correctly for different versions (nsKey)', () => {
       service.addResourceBundle('en', 'test', { greet: 'hello' });
       const f1 = service.getAndCreateFormatter('en:test:v1', 'greet');
       const f2 = service.getAndCreateFormatter('en:test:v2', 'greet');
       expect(f1).toBeDefined();
       expect(f2).toBeDefined();
-      expect(f1).not.toBe(f2);
       expect(f1?.format({})).toBe('hello');
       expect(f2?.format({})).toBe('hello');
     });

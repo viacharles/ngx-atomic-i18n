@@ -1,6 +1,11 @@
 import 'jest';
 import { HttpTranslationLoader } from './translation.loader.csr';
 import { of, throwError } from 'rxjs';
+import { detectBuildVersion } from './translate.util';
+jest.mock('./translate.util', () => {
+  const actual = jest.requireActual('./translate.util');
+  return { ...actual, detectBuildVersion: jest.fn(() => 'vh1') };
+});
 
 describe('HttpTranslationLoader', () => {
   let loader: HttpTranslationLoader;
@@ -61,6 +66,37 @@ describe('HttpTranslationLoader', () => {
     const relativeLoader = new HttpTranslationLoader(httpMock, { httpBaseUrl: 'assets' });
     const result2 = await relativeLoader.load(['root1'], 'ns', 'en');
     expect(result2).toEqual({ hello: 'world2' });
+  });
+
+  it('should append build version as query string when available', async () => {
+    // first call returns success
+    httpMock.get.mockReturnValueOnce(of({ ok: true }));
+    const result = await loader.load(['root1'], 'ns', 'en');
+    expect(result).toEqual({ ok: true });
+    // verify that the request URL contains ?v=vh1
+    const calledUrl = (httpMock.get.mock.calls[0][0]) as string;
+    expect(calledUrl.includes('v=vh1')).toBe(true);
+  });
+
+  it('should append &v when URL already has query parameters', async () => {
+    httpMock.get.mockReturnValueOnce(of({ ok: true }));
+    const custom = new HttpTranslationLoader(httpMock, {
+      pathTemplates: 'i18n/{{namespace}}/{{lang}}.json?foo=1'
+    });
+    const result = await custom.load(['root1'], 'ns', 'en');
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (httpMock.get.mock.calls[0][0]) as string;
+    expect(calledUrl).toContain('?foo=1');
+    expect(calledUrl).toContain('&v=vh1');
+  });
+
+  it('should not append version when detectBuildVersion returns null', async () => {
+    (detectBuildVersion as unknown as jest.Mock).mockReturnValueOnce(null);
+    httpMock.get.mockReturnValueOnce(of({ ok: true }));
+    const result = await loader.load(['root1'], 'ns', 'en');
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (httpMock.get.mock.calls[0][0]) as string;
+    expect(calledUrl.includes('v=')).toBe(false);
   });
 
   it('should cache successful template and reorder for next requests', async () => {

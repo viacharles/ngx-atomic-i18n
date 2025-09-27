@@ -1,0 +1,16 @@
+@use "colors" as c;
+:host {
+  height: auto;
+}
+
+p {
+  margin-left: 1rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: c.$error-50;
+  height: 0;
+  transition: 0.3s;
+  &.show {
+    height: auto;
+  }
+}
