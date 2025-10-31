@@ -1,0 +1,35 @@
+<div>
+  <h1>介紹</h1>
+  <section>
+    <h3>最簡單 / 最高效 Angular 翻譯套件</h3>
+
+    <div class="tag demand">需求 | Angular 16+ (無 peerDependencies)<span>說明
+        <!-- 說明popup： pipe(TranslationPipe) / directive(TranslationDirective) 是 standalone，並且套件裡有使用 signal 與 inject 等 API -->
+      </span></div>
+    <!-- 優點 tags -->
+    <p>優點</p>
+    <div class="advantage">
+      <div class="tag">極簡設定 <span>說明</span></div>
+      <div class="tag">動態切換語系</div>
+      <div class="tag">支援CSR/SSR</div>
+      <div class="tag">體積最小化 <span>說明
+          <!-- 說明popup：tree-shake + standalone API，體積最小化 -->
+        </span></div>
+      <div class="tag">效能最佳化 <span>說明
+          <!-- 說明popup：自動快取+signals，強效能 -->
+        </span></div>
+    </div>
+
+  </section>
+  <section>
+    <h1>開始使用</h1>
+    <section>
+      <h3>安裝</h3>
+      <app-code-block title="{{'CLI 安裝指令' | t}}" language="typescript" [code]="installCLI"></app-code-block>
+      <pre>安裝完後，
+        如果是單專案(不是monorepo)，並且是CSR，
+        那直接在根設定的 providers 裡加入 provideI18nInit() 一個步驟即可完成。 </pre>
+      <app-code-block title="{{'極簡設定' | t}}" language="typescript" [code]="initConfig"></app-code-block>
+    </section>
+  </section>
+</div>

@@ -1,0 +1,13 @@
+@use "mixins" as *;
+
+:host {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 2rem 1rem 1rem;
+}
+
+
+.icon-btn {
+  @include icon-btn();
+  margin-left: 0.5rem;
+}

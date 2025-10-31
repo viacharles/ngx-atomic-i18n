@@ -1,0 +1,10 @@
+@use "mixins" as m;
+
+.select {
+  @include m.field();
+  cursor: pointer;
+
+  input {
+    cursor: pointer;
+  }
+}

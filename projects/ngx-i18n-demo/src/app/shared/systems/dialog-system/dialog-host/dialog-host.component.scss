@@ -1,0 +1,22 @@
+@use "variables" as *;
+
+.backdrop {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: map-get($z-index , model);
+  background-color: rgba(0, 0, 0, 0.3);
+
+  &.transparentBackdrop {
+    background-color: transparent;
+  }
+}
+
+.dialog-container {
+  position: relative;
+}

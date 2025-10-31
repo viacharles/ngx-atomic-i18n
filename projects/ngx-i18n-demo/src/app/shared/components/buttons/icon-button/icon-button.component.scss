@@ -1,0 +1,10 @@
+@use "mixins" as m;
+@use "colors" as c;
+
+.icon-btn {
+  @include m.icon-btn();
+
+  &.active {
+    background-color: c.$bg-active;
+  }
+}

@@ -1,7 +1,7 @@
 import zh_TW from "./zh-Hant";
 
 const en: typeof zh_TW = {
-    "welcome": "Welcome to ngx-atomic-i18n",
+    "welcome": "Welcome to ngx-i18n",
     "language": "Language",
     "switchLanguage": "Switch Language",
     "home": "Home",

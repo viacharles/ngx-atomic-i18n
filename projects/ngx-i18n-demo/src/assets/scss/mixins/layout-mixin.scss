@@ -1,0 +1,27 @@
+@use "variables" as v;
+@use "colors" as c;
+
+/** RWD **/
+@mixin rwdByMaxWidth($breakpoint) {
+  @if map-has-key(v.$breakpoints, $breakpoint) {
+    @media screen and (max-width: calc(#{map-get(v.$breakpoints, $breakpoint)})) {
+      @content;
+    }
+  }
+
+  @else {
+    @warn "Undefined breakpoint: #{$breakpoint}. Please check your breakpoints map.";
+  }
+}
+
+@mixin rwdByMinWidth($breakpoint) {
+  @if map-has-key(v.$breakpoints, $breakpoint) {
+    @media screen and (min-width: #{map-get(v.$breakpoints, $breakpoint)}) {
+      @content;
+    }
+  }
+
+  @else {
+    @warn "Undefined breakpoint: #{$breakpoint}. Please check your breakpoints map.";
+  }
+}

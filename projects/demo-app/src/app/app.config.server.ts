@@ -4,7 +4,7 @@ import { appConfig } from './app.config';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
-import { provideTranslationInit } from '../../../ngx-atomic-i18n/src/public-api';
+import { provideTranslationInit } from '../../../ngx-i18n/src/public-api';
 
 const serverConfig: ApplicationConfig = {
   providers: [

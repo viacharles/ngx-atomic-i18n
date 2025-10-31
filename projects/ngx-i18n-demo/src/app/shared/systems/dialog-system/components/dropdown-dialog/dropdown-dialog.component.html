@@ -1,0 +1,8 @@
+<ul [class.show]="show" [class.isAboveAnchor]="isAboveAnchor" [class.mobile]="isMobile" [ngStyle]="panelStyle()">
+  @if (data.title) {
+  <p>{{data.title}}</p>
+  }
+  @for (option of data.options; track option.value) {
+  <li (click)="ref.close(option)">{{ option.name }}</li>
+  }
+</ul>

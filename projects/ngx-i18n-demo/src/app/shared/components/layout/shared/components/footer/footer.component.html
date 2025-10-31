@@ -1,0 +1,9 @@
+<app-icon-button [active]="currentTheme() === ThemeType.LIGHT" (click)="setTheme(ThemeType.LIGHT)">
+  <app-icon-sun></app-icon-sun>
+</app-icon-button>
+<app-icon-button [active]="currentTheme() === ThemeType.SYSTEM" (click)="setTheme(ThemeType.SYSTEM)">
+  <app-icon-screen></app-icon-screen>
+</app-icon-button>
+<app-icon-button [active]="currentTheme() === ThemeType.DARK" (click)="setTheme(ThemeType.DARK)">
+  <app-icon-moon></app-icon-moon>
+</app-icon-button>

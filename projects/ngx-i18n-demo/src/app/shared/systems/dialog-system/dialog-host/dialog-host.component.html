@@ -1,0 +1,8 @@
+@for (dialog of host.dialogs(); track dialog.id) {
+<div class="backdrop show" [class.transparentBackdrop]="dialog.config?.transparentBackdrop"
+  (click)="backdropClick(dialog)">
+  <div class="dialog-container">
+    <app-dialog-portal [dialog]="dialog" (click)="$event.stopPropagation()" />
+  </div>
+</div>
+}

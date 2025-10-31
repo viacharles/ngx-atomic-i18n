@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CodeBlockComponent } from '../../shared/components/code-block/code-block.component';
-import { provideTranslation, TranslationPipe, TranslationService } from '../../../../../ngx-atomic-i18n/src/public-api';
+import { provideTranslation, TranslationPipe, TranslationService } from '../../../../../ngx-i18n/src/public-api';
 
 @Component({
   selector: 'app-setting',
@@ -25,7 +25,7 @@ export class SettingComponent {
 `,
   }
   exampleCode = `import { Component } from '@angular/core';
-import { TranslationPipe } from 'ngx-atomic-i18n';
+import { TranslationPipe } from 'ngx-i18n';
 
 @Component({
   selector: 'app-example',

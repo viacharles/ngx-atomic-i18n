@@ -1,0 +1,69 @@
+// variables
+$spacing: (
+  0: 0,
+  0_5: 0.5rem,
+  // 8px
+  0_8: 0.8rem,
+  // 12.8px
+  1: 1rem,
+  // 16px
+  1_5: 1.5rem,
+  2: 2rem,
+  2_5: 2.5rem,
+  3: 3rem,
+  3_5: 3.5rem,
+  4: 4rem,
+  4_5: 4.5rem,
+  5: 5rem,
+  5_5: 5.5rem,
+  6: 6rem,
+  6_5: 6.5rem,
+  7: 7rem,
+  7_5: 7.5rem,
+  8: 8rem,
+  8_5: 8.5rem,
+  9: 9rem,
+  9_5: 9.5rem,
+  10: 10rem,
+);
+
+$direction: (
+  r: right,
+  l: left,
+  t: top,
+  b: bottom,
+  e: end,
+  s: start,
+);
+
+$z-index: (
+  base: 0,
+  sticky: 100,
+  absolute: 200,
+  fixed: 300,
+  dropdown: 400,
+  popover: 500,
+  tooltip: 600,
+  model: 700,
+  snackbar: 800,
+  globalLoading: 900,
+);
+/** 請同步 common.enum.ts SCREEN_WIDTH */
+$breakpoints: (
+  xsmall: 300px,
+  small: 430px,
+  xxmedium: 560px,
+  xmedium: 630px,
+  medium: 768px,
+  large: 1024px,
+  xlarge: 1440px,
+  xxlarge: 2000px,
+);
+
+$border-radius: (
+  none: 0,
+  sm: 4px,
+  md: 8px,
+  lg: 16px,
+  full: 9999px,
+);

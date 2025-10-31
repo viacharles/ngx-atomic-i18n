@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../services/toast.service';
-import { TranslationPipe } from '../../../../../ngx-atomic-i18n/src/public-api';
+import { TranslationPipe } from '../../../../../ngx-i18n/src/public-api';
 
 @Component({
   selector: 'app-test',

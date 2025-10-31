@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
-import { provideTranslationInit } from '../../../ngx-atomic-i18n/src/public-api';
+import { provideTranslationInit } from '../../../ngx-i18n/src/public-api';
 
 export const appConfig: ApplicationConfig = {
   providers: [

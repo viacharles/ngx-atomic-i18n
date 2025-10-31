@@ -1,0 +1,7 @@
+<fieldset #selectElem class="select field {{size()}}" [class.error]="error()" (click)="openDropdown(selectElem)">
+  @if(title()) {
+  <legend>{{title()}}</legend>
+  }
+  <input [value]="selectedOption()?.name ?? ''" [placeholder]="placeholder()">
+  <em class="icon-arrow-down1"></em>
+</fieldset>

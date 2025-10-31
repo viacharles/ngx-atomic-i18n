@@ -1,7 +1,0 @@
-
-<ul [class.show]="show">
-  <p>{{data.title}}</p>
-  @for (option of data.options; track option.value) {
-    <li (click)="ref.close(option)">{{ option.name }}</li>
-  }
-</ul>

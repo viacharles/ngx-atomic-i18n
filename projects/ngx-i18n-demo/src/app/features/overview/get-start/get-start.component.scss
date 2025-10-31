@@ -1,0 +1,30 @@
+.tag {
+  display: inline-block;
+  background-color: #cfffcf;
+  color: #21914b;
+  padding: 4px 8px;
+  border-radius: 14px 4px;
+  font-size: 16px;
+  margin-right: 12px;
+  border: 1px solid #72eba0;
+
+  span {
+    font-size: 16px;
+    background-color: #cfffcf;
+  }
+}
+
+.demand {
+  background-color: #d2ebf5;
+  color: #21914b;
+  margin-right: auto;
+}
+
+.advantage {
+  margin-top: 0.8rem;
+}
+
+pre {
+  text-wrap: normal;
+  white-space: pre-wrap;
+}

@@ -1,0 +1,54 @@
+@use "variables" as *;
+@use "mixins" as m;
+@use "colors" as c;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: map-get($z-index, fixed);
+  border-bottom: 1px solid c.$outline-100;
+}
+
+.layout-main {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding-top: 3rem;
+
+
+  main {
+    width: 100%;
+    padding: 1rem;
+    overflow: auto;
+    background-color: c.$bg;
+
+  }
+
+  app-side-nav {
+    position: sticky;
+    left: 0;
+    top: 3rem;
+    width: 250px;
+    height: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+
+
+    @include m.rwdByMaxWidth(medium) {
+      display: none;
+    }
+  }
+}
+
+app-footer {
+  min-height: 100px;
+  width: 100%;
+  border-top: 1px solid c.$outline-100;
+}

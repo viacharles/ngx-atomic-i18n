@@ -1,0 +1,16 @@
+<ul>
+  @for(group of navItems; track group.path) {
+  <li>
+    {{group.label}}
+    @if (group.children?.length) {
+    <ul>
+      @for(item of group.children; track item.path) {
+      <li>
+        <a (click)="toPage(item.fullPath)">{{item.label}}</a>
+      </li>
+      }
+    </ul>
+    }
+  </li>
+  }
+</ul>
