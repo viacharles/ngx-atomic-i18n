@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, Signal, signal } from '@angular/core';
-import { deepMerge, detectPreferredLang, filterNewKeysDeep, getNested, parseICU, toObservable } from './translate.util';
+import { deepMerge, detectPreferredLang, filterNewKeysDeep, getNested, normalizeLangCode, parseICU, toObservable } from './translate.util';
 
 import { FIFOCache } from './FIFO.model';
 import { ICU_FORMATTER_TOKEN, TRANSLATION_CONFIG, TRANSLATION_LOADER } from './translate.token';
@@ -50,9 +50,11 @@ export class TranslationCoreService {
   }
 
   setLang(lang?: string): void {
-    const currentLang = lang ?? detectPreferredLang(this._config);
-    if (!this._config.supportedLangs.includes(currentLang)) {
-      this.warn(`Unsupported language requested: ${currentLang}`);
+    const attempted = lang ?? detectPreferredLang(this._config);
+    const currentLang = normalizeLangCode(attempted, this._config.supportedLangs);
+
+    if (!currentLang) {
+      this.warn(`Unsupported language requested: ${attempted}`);
       return;
     }
     if (this._lang() !== currentLang) {
@@ -109,6 +111,10 @@ export class TranslationCoreService {
     if (this._formatterCache.has(cacheKey)) return this._formatterCache.get(cacheKey);
     const [lang, namespace] = nsKey.split(':');
     const raw = getNested(this._jsonCache().get(lang)?.get(namespace), key);
+    if (key === 'getStart.config.supportedLangHint') {
+      console.log('aa-raw', raw, lang, namespace, this._jsonCache().get(lang)?.get(namespace))
+    }
+
     if (raw === undefined) return;
     let result: FormatResult;
     if (this._ICU) {
@@ -147,7 +153,6 @@ export class TranslationCoreService {
       if (this._missingKeyCache.has(missKey)) continue;
       const result = this.getAndCreateFormatter(nsKey, key);
       if (result) return result;
-      // mark this namespace as missing for the given key
       this._missingKeyCache.add(missKey);
     }
     return undefined;
@@ -227,6 +232,10 @@ export class TranslationCoreService {
 
   addResource(lang: string, namespace: string, key: string, val: string, overwrite = true) {
     this.addResources(lang, namespace, { [key]: val }, overwrite);
+  }
+
+  getAllBundle(): Map<string, Map<string, Record<string, any>>> {
+    return this._jsonCache()
   }
 
   hasResourceBundle(lang: string, namespace: string): boolean {

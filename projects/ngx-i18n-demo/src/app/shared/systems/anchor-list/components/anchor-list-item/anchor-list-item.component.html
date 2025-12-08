@@ -1,0 +1,10 @@
+<ul>
+  <li [class.is-Sub]="isSub()">
+    <a class="anchor-link" [routerLink]="[]" [fragment]="prefix()">
+      {{ item().title }}
+    </a>
+    @for (subItem of item().list; track $index; let index = $index) {
+    <app-anchor-list-item [item]="subItem" [prefix]="prefix() + '-' + index"></app-anchor-list-item>
+    }
+  </li>
+</ul>

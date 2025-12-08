@@ -1,0 +1,21 @@
+<ul>
+  @for(group of navItems; track group.path) {
+  <li class="parent-item">
+    <p>{{group.label | t}}</p>
+    @if (group.children?.length) {
+    <ul>
+      @for(item of group.children; track item.path) {
+      <li class="child-item" [class.active]="currentUrl().includes(item.fullPath)" (click)="toPage(item.fullPath)">
+        <a>
+          @if (currentUrl() === item.fullPath) {
+          <span>></span>
+          }
+          {{item.label | t}}
+        </a>
+      </li>
+      }
+    </ul>
+    }
+  </li>
+  }
+</ul>

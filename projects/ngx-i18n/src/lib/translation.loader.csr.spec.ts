@@ -58,12 +58,12 @@ describe('HttpTranslationLoader', () => {
   it('should handle different baseUrl formats', async () => {
     httpMock.get.mockReturnValueOnce(of({ hello: 'world' }));
 
-    const httpsLoader = new HttpTranslationLoader(httpMock, { httpBaseUrl: 'https://example.com/assets' });
+    const httpsLoader = new HttpTranslationLoader(httpMock, { baseUrl: 'https://example.com/assets' });
     const result1 = await httpsLoader.load(['root1'], 'ns', 'en');
     expect(result1).toEqual({ hello: 'world' });
 
     httpMock.get.mockReturnValueOnce(of({ hello: 'world2' }));
-    const relativeLoader = new HttpTranslationLoader(httpMock, { httpBaseUrl: 'assets' });
+    const relativeLoader = new HttpTranslationLoader(httpMock, { baseUrl: 'assets' });
     const result2 = await relativeLoader.load(['root1'], 'ns', 'en');
     expect(result2).toEqual({ hello: 'world2' });
   });

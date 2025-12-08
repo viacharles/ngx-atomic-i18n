@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DialogHostComponent } from './shared/systems/dialog-system/dialog-host/dialog-host.component';
-import { LayoutComponent } from './shared/components/layout/layout.component';
+import { LayoutComponent } from './features/layout/layout.component';
+
 
 @Component({
   selector: 'app-root',

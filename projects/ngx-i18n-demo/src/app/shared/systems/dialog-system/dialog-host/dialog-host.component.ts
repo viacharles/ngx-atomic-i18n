@@ -2,12 +2,13 @@ import { AfterViewInit, Component, inject, Type, ViewChild, ViewContainerRef } f
 import { DialogModel } from '../dialog.model';
 import { DialogService } from '../dialog.service';
 import { DialogPortalComponent } from './dialog-portal/dialog-portal.component';
+import { JsonPipe } from '@angular/common';
 export interface DialogComponentWithAnimation extends Type<any> {
   animationTrigger?: string;
 }
 @Component({
   selector: 'app-dialog-host',
-  imports: [DialogPortalComponent],
+  imports: [DialogPortalComponent, JsonPipe],
   templateUrl: './dialog-host.component.html',
   styleUrl: './dialog-host.component.scss',
   standalone: true,
@@ -36,7 +37,7 @@ export class DialogHostComponent implements AfterViewInit {
   // }
   backdropClick(dialog: DialogModel<any, any>): void {
     if (dialog.config?.closeOnBackdropClick === true) {
-      dialog.close(dialog);
+      dialog.close();
     }
   }
   // isTemplate(dialog: DialogModel<any, any>): boolean {

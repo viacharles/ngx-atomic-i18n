@@ -1,0 +1,75 @@
+@use "variables" as *;
+@use "mixins" as m;
+@use "colors" as c;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: map-get($z-index, fixed);
+  border-bottom: 1px solid c.$outline-100;
+}
+
+.layout-main {
+  display: flex;
+  width: 100%;
+  padding-top: 3rem;
+
+  main {
+    display: flex;
+    width: calc(100% - 200px);
+    min-height: calc(100vh - 1rem);
+    padding: 1rem;
+    background-color: c.$bg;
+
+    .left {
+      width: calc(100% - 200px);
+
+      @include m.rwdByMaxWidth(medium) {
+        width: 100%;
+      }
+    }
+
+    .right {
+      padding-left: 0.7rem;
+
+      app-anchor-list {
+        position: fixed;
+        height: calc(100% - 60px);
+        overflow: auto;
+      }
+
+      @include m.rwdByMaxWidth(medium) {
+        display: none;
+      }
+    }
+
+    @include m.rwdByMaxWidth(medium) {
+      width: 100%;
+    }
+  }
+
+  app-side-nav {
+    min-width: 200px;
+    height: 100%;
+    padding: 1rem;
+
+    @include m.rwdByMaxWidth(medium) {
+      display: none;
+    }
+  }
+
+
+}
+
+app-footer {
+  min-height: 100px;
+  width: 100%;
+  border-top: 1px solid c.$outline-100;
+}

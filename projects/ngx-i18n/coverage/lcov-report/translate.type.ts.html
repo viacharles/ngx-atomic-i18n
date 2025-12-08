@@ -1,65 +1,65 @@
-
 <!doctype html>
 <html lang="en">
 
 <head>
-    <title>Code coverage report for translate.type.ts</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type='text/css'>
-        .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
-        }
-    </style>
+  <title>Code coverage report for translate.type.ts</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="prettify.css" />
+  <link rel="stylesheet" href="base.css" />
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style type='text/css'>
+    .coverage-summary .sorter {
+      background-image: url(sort-arrow-sprite.png);
+    }
+  </style>
 </head>
-    
+
 <body>
-<div class='wrapper'>
+  <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> translate.type.ts</h1>
-        <div class='clearfix'>
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Statements</span>
-                <span class='fraction'>4/4</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>2/2</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Lines</span>
-                <span class='fraction'>4/4</span>
-            </div>
-        
-            
+      <h1><a href="index.html">All files</a> translate.type.ts</h1>
+      <div class='clearfix'>
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Statements</span>
+          <span class='fraction'>4/4</span>
         </div>
-        <p class="quiet">
-            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
-        </p>
-        <template id="filterTemplate">
-            <div class="quiet">
-                Filter:
-                <input type="search" id="fileSearch">
-            </div>
-        </template>
+
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Branches</span>
+          <span class='fraction'>2/2</span>
+        </div>
+
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Functions</span>
+          <span class='fraction'>1/1</span>
+        </div>
+
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Lines</span>
+          <span class='fraction'>4/4</span>
+        </div>
+
+
+      </div>
+      <p class="quiet">
+        Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the
+        previous block.
+      </p>
+      <template id="filterTemplate">
+        <div class="quiet">
+          Filter:
+          <input type="search" id="fileSearch">
+        </div>
+      </template>
     </div>
     <div class='status-line high'></div>
     <pre><table class="coverage">
@@ -328,7 +328,7 @@ export interface FsModuleLike {
 &nbsp;
 export interface FsLoaderOptions {
   /** e.g. process.cwd() only for SSR */
-  fsBaseDir?: string;
+  baseDir?: string;
   /** e.g. 'projects/app/src/assets' (dev) or 'dist/app/browser/assets' (prod) */
   assetPath?: string;
   /** template , accept {{root}} {{lang}} {{namespace}} */
@@ -337,7 +337,7 @@ export interface FsLoaderOptions {
    * priority to resolve
    */
   resolvePaths?: (ctx: {
-    fsBaseDir: string;
+    baseDir: string;
     assetPath: string;
     root: string;
     lang: string;
@@ -350,7 +350,7 @@ export interface FsLoaderOptions {
 &nbsp;
 export interface HttpLoaderOptions {
   /** default '/assets' */
-  httpBaseUrl?: string;
+  baseUrl?: string;
   /** default 'i18n/{{namespace}}/{{lang}}.json' */
   pathTemplates?: string | string[];
 &nbsp;
@@ -360,7 +360,7 @@ export interface TranslationLoaderOptions {
   forceMode?: 'ssr' | 'csr';
   ssrLoader?: () =&gt; TranslationLoader;                    // custom SSR loader
   csrLoader?: (http: HttpClient) =&gt; TranslationLoader;    // custom CSR loader
-  loaderOptions?: FsLoaderOptions;          //options for FsTranslationLoader
+  fsOptions?: FsLoaderOptions;          //options for FsTranslationLoader
   httpOptions?: HttpLoaderOptions;         // options for HttpTranslationLoader
 }
 &nbsp;
@@ -375,23 +375,27 @@ export enum TempToken {
 }
 &nbsp;
 &nbsp;
-&nbsp;</pre></td></tr></table></pre>
+&nbsp;</pre>
+    </td>
+    </tr>
+    </table>
+    </pre>
 
-                <div class='push'></div><!-- for sticky footer -->
-            </div><!-- /wrapper -->
-            <div class='footer quiet pad2 space-top1 center small'>
-                Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-22T13:50:36.914Z
-            </div>
-        <script src="prettify.js"></script>
-        <script>
-            window.onload = function () {
-                prettyPrint();
-            };
-        </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
-    </body>
+    <div class='push'></div><!-- for sticky footer -->
+  </div><!-- /wrapper -->
+  <div class='footer quiet pad2 space-top1 center small'>
+    Code coverage generated by
+    <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+    at 2025-09-22T13:50:36.914Z
+  </div>
+  <script src="prettify.js"></script>
+  <script>
+    window.onload = function () {
+      prettyPrint();
+    };
+  </script>
+  <script src="sorter.js"></script>
+  <script src="block-navigation.js"></script>
+</body>
+
 </html>
-    

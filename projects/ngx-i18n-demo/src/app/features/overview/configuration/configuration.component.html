@@ -1,0 +1,304 @@
+@if (translationService.readySignal()) {}
+<div #pageElem>
+  <h1>{{OverviewPaths.ConfigurationOptions|t}}</h1>
+  <p>{{'全部參數'|t}}</p>
+  <p>{{"＊ 符號表示重要常用功能"|t}}</p>
+  <section>
+    <!-- '語系與namespace -->
+    <h2 class="title" id="0"><span>#</span>{{'語系與namespace'|t}}</h2>
+    <section>
+      <h3 class="subTitle config-attr" id="0-0">＊ ({{'必填'|t}})supportedLangs
+      </h3>
+      <p class="config-type">string | string[] <span class="default-type">{{'預設' |t}}: <span>
+            ['en']
+          </span></span></p>
+      <pre>{{'supportedLangs-des' | t}}</pre>
+      <pre class="config-ex">{{"supportedLangs-ex"|t}}</pre>
+
+      <!-- ＊ fallbackNamespace -->
+      <h3 class="subTitle config-attr" id="0-1">＊ fallbackNamespace</h3>
+      <p class="config-type">string | string[] <span class="default-type">{{'預設:'|t}} <span>
+            'common'
+          </span></span>
+      </p>
+      <pre>{{"fallbackNamespace-des"|t}}</pre>
+      <pre class="config-ex">{{"fallbackNamespace-ex"|t}}</pre>
+
+      <!-- ＊ enablePageFallback -->
+      <h3 class="subTitle config-attr" id="0-2">＊ enablePageFallback</h3>
+      <p class="config-type">boolean <span class="default-type">{{'預設:'|t}} <span>
+            false
+          </span></span></p>
+      <pre>{{'enablePageFallback-des'|t}}</pre>
+
+      <!-- fallbackLang -->
+      <h3 class="subTitle config-attr" id="0-3">fallbackLang</h3>
+      <p class="config-type">string <span class="default-type">{{'預設:'|t}} <span>
+            'en'
+          </span></span></p>
+      <pre>{{'候補語系。比對不到語系時用這個。'|t}}</pre>
+      <pre class="config-ex">{{"fallbackLang-ex"|t}}</pre>
+
+      <!-- langDetectionOrder -->
+      <h3 class="subTitle config-attr" id="0-4">langDetectionOrder</h3>
+      <p class="config-type">('localStorage' | 'url' | 'browser' | 'customLang' | 'fallback')[] </p>
+      <div class="default-type">{{'預設'|t}}: <span>
+          ['localStorage', 'url', 'browser', 'customLang', 'fallback']
+        </span></div>
+      <pre>{{"supportedLangs-des-1"|t}}<strong>localStorage</strong>{{"supportedLangs-des-2"|t}}<strong>url</strong>{{"supportedLangs-des-3"|t}}<strong>browser</strong>{{"supportedLangs-des-4"|t}}<strong>customLang</strong>{{"supportedLangs-des-5"|t}}<a class="link"[routerLink]="[]" [fragment]="'0-5'"> customLang</a>{{"supportedLangs-des-6"|t}}<strong>fallbackLang</strong>{{" - provideTranslationInit 的 "|t}}<a class="link" [routerLink]="[]" [fragment]="'0-3'">fallbackLang</a>{{" 參數。"|t}}</pre>
+      <pre class="config-ex"></pre>
+
+      <!-- customLang -->
+      <h3 class="subTitle config-attr" id="0-5">customLang</h3>
+      <div class="config-type">{{'(). => string'}} <span class="default-type">{{'預設'|t}}: <span>
+            undefined
+          </span></span></div>
+      <pre>{{'customLang-des'|t}}</pre>
+      <pre class="config-ex">{{"customLang-ex"|t}}</pre>
+    </section>
+  </section>
+  <section>
+    <!-- 翻譯資源與路徑 -->
+    <h2 class="title" id="1"><span>#</span>{{'翻譯資源與路徑'|t}}</h2>
+    <p>{{'範例:' | t}}</p>
+    <app-select [title]="'請選擇專案架構'" [options]="structureOptions" [(ngModel)]="structureSelectValue"
+      (ngModelChange)="changeStructure($event)"></app-select>
+    <app-code-block [code]="structureText | t"></app-code-block>
+    <section>
+      <!-- i18nRoots -->
+      <h3 class="subTitle config-attr" id="1-0">i18nRoots</h3>
+      <div class="config-type">string[] <span class="default-type">{{'預設'|t}}: <span>
+            ['i18n']
+          </span></span></div>
+      <pre>{{"assets 裡存放翻譯資料的母資料夾位置，可放多個依序查詢。\n對應"|t}} <a class="link" [routerLink]="[]" [fragment]="'1-1'">pathTemplates</a> {{"裡的關鍵字 '{{root}}'。"|t}}</pre>
+      <pre class="config-ex">{{"i18nRoots-ex"|t}}</pre>
+
+      <!-- pathTemplates -->
+      <h3 class="subTitle config-attr" id="1-1">pathTemplates</h3>
+      <span class="config-type">string[] <span class="default-type">{{'預設'|t}}: <span>
+            {{"['{{"+'root'+"}}/{{"+'namespace'+"}}/{{"+'lang'+"}}.json']"}}
+          </span></span></span>
+      <pre>  {{ '路徑樣板。{{root}} 一定放第一個，代表 i18nRoots，{{lang}} {{namespace}} 則代表接在 i18nRoots 路徑之後的資料夾結構，可自由調整資料夾階層。\n記得最後一個要加上副檔名。\n 支援複數路徑候選。\n' | t}}<strong>{{'{{root}}'}}</strong>{{" - 對應 i18nRoots\n" | t}}<strong>{{'{{namespace}}'}}</strong>{{' - 從 provideTranslation(namespace) 中得到\n' | t}}<strong>{{'{{lang}}'}}</strong>{{' - 從 setLang(lang) 中得到' | t}}</pre>
+      <pre class="config-ex"></pre>
+    </section>
+  </section>
+  <section>
+    <!-- 行為 -->
+    <h2 class="title" id="2"><span>#</span>{{'行為'|t}}</h2>
+    <section>
+      <!-- missingTranslationBehavior -->
+      <h3 class="subTitle config-attr" id="2-0">missingTranslationBehavior</h3>
+      <div class="config-type">'show-key' | 'empty' | 'throw-error' <span class="default-type">{{'預設'|t}}: <span>
+            'show-key'
+          </span></span></div>
+      <pre>{{"翻譯還沒生效時的顯示行為。"|t}}
+<strong>show-key</strong>{{" - 顯示 key"|t}}
+<strong>empty</strong>{{" - 顯示 空字串"|t}}
+<strong>throw-error</strong>{{" - 丟錯"|t}}</pre>
+    </section>
+  </section>
+  <section>
+    <!-- 預載 -->
+    <h2 class="title" id="3"><span>#</span>{{'預載'|t}}</h2>
+    <section>
+      <!-- ＊ preloadNamespaces -->
+      <h3 class="subTitle config-attr" id="3-0">＊ preloadNamespaces</h3>
+      <div class="config-type">string[] <span class="default-type">{{'預設'|t}}: <span>
+            []
+          </span></span></div>
+      <pre>{{'啟動時預載的 namespace 名稱列表，預設不預載。'|t}}</pre>
+      <pre class="config-ex">{{"preloadNamespaces-ex"|t}}</pre>
+    </section>
+  </section>
+  <section>
+    <!-- Cache -->
+    <h2 class="title" id="4"><span>#</span>{{'Cache'|t}}</h2>
+    <section>
+      <!-- buildVersion -->
+      <h3 class="subTitle config-attr" id="4-0">buildVersion</h3>
+      <div class="config-type">string <span class="default-type">{{'預設'|t}}: <span>
+            null
+          </span></span></div>
+      <pre>{{'版本字串會加進 cache key， 在 Loader 裡用於解 cache。預設不帶版本。'|t}}</pre>
+    </section>
+  </section>
+  <section>
+    <!-- Loader -->
+    <h2 class="title" id="5"><span>#</span>{{'Loader'|t}}</h2>
+    <section>
+      <!-- loader -->
+      <h3 class="subTitle config-attr" id="5-0">loader</h3>
+      <p>{{'套件會偵測目前環境自己決定使用 http loader 或 fs loader。'|t}}</p>
+      <p class="braces">{{'{'}}</p>
+
+      <!-- loader.csrLoader -->
+      <h3 class="subTitle config-attr" id="5-1">
+        <l /> loader.csrLoader
+      </h3>
+      <div class="column indent">
+        <div class="config-type">(http: HttpClient) => TranslationLoader </div>
+        <span class="default-type">{{'預設'|t}}:
+          {{" (http) => new HttpTranslationLoader(http, {...})"}}
+        </span>
+        <pre>{{'可自訂 Http loader。\n會自動在 CSR 模式下使用。\n預設建立內建的 HttpTranslationLoader。\n使用 httpOptions 裡設定的路徑(baseUrl + i18nRoots + pathTemplates)下載翻譯資源。'|t}}</pre>
+        <pre class="config-ex">{{'csrLoader-ex'|t}}</pre>
+      </div>
+
+      <!-- loader.httpOptions -->
+      <h3 class="subTitle config-attr" id="5-2">
+        <l /> loader.httpOptions
+      </h3>
+      <p>
+        <l />{{'內建的 csrLoader 的相關設定'|t}}
+      </p>
+      <p class="braces">
+        <l />{{'{'}}
+      </p>
+
+      <!-- loader.httpOptions.baseUrl -->
+      <h3 class="subTitle config-attr" id="5-3">
+        <l />
+        <l /> loader.httpOptions.baseUrl
+      </h3>
+      <div class="config-type">
+        <l />
+        <l />string <span class="default-type">{{'預設'|t}}:
+          <span>
+            '/assets'
+          </span></span>
+      </div>
+      <div class="row">
+        <l />
+        <l />
+        <pre>{{'內建 csrLoader 用。\n下載翻譯檔的 base URL，也可指向外部下載位置， 或自訂根路徑。\n後面接 pathTemplates，組合成一個完整路徑。'|t}}</pre>
+      </div>
+      <p class="braces">
+        <l />{{'}'}}
+      </p>
+
+      <!-- loader.ssrLoader -->
+      <h3 class="subTitle config-attr" id="5-4">
+        <l /> loader.ssrLoader
+      </h3>
+      <div class="config-type">
+        <l />function <span class="default-type"> {{"預設"|t}}: <span>
+            {{'() = new FsTranslationLoader({...})'}}
+          </span></span>
+      </div>
+
+      <div class="row">
+        <l />
+        <pre>{{'SSR/SSG 模式下自訂檔案系統 loader。\n預設建立內建的 FsTranslationLoader。'|t}}</pre>
+      </div>
+
+      <!-- loader.fsOptions -->
+      <h3 class="subTitle config-attr" id="5-5">
+        <l />loader.fsOptions
+      </h3>
+      <p>
+        <l />{{'內建的 ssrLoader 的相關設定'|t}}
+      </p>
+      <p class="braces">
+        <l />{{'{'}}
+      </p>
+
+      <!-- loader.fsOptions.baseDir -->
+      <h3 class="subTitle config-attr" id="5-6">
+        <l />
+        <l />loader.fsOptions.baseDir
+      </h3>
+      <div class="config-type">
+        <l />
+        <l />string <span class="default-type"> {{"預設"|t}}:<span>
+            {{'process.cwd()'}}
+          </span></span>
+      </div>
+      <div class="row">
+        <l />
+        <l />
+        <pre>{{'內建 ssrLoader 用。\n檔案系統 loader 解析翻譯檔時的專案根目錄，預設為目前工作目錄。'|t}}</pre>
+      </div>
+
+      <!-- loader.fsOptions.assetPath -->
+      <h3 class="subTitle config-attr" id="5-7">
+        <l />
+        <l />loader.fsOptions.assetPath
+      </h3>
+      <div class="config-type">
+        <l />
+        <l />string <span class="default-type">{{'預設'|t}}: <span>
+            {{"isDevMode() ? 'src/assets' : 'dist/browser/assets'"}}
+          </span></span>
+      </div>
+      <div class="row">
+        <l />
+        <l />
+        <pre>{{'內建 ssrLoader 用。\nSSR/SSG 時相對於 baseDir 的資源資料夾，記得開發與正式環境需自動切換。'|t}}</pre>
+      </div>
+
+      <!-- loader.fsOptions.resolvePaths -->
+      <h3 class="subTitle config-attr" id="5-8">
+        <l />
+        <l />loader.fsOptions.resolvePaths
+      </h3>
+      <div class="config-type">
+        <l />
+        <l />{{"(ctx: {\n
+        baseDir: string;\n
+        assetPath: string;\n
+        root: string;\n
+        lang: string;\n
+        namespace: string;\n
+        }) => string[]"}}
+      </div>
+      <div class="default-type">
+        <l />
+        <l />{{'預設'|t}}: <span>
+          undefined
+        </span>
+      </div>
+      <div class="row">
+        <l />
+        <l />
+        <pre>{{'resolvePaths-des'|t}}</pre>
+      </div>
+      <div class="row">
+        <l />
+        <l />
+        <pre class="config-ex">{{'ex. (baseDir, assetPath, root, lang, namespace) => (["${baseDir}/${assetPath}/${root}/${lang}/${namespace}.json",'}}
+{{'"${baseDir}/${assetPath}/${root}/${namespace}/${lang}.json"])'}}</pre>
+      </div>
+      <p class="braces">
+        <l />{{'}'}}
+      </p>
+
+      <!-- loader.forceMode -->
+      <h3 class="subTitle config-attr" id="5-9">
+        <l /> loader.forceMode
+      </h3>
+      <div class="config-type">
+        <l />'csr' | 'ssr' <span class="default-type">{{'預設'|t}}: <span>
+            {{'forceMode-default'|t}}
+          </span></span>
+      </div>
+      <div class="row">
+        <l />
+        <pre>{{'強制 loader 運作於 CSR 或 SSR，預設依平台自動切換。'|t}}</pre>
+      </div>
+    </section>
+    <p class="braces">{{'}'}}</p>
+  </section>
+  <section>
+    <!-- Log -->
+    <h2 class="title" id="6"><span>#</span>{{'Log'|t}}</h2>
+    <section>
+      <!-- ＊ debug -->
+      <h3 class="subTitle config-attr" id="6-0">＊ debug</h3>
+      <div class="config-type">boolean <span class="default-type">{{'預設'|t}}: <span>
+            isDevMode() ? true : false
+          </span></span></div>
+      <pre>{{'控制是否輸出偵錯資訊，預設在開發模式為 true、正式模式為 false。'|t}}</pre>
+    </section>
+  </section>
+
+</div>

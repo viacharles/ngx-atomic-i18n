@@ -1,0 +1,108 @@
+@use 'sass:color';
+@use "colors" as c;
+@use "mixins" as m;
+
+@include m.push-off-sticky();
+
+.config-table {
+  margin: 1rem 0 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  backdrop-filter: blur(6px);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.25rem 0 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  align-items: flex-start;
+  border-left: 1px solid #eccccc;
+
+  div,
+  h3 {
+    width: 100%;
+  }
+
+  .column {
+    width: 100%;
+  }
+
+
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &>*:not(:first-child) {
+    padding-left: 0.5rem;
+  }
+
+  &.group {
+    background: rgba(255, 255, 255, 0.02);
+    font-weight: 600;
+  }
+
+  h2.title {
+    color: c.$primary-500;
+  }
+
+  h3.subTitle {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+h3.subTitle {
+  display: flex;
+  padding-top: 1rem;
+  margin: 0; // override mixin
+  color: c.$primary-300;
+}
+
+.config-attr {
+  color: c.$icon-font;
+  font-size: 1rem;
+  text-transform: none;
+}
+
+.config-type {
+  display: flex;
+  font-weight: 600;
+  color: #57bbea;
+}
+
+.default-type {
+  display: flex;
+  font-weight: 600;
+  color: c.$primary-500;
+}
+
+.braces {
+  font-weight: 700;
+  color: #fac5c5
+}
+
+p {
+  display: flex;
+}
+
+.row {
+  display: flex;
+}
+
+pre {
+  margin: 0;
+  line-height: 22px;
+
+  &.config-ex {
+    flex: 1;
+    color: c.$neutral-50;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-bottom: 1px solid c.$outline-100;
+    padding-bottom: 0.5rem;
+  }
+}

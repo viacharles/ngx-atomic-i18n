@@ -5,7 +5,7 @@ import { detectPreferredLang } from "./translate.util";
 import { isPlatformServer } from "@angular/common";
 import { TranslationService } from "./translation.service";
 import { TempToken, TranslationConfig, TranslationLoader, TranslationLoaderOptions } from "./translate.type";
-import { BUILD_VERSION, TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from "./translate.token";
+import { BUILD_VERSION, PAGE_TRANSLATION_ROOT, TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from "./translate.token";
 import { FsTranslationLoader } from "./translation.loader.ssr";
 
 export type ProvideTranslationInitOptions =
@@ -15,17 +15,18 @@ export type ProvideTranslationInitOptions =
     buildVersion?: string | null;
   };
 
+export const defaultConfig: TranslationConfig = {
+  supportedLangs: ['en'],
+  fallbackNamespace: 'common',
+  fallbackLang: 'en',
+  i18nRoots: ['i18n'],
+  pathTemplates: [`${TempToken.Root}/${TempToken.Namespace}/${TempToken.Lang}.json`],
+  enablePageFallback: false,
+  missingTranslationBehavior: 'show-key',
+  langDetectionOrder: ['localStorage', 'url', 'browser', 'customLang', 'fallback'],
+};
 /** Bootstraps the entire translation infrastructure for an application. */
 export function provideTranslationInit(userConfig?: ProvideTranslationInitOptions): Provider[] {
-  const defaultConfig: TranslationConfig = {
-    supportedLangs: ['en'],
-    fallbackNamespace: 'common',
-    fallbackLang: 'en',
-    initialLang: () => 'en',
-    i18nRoots: ['i18n'],
-    missingTranslationBehavior: 'show-key',
-    langDetectionOrder: ['localStorage', 'url', 'browser', 'initialLang', 'fallback'],
-  };
   const debugEnabled = userConfig?.debug ?? isDevMode();
   const finalConfig = { ...defaultConfig, ...(userConfig ?? {}), debug: debugEnabled } as TranslationConfig;
   const preferredLang = detectPreferredLang(finalConfig);
@@ -35,13 +36,13 @@ export function provideTranslationInit(userConfig?: ProvideTranslationInitOption
   return [
     {
       provide: TRANSLATION_CONFIG,
-      useValue: { ...finalConfig, initialLang: preferredLang },
+      useValue: { ...finalConfig, customLang: preferredLang },
     },
     {
       provide: BUILD_VERSION,
       useValue: userConfig?.buildVersion ?? null,
     },
-    ...provideTranslationLoader(userConfig?.loader),
+    ...provideTranslationLoader(finalConfig),
     ...provideTranslation(finalConfig.fallbackNamespace),
     {
       provide: APP_INITIALIZER,
@@ -61,47 +62,52 @@ export function provideTranslationInit(userConfig?: ProvideTranslationInitOption
 }
 
 
-/** Provides the component-scoped namespace injection for component-registered service. */
-export function provideTranslation(namespace: string | string[]): Provider[] {
+/** Provides the component-scoped namespace injection for component-registered service.
+ * @param namespace The namespace or namespaces owned by the component.
+ * @param isPage Whether the component is a top-level page (defaults to false).
+*/
+export function provideTranslation(namespace: string | string[], isPage: boolean = false): Provider[] {
+  const namespaces = Array.isArray(namespace) ? namespace : [namespace];
   return [
     {
       provide: TRANSLATION_NAMESPACE,
-      useValue: namespace,
+      useValue: namespaces,
     },
-    {
-      provide: TranslationService,
-      useClass: TranslationService
-    }
+    TranslationService,
+    ...(isPage ? [{
+      provide: PAGE_TRANSLATION_ROOT,
+      useValue: true,
+    }] : []),
   ]
 }
 
 /** Configures the runtime translation loader for CSR or SSR environments. */
-export function provideTranslationLoader(options: TranslationLoaderOptions = {}): Provider[] {
+export function provideTranslationLoader(config: ProvideTranslationInitOptions): Provider[] {
   return [
     {
       provide: TRANSLATION_LOADER,
       useFactory: (platformId: Object): TranslationLoader => {
+        const options = config.loader ?? {};
+        const finalPathTemplates = config.pathTemplates ?? defaultConfig.pathTemplates;
         const isSSR = options.forceMode === 'ssr' || (options.forceMode !== 'csr' && isPlatformServer(platformId));
         if (isSSR) {
-          const fsBaseDir =
-            options.loaderOptions?.fsBaseDir ??
+          const baseDir =
+            options.fsOptions?.baseDir ??
             (typeof process !== 'undefined' ? process.cwd() : '');
-          const assetPath = options.loaderOptions?.assetPath ?? (isDevMode() ? 'src/assets' : 'dist/browser/assets');
+          const assetPath = options.fsOptions?.assetPath ?? (isDevMode() ? 'src/assets' : 'dist/browser/assets');
           return options.ssrLoader?.()
             ?? new FsTranslationLoader({
-              fsBaseDir,
+              baseDir,
               assetPath,
-              pathTemplates: options.loaderOptions?.pathTemplates ?? [`i18n/${TempToken.Namespace}/${TempToken.Lang}.json`, `i18n/${TempToken.Lang}/${TempToken.Namespace}.json`],
-              resolvePaths: options.loaderOptions?.resolvePaths,
-              fsModule: options.loaderOptions?.fsModule
-            });
+              resolvePaths: options.fsOptions?.resolvePaths,
+              fsModule: options.fsOptions?.fsModule
+            }, finalPathTemplates);
         }
         const http = inject(HttpClient);
         return options.csrLoader?.(http)
           ?? new HttpTranslationLoader(http, {
-            httpBaseUrl: options.httpOptions?.httpBaseUrl ?? '/assets',
-            pathTemplates: options.httpOptions?.pathTemplates ?? `${TempToken.Root}/${TempToken.Namespace}/${TempToken.Lang}.json`
-          });
+            baseUrl: options.httpOptions?.baseUrl ?? '/assets',
+          }, finalPathTemplates);
       },
       deps: [PLATFORM_ID],
     }

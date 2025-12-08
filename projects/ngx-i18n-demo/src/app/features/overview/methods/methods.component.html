@@ -1,0 +1,113 @@
+@if (translationService.readySignal()) {
+<div #pageElem>
+  <h1>{{'Api'|t}}</h1>
+  <p>{{"＊ 符號表示重要常用功能"|t}}</p>
+  <section>
+    <h2 class="title" id="0"><span>#</span>{{' TranslationService'|t}}</h2>
+    <section>
+      <h3 class="subTitle config-attr" id="0-0">＊ setLang</h3>
+      <p class="config-type">{{"setLang(lang: string): void"}}</p>
+      <pre>{{'setLang-des'|t}}</pre>
+      <pre class="ex">{{'setLang-ex'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-1">＊ t</h3>
+      <p class="config-type">{{"t(key: string, params?: Params): string"}}</p>
+      <pre>{{'t-des'|t}}</pre>
+      <p>{{'t-behavior'|t}}</p>
+      <ul>
+        <li>{{'t-behavior-i-1'|t}}</li>
+        <li>{{'t-behavior-i-2'|t}}(<a class="link"
+            [routerLink]="['/', FeaturePaths.Overview, OverviewPaths.ConfigurationOptions]"
+            [fragment]="'0-2'">enablePageFallback</a>)</li>
+        <li>{{'t-behavior-i-3'|t}}(<a class="link"
+            [routerLink]="['/', FeaturePaths.Overview, OverviewPaths.ConfigurationOptions]"
+            [fragment]="'0-1'">fallbackNamespace</a>)</li>
+        <li>{{'t-behavior-i-4'|t}}(<a class="link"
+            [routerLink]="['/', FeaturePaths.Overview, OverviewPaths.ConfigurationOptions]"
+            [fragment]="'2-0'">missingTranslationBehavior</a>)</li>
+      </ul>
+      <pre class="ex">{{'t-ex'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-2">＊ (readonly) onLangChange</h3>
+      <p class="config-type">{{"Observable\<string>"}}</p>
+      <pre>{{'onLangChange-des'|t}}</pre>
+      <p>{{'onLangChange-emit'|t}}</p>
+      <ul>
+        <li>{{'onLangChange-emit-1'|t}}</li>
+      </ul>
+      <p>{{'onLangChange-usage'|t}}</p>
+      <ul>
+        <li>{{'onLangChange-usage-1'|t}}</li>
+      </ul>
+
+      <h3 class="subTitle config-attr" id="0-3">＊ (readonly) readySignal</h3>
+      <p class="config-type">{{"Signal\<boolean>"}}</p>
+      <pre>{{'readySignal-des'|t}}</pre>
+      <ul>
+        <li>{{'readySignal-i-1'|t}}</li>
+      </ul>
+
+      <h3 class="subTitle config-attr" id="0-4">＊ preloadNamespaces</h3>
+      <p class="config-type">{{"preloadNamespaces(...args:\n
+        Parameters&lt;TranslationCoreService['preloadNamespaces']&gt;):\nPromise&lt;void&gt;"}}</p>
+      <pre>{{'preloadNamespaces-des'|t}}</pre>
+      <pre class="ex">{{'preloadNamespaces-ex'|t}}</pre>
+
+
+      <h3 class="subTitle config-attr" id="0-5">(readonly) lang</h3>
+      <p class="config-type">{{"Signal\<string>"}}</p>
+      <pre>{{'lang-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-6">(readonly) currentLang</h3>
+      <p class="config-type">{{"string"}}</p>
+      <pre>{{'currentLang-des'|t}}</pre>
+      <pre class="ex">{{'currentLang-ex'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-7">(readonly) supportedLangs</h3>
+      <p class="config-type">{{"string[]"}}</p>
+      <pre>{{'supportedLangs-des'|t}}</pre>
+      <pre class="ex">{{'supportedLangs-ex'|t}}</pre>
+
+
+      <h3 class="subTitle config-attr" id="0-8">(readonly) ready</h3>
+      <p class="config-type">{{"boolean"}}</p>
+      <pre>{{'ready-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-9">addResourceBundle</h3>
+      <p class="config-type">{{"addResourceBundle(...args: Parameters\<TranslationCoreService['addResourceBundle']>
+          ):\nvoid"}}</p>
+      <pre>{{'addResourceBundle-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-10">addResources</h3>
+      <p class="config-type">{{"addResources(...args: Parameters\<TranslationCoreService['addResources']>): void"}}</p>
+      <pre>{{'addResources-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-11">addResource</h3>
+      <p class="config-type">{{"addResource(...args: Parameters\<TranslationCoreService['addResource']>): void"}}</p>
+      <pre>{{'addResource-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-12">hasResourceBundle</h3>
+      <p class="config-type">{{"hasResourceBundle(...args:\n
+        Parameters&lt;TranslationCoreService['hasResourceBundle']&gt;):\nboolean"}}</p>
+      <pre>{{'hasResourceBundle-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-13">getResource</h3>
+      <p class="config-type">{{"getResource(...args: Parameters\<TranslationCoreService['getResource']>): unknown"}}</p>
+      <pre>{{'getResource-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-14">getResourceBundle</h3>
+      <p class="config-type">{{"getResourceBundle(...args:\n
+        Parameters&lt;TranslationCoreService['getResourceBundle']&gt;):\nunknown"}}</p>
+      <pre>{{'getResourceBundle-des'|t}}</pre>
+
+      <h3 class="subTitle config-attr" id="0-15">removeResourceBundle</h3>
+      <p class="config-type">{{"removeResourceBundle(...args:\n
+        Parameters&lt;TranslationCoreService['removeResourceBundle']&gt;): void"}}
+      </p>
+      <pre>{{'removeResourceBundle-des'|t}}</pre>
+
+
+    </section>
+  </section>
+</div>
+}

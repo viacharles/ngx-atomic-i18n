@@ -1,0 +1,89 @@
+@use "colors" as c;
+
+html {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+    sans-serif;
+  /* font-smoothing：只在 macOS Safari/Firefox 可能有感，其他平台會忽略 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /** scroll bar **/
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) var(--sb-track);
+
+}
+
+pre,
+code,
+kbd,
+samp {
+  font-family: inherit;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+body,
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  border: none;
+  outline: none;
+
+  &::placeholder {
+    color: c.$neutral-50;
+  }
+}
+
+p,
+pre {
+  font-size: 1rem;
+  line-height: 30px;
+  text-wrap: normal;
+  white-space: pre-wrap;
+}
+
+h1 {
+  line-height: 2.5rem;
+  font-size: 2rem;
+}
+
+h2 {
+  line-height: 1.9rem;
+  font-size: 1.5rem;
+}
+
+h3 {
+  line-height: 1.4rem;
+  font-size: 1.2rem;
+}
+
+h4 {
+  font-size: 0.5rem;
+}
+
+ul,
+li,
+p {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a.link {
+  color: c.$primary-300;
+}

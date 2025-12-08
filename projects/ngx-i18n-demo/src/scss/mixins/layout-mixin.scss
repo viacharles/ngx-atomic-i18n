@@ -1,0 +1,58 @@
+@use "variables" as v;
+@use "colors" as c;
+
+/** h2 主標題, h3 副標題 **/
+@mixin push-off-sticky() {
+  h2.title {
+    position: sticky;
+    top: 3.5rem;
+    z-index: map-get(v.$z-index , sticky) + 1;
+    background-color: c.$bg;
+    opacity: 0.9;
+    padding-bottom: 0.3rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid c.$icon-font;
+    overflow: auto;
+    text-wrap-mode: nowrap;
+  }
+
+  h3.subTitle {
+    position: sticky;
+    top: 5.8rem;
+    z-index: map-get(v.$z-index , sticky);
+    background-color: c.$bg;
+    opacity: 0.9;
+    padding-bottom: 0.3rem;
+    margin-top: 2rem;
+    margin-bottom: 0;
+    overflow: auto;
+    font-size: 20px;
+    text-wrap-mode: nowrap;
+  }
+}
+
+/** RWD **/
+@mixin rwdByMaxWidth($breakpoint) {
+  @if map-has-key(v.$breakpoints, $breakpoint) {
+    @media screen and (max-width: calc(#{map-get(v.$breakpoints, $breakpoint)})) {
+      @content;
+    }
+  }
+
+  @else {
+    @warn "Undefined breakpoint: #{$breakpoint}. Please check your breakpoints map.";
+  }
+}
+
+@mixin rwdByMinWidth($breakpoint) {
+  @if map-has-key(v.$breakpoints, $breakpoint) {
+    @media screen and (min-width: #{map-get(v.$breakpoints, $breakpoint)}) {
+      @content;
+    }
+  }
+
+  @else {
+    @warn "Undefined breakpoint: #{$breakpoint}. Please check your breakpoints map.";
+  }
+}

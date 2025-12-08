@@ -1,0 +1,38 @@
+@use "colors" as c;
+@use "mixins" as m;
+
+@include m.push-off-sticky();
+
+h3.subTitle {
+  display: flex;
+  padding-top: 1rem;
+  margin: 0; // override mixin
+  color: c.$primary-300;
+}
+
+// .config-type {
+//   font-weight: 700;
+//   color: green;
+// }
+
+.config-type {
+  display: flex;
+  font-weight: 600;
+  line-height: 21px;
+  color: #57bbea;
+}
+
+
+pre {
+  margin: 0;
+  line-height: 22px;
+
+  &.ex {
+    flex: 1;
+    color: c.$neutral-50;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-bottom: 1px solid c.$outline-100;
+    padding-bottom: 0.5rem;
+  }
+}

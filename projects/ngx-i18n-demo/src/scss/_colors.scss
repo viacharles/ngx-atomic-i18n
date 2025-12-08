@@ -1,0 +1,119 @@
+:root {
+  --green-700: #0e6b58;
+  --green-600: #3ba188;
+  --green-500: #007f68;
+  --green-400: #15866f;
+  --green-300: #005141;
+  --green-200: #bec9c5;
+  --green-150: #dae5e1;
+  --green-100: #f3fff9;
+  --green-50: #eff5f6;
+
+
+  --reddish-purple-500: #7f004b;
+  --reddish-purple-300: #d74399;
+  --reddish-purple-250: #eb8cc3;
+  --reddish-purple-200: #e694c3;
+  --reddish-purple-100: #eddeea;
+  --reddish-purple-50: #f8e7f5;
+
+  --brown-600: #5e4a28;
+  --brown-500: #8d845d;
+  --brown-400: #aca277;
+  --brown-300: #cec18b;
+  --brown-200: #e5dcba;
+  --brown-100: #fef1e4;
+
+
+  --light-green-400-rgba: 216, 235, 154;
+
+  --red-600: #ba1a1a;
+  --red-500: #ba1a1a;
+  --red-400: #ff5449;
+  --red-50: #de3730;
+  --red-10: #ffedea;
+
+  --light-red-400-rgba: 255, 218, 214;
+
+  --tan-800: #645000;
+  --tan-500: #edc200;
+  --tan-300: #ecd8a5;
+  --tan-200: #fff0c9;
+
+  --gray-800: #181818;
+  --gray-700: #2e2e2e;
+  --gray-650: #454545b3;
+  --gray-600: #606060;
+  --gray-500: #7f7f7f;
+  --gray-400: #767676;
+  --gray-350: #c9c9c9;
+  --gray-300: #e0e0e0;
+  --gray-250: #e6e6e6;
+  --gray-200: #ececec;
+  --gray-100: #FAFAFA;
+  --gray-50: #fbfbfb;
+
+  --white: #ffffff;
+  --black: #000000;
+}
+
+$primary-500: light-dark(var(--reddish-purple-500), var(--reddish-purple-300));
+$primary-300: light-dark(var(--reddish-purple-300), var(--reddish-purple-200));
+$secondary-500: light-dark(var(--green-300), var(--green-500));
+$tertiary-500: light-dark(var(--tan-300), var(--tan-500));
+
+// background
+$bg: light-dark(var(--white), var(--gray-800));
+$bg-hover: light-dark(var(--gray-250), var(--gray-700));
+$bg-active: light-dark(var(--gray-300), var(--gray-600));
+$dialog-bg: light-dark(var(--gray-50), var(--gray-700));
+$dialog-bg-hover: light-dark(var(--gray-200), var(--gray-650));
+$tag-bg: light-dark(var(--reddish-purple-100), var(--reddish-purple-200));
+$btn-bg: light-dark(var(--reddish-purple-200), var(--reddish-purple-200));
+
+// icon font
+$icon-font: light-dark(var(--gray-800), var(--gray-50));
+
+// font
+$neutral-50: light-dark(var(--gray-500), var(--gray-300));
+$empty-font: light-dark(var(--gray-100), var(--gray-800));
+$focus-font: light-dark(var(--brown-400), var(--brown-300));
+$link: light-dark(var(--reddish-purple-300), var(--reddish-purple-100));
+
+// 邊框
+$outline: light-dark(var(--gray-400), var(--gray-200));
+$outline-300: light-dark(var(--gray-300), var(--gray-300));
+$outline-100: light-dark(var(--gray-200), var(--gray-600));
+$tag-outline: light-dark(var(--reddish-purple-200), var(--reddish-purple-100));
+
+//error
+$error-50: light-dark(var(--red-50), var(--red-50));
+
+//shadow
+$dialog-shadow: 0 1px 10px light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.3));
+
+// 漸層
+$gradient-1: linear-gradient(0deg, #3abd77 70%, #09bc9c 100%);
+$gradient-2: linear-gradient(0deg, #fdcf00 70%, #5c9d00 100%);
+$gradient-3: linear-gradient(0deg, #3ba188 70%, #5c9d00 100%);
+$gradient-4: linear-gradient(0deg, #fdffff 70%, #daf4ef 100%);
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}

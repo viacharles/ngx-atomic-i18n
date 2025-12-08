@@ -6,12 +6,15 @@ export interface TranslationConfig {
   supportedLangs: string[];
   fallbackLang: string;
   i18nRoots: string[];
+  pathTemplates: string[] | string;
   fallbackNamespace: string | string[];
-  langDetectionOrder: ('localStorage' | 'url' | 'browser' | 'initialLang' | 'fallback')[];
+  langDetectionOrder: ('localStorage' | 'url' | 'browser' | 'customLang' | 'fallback')[];
   /** Enable verbose logging. Defaults to true in dev mode. */
   debug?: boolean;
+  /** Enable use  */
+  enablePageFallback: boolean;
   preloadNamespaces?: string[];
-  initialLang?: () => string | string;
+  customLang?: (() => string) | string;
   missingTranslationBehavior?: MissingTranslationBehavior;
 }
 
@@ -35,7 +38,7 @@ export type nsKey = string;
  * - 'throw': Throw a runtime error. Recommended only during development or testing; will break the UI if not handled.
  * - string: Any custom string, e.g., '--', 'loading...', etc.
  */
-export type MissingTranslationBehavior = 'show-key' | 'empty' | 'throw' | string;
+export type MissingTranslationBehavior = 'show-key' | 'empty' | 'throw-error';
 
 export interface TranslationLoader {
   /**
@@ -61,14 +64,12 @@ export interface FsModuleLike {
 /** Options used to customise the SSR file-system loader. */
 export interface FsLoaderOptions {
   /**  only for SSR , e.g. process.cwd() */
-  fsBaseDir?: string;
+  baseDir?: string;
   /** e.g. 'projects/app/src/assets' (dev) or 'dist/app/browser/assets' (prod) */
   assetPath?: string;
-  /** Template(s) supporting {{root}}, {{lang}} and {{namespace}} placeholders. */
-  pathTemplates?: string[];
   /** Custom resolver that returns an ordered list of candidate absolute paths. */
   resolvePaths?: (ctx: {
-    fsBaseDir: string;
+    baseDir: string;
     assetPath: string;
     root: string;
     lang: string;
@@ -82,10 +83,7 @@ export interface FsLoaderOptions {
 /** Options used to customise the HTTP loader in CSR environments. */
 export interface HttpLoaderOptions {
   /** default '/assets' */
-  httpBaseUrl?: string;
-  /** default 'i18n/{{namespace}}/{{lang}}.json' */
-  pathTemplates?: string | string[];
-
+  baseUrl?: string;
 }
 
 /** Aggregate options exposed via `provideTranslationInit`. */
@@ -93,7 +91,7 @@ export interface TranslationLoaderOptions {
   forceMode?: 'ssr' | 'csr';
   ssrLoader?: () => TranslationLoader;                    // custom SSR loader
   csrLoader?: (http: HttpClient) => TranslationLoader;    // custom CSR loader
-  loaderOptions?: FsLoaderOptions;          //options for FsTranslationLoader
+  fsOptions?: FsLoaderOptions;          //options for FsTranslationLoader
   httpOptions?: HttpLoaderOptions;         // options for HttpTranslationLoader
 }
 

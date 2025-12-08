@@ -1,0 +1,12 @@
+@use "mixins" as *;
+
+:host {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 2rem 1rem 1rem;
+}
+
+
+app-icon-button {
+  margin-left: 0.5rem;
+}

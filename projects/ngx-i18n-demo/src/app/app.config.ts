@@ -1,5 +1,5 @@
 import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, TitleStrategy } from '@angular/router';
+import { provideRouter, TitleStrategy, withInMemoryScrolling } from '@angular/router';
 
 import { appRoutes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -11,17 +11,23 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(),
-    provideRouter(appRoutes),
+    provideRouter(appRoutes,
+      withInMemoryScrolling({
+        anchorScrolling: 'enabled',
+        scrollPositionRestoration: 'enabled',
+      })),
     provideClientHydration(),
     provideTranslationInit({
       supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'zh-Hant',
       loader: {
-        loaderOptions: {
+        fsOptions: {
           assetPath: isDevMode()
             ? 'projects/ngx-i18n-demo/src/assets'
             : 'dist/ngx-i18n-demo/browser/assets',
         },
       },
+      debug: false
     }),
     {
       provide: TitleStrategy,

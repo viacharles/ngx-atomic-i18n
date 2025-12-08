@@ -2,6 +2,27 @@ import { effect, inject, Injector, runInInjectionContext, Signal } from "@angula
 import { DeepPartial, PathTemplate, TranslationConfig } from "./translate.type";
 import { Observable } from "rxjs";
 
+/** Normalizes a language code against the configured supported languages. */
+export function normalizeLangCode(
+  lang: string | null | undefined,
+  supportedLangs: string[]
+): string | null {
+  if (!lang) return null;
+  const variants = new Set<string>();
+  variants.add(lang);
+  variants.add(lang.replace(/_/g, '-'));
+  variants.add(lang.replace(/-/g, '_'));
+  variants.add(lang.toLowerCase());
+  variants.add(lang.replace(/_/g, '-').toLowerCase());
+  for (const candidate of variants) {
+    const match = supportedLangs.find(
+      supported => supported.toLowerCase() === candidate.toLowerCase()
+    );
+    if (match) return match;
+  }
+  return null;
+}
+
 /** Determines the most appropriate language using the configured detection order. */
 export function detectPreferredLang(config: TranslationConfig): string {
   const { supportedLangs, fallbackLang, langDetectionOrder } = config;
@@ -18,18 +39,19 @@ export function detectPreferredLang(config: TranslationConfig): string {
         const langTag = (globalThis as any)?.navigator?.language ?? '';
         lang = supportedLangs.find(s => langTag.startsWith(s)) ?? null;
         break;
-      case 'initialLang':
-        lang = typeof config.initialLang === 'function' ? config.initialLang() : config.initialLang ?? null;
+      case 'customLang':
+        lang = typeof config.customLang === 'function' ? config.customLang() : config.customLang ?? null;
         break;
       case 'fallback':
         lang = fallbackLang;
         break;
     }
-    if (lang && supportedLangs.includes(lang)) {
-      return lang
+    const normalized = normalizeLangCode(lang, supportedLangs);
+    if (normalized) {
+      return normalized;
     };
   }
-  return fallbackLang;
+  return normalizeLangCode(fallbackLang, supportedLangs) ?? fallbackLang;
 }
 
 /** Lightweight ICU parser that supports nested select/plural structures. */
@@ -54,7 +76,6 @@ export function parseICU(templateText: string, params?: Record<string, string | 
       }
       i++;
     }
-    // The block is malformed; return the remainder without throwing.
     return [text.slice(startIndex), text.length];
   }
 
@@ -145,8 +166,7 @@ export function parseICU(templateText: string, params?: Record<string, string | 
     return result;
   }
 
-
-  return resolveICU(templateText).trim();
+  return resolveICU(templateText);
 }
 
 
@@ -171,7 +191,7 @@ export function toObservable<T>(signal: Signal<T>): Observable<T> {
   const injector = inject(Injector);
   return new Observable(subscribe => {
     subscribe.next(signal());
-    const stop = runInInjectionContext(injector, () => effect(() => subscribe.next(signal())));
+    const stop = runInInjectionContext(injector, () => effect(() => subscribe.next(signal()), { allowSignalWrites: true }));
     return () => stop.destroy();
   });
 }
@@ -229,7 +249,7 @@ export function getNested(obj: any, path: string): string | undefined {
 export const stripLeadingSep = (s: string) => s.replace(/^[\\/]+/, '');
 
 /** Normalises the path template configuration to an array form. */
-export const toArray = (template: PathTemplate) => Array.isArray(template) ? template : (template ? [template] : undefined);
+export const tempToArray = (template: PathTemplate) => Array.isArray(template) ? template : (template ? [template] : undefined);
 
 /**
  * Detect current build version from injected script names (CSR only).

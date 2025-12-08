@@ -24,10 +24,10 @@ export class ThemeService {
   }
 
   setTheme(theme: ThemeType): void {
-    console.log('aa-setTheme', theme, this.isBrowser);
     if (!this.isBrowser) return;
     sessionStorage.setItem(StoreObjectName.DataTheme, theme);
     this.toggleTheme(theme);
+    this.theme.set(theme);
   }
 
 
@@ -35,17 +35,9 @@ export class ThemeService {
     if (!this.isBrowser) return;
     const rootElem = this.doc.documentElement;
     if (theme === ThemeType.SYSTEM) {
-      rootElem.removeAttribute('');
-      rootElem.style.colorScheme = '';
-      this.setColorScheme(matchMedia('(prefer-color-scheme: dark)').matches ? ThemeType.DARK : ThemeType.LIGHT);
+      rootElem.removeAttribute(StoreObjectName.DataTheme);
     } else {
       rootElem.setAttribute(this.attrName, theme);
-      this.setColorScheme(theme);
     }
-  }
-
-  private setColorScheme(theme: ThemeType): void {
-    if (!this.isBrowser) return;
-    this.doc.documentElement.style.colorScheme = theme;
   }
 }

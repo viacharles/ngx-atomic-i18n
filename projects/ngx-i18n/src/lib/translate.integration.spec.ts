@@ -53,9 +53,10 @@ describe('Translation Integration Tests', () => {
       fallbackLang: 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
-      initialLang: () => 'en',
-      langDetectionOrder: ['localStorage', 'url', 'browser', 'initialLang', 'fallback'],
-      missingTranslationBehavior: 'show-key'
+      langDetectionOrder: ['localStorage', 'url', 'browser', 'customLang', 'fallback'],
+      missingTranslationBehavior: 'show-key',
+      pathTemplates: ['i18n/{namespace}/{lang}.json'],
+      enablePageFallback: false
     };
 
     // Create a mock loader that doesn't make HTTP requests

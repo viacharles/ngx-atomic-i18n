@@ -7,10 +7,11 @@ import { DIALOG_DATA } from '../../dialog.token';
 import { DropdownData } from '../../dialog.type';
 import { SCREEN_WIDTH } from 'projects/ngx-i18n-demo/src/app/shared/enums/common.enum';
 import { NgStyle } from '@angular/common';
+import { TranslationPipe } from 'ngx-i18n';
 
 @Component({
   selector: 'app-dropdown-dialog',
-  imports: [NgStyle],
+  imports: [NgStyle, TranslationPipe],
   standalone: true,
   templateUrl: './dropdown-dialog.component.html',
   styleUrl: './dropdown-dialog.component.scss',
@@ -49,10 +50,13 @@ export class DropdownDialogComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // 延遲顯示，避免動畫起始位置錯誤
-    console.log('aa-ngAfterViewInit')
-    timer(0).subscribe(() => { this.show = true; console.log('aa-show', this.show) });
+    timer(0).subscribe(() => { this.show = true });
     this.isMobile = this.detectMobile();
     this.reposition();
+  }
+
+  select(option: Option): void {
+    this.ref.close(option)
   }
 
   private detectMobile(): boolean {
@@ -102,7 +106,6 @@ export class DropdownDialogComponent implements AfterViewInit {
       this.panelStyle.set({
         left: `${Math.round(left)}px`,
         width: `${Math.round(finalPanelWidth)}px`,
-        top: `${margin}px`,
         bottom: `${Math.ceil(finalBottom)}px`,
         height: 'fit-content',
       })

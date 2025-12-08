@@ -1,3 +1,4 @@
+import { defaultConfig } from './translate.provider';
 import {
   FsModuleLike,
   TempToken as t,
@@ -6,40 +7,37 @@ import {
   type TranslationLoader,
   type Translations,
 } from './translate.type';
-import { stripLeadingSep, toArray } from './translate.util';
+import { stripLeadingSep, tempToArray } from './translate.util';
 
 /** File-system backed loader used during SSR to read translation JSON from disk. */
 export class FsTranslationLoader implements TranslationLoader {
   private cache = new Map<string, CacheEntry>();
 
   /**
-   * @param opts      Loader configuration resolved from `TranslationLoaderOptions`.
    * @param customFs  Optional fs-like abstraction injected explicitly (tests or adapters).
    */
-  constructor(private opts: FsLoaderOptions = {}, private customFs?: FsModuleLike) {}
+  constructor(private fsOptions: FsLoaderOptions = {}, private pathTemplates: string[] | string, private customFs?: FsModuleLike) { }
 
-  /** Locates and reads the namespace file for SSR, caching by mtime and size. */
   async load(i18nRoots: string[] | string, namespace: string, lang: string): Promise<Translations> {
     const roots = (Array.isArray(i18nRoots) ? i18nRoots : [i18nRoots]).map(stripLeadingSep);
 
     const pathMod = await this.importSafely('node:path');
     const fsImported = await this.importSafely('node:fs');
-
     const fsLike: FsModuleLike | undefined =
-      this.pickFs(this.customFs) ?? this.pickFs(this.opts.fsModule) ?? this.pickFs(fsImported);
+      this.pickFs(this.customFs) ?? this.pickFs(this.fsOptions.fsModule) ?? this.pickFs(fsImported);
 
-    const fsBaseDir = this.opts.fsBaseDir ?? (globalThis.process?.cwd?.() ?? '/');
-    const assetPathRaw = this.opts.assetPath ?? 'dist/browser/assets';
+    const baseDir = this.fsOptions.baseDir ?? (globalThis.process?.cwd?.() ?? '/');
+    const assetPathRaw = this.fsOptions.assetPath ?? 'dist/browser/assets';
     const assetPath = stripLeadingSep(assetPathRaw);
 
     const templates =
-      toArray(this.opts.pathTemplates) ??
-      [`${t.Root}/${t.Lang}/${t.Namespace}.json`, `${t.Root}/${t.Namespace}/${t.Lang}.json`];
+      tempToArray(this.pathTemplates) ??
+      tempToArray(defaultConfig.pathTemplates) as string[];
 
     for (const root of roots) {
       const candidatePaths =
-        this.opts.resolvePaths?.({
-          fsBaseDir,
+        this.fsOptions.resolvePaths?.({
+          baseDir,
           assetPath,
           root,
           lang,
@@ -48,7 +46,7 @@ export class FsTranslationLoader implements TranslationLoader {
         templates.map((temp) =>
           this.safeJoin(
             pathMod,
-            fsBaseDir,
+            baseDir,
             assetPath,
             temp.replace(t.Root, root).replace(t.Lang, lang).replace(t.Namespace, namespace),
           ),

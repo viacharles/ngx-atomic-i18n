@@ -19,11 +19,11 @@ describe('TranslationCoreService', () => {
     configMock = {
       supportedLangs: ['en', 'zh-Hant'],
       fallbackLang: 'en',
-      initialLang: () => 'en',
+      customLang: () => 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
       missingTranslationBehavior: 'show-key',
-      langDetectionOrder: ['localStorage', 'url', 'browser', 'initialLang', 'fallback'],
+      langDetectionOrder: ['localStorage', 'url', 'browser', 'customLang', 'fallback'],
     };
     loaderMock = {
       load: jest.fn().mockResolvedValue({ hello: 'world' })

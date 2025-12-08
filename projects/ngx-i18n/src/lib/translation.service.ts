@@ -1,5 +1,5 @@
 import { computed, effect, Inject, inject, Injectable, Signal } from "@angular/core";
-import { BUILD_VERSION, TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from "./translate.token";
+import { BUILD_VERSION, PAGE_TRANSLATION_ROOT, TRANSLATION_CONFIG, TRANSLATION_LOADER, TRANSLATION_NAMESPACE } from "./translate.token";
 import { Params } from "./translate.type";
 import { detectBuildVersion, toObservable } from "./translate.util";
 import { TranslationCoreService } from "./translation-core.service";
@@ -8,6 +8,8 @@ import { TranslationCoreService } from "./translation-core.service";
 export class TranslationService {
   /** Shared translation configuration resolved from the host application. */
   private readonly config = inject(TRANSLATION_CONFIG);
+  private readonly parent = inject(TranslationService, { skipSelf: true, optional: true });
+  private readonly isPageRoot = inject(PAGE_TRANSLATION_ROOT, { skipSelf: true, optional: true }) ?? false;
   /** Core translation engine that handles lookups and formatter lifecycle. */
   private readonly core = inject(TranslationCoreService);
   /** Loader implementation responsible for fetching translation payloads. */
@@ -80,11 +82,17 @@ export class TranslationService {
     const nsKey = this.getNskey;
     const missingResult = this.getMissingTranslation(key);
     if (!this.ready) {
-      this.warn(`Namespace "${this.namespace}" is not ready when resolving key "${key}". Returning fallback value.`);
-      return missingResult;
+      this.warn(`Namespace "${this.namespace}" is not ready.`);
+      return '';
     }
     const formatResult = this.core.getAndCreateFormatter(nsKey, key);
+    if (key === 'getStart.config.supportedLangHint') {
+      console.log('aa-nsKey', nsKey)
+    }
     if (formatResult) return formatResult.format(params);
+    if (this.config.enablePageFallback && !this.isPageRoot && this.parent) {
+      return this.parent.t(key, params);
+    }
     const fallback = this.core.findFallbackFormatter(key, [], this.buildVersion ?? undefined);
     if (fallback) {
       this.info(`Resolved key "${key}" via fallback namespace while rendering "${this.namespace}".`);
@@ -98,7 +106,7 @@ export class TranslationService {
   private getMissingTranslation(key?: string): string | never {
     const forceMode = this.config.missingTranslationBehavior ?? 'show-key';
     switch (forceMode) {
-      case 'throw':
+      case 'throw-error':
         throw new Error(`[i18n] Missing translation: ${key} in ${this.namespace}`);
       case 'empty':
         this.warn(`Missing translation returned an empty string for key "${key}" in namespace "${this.namespace}".`);
@@ -130,6 +138,9 @@ export class TranslationService {
   }
   getResourceBundle(...p: Parameters<TranslationCoreService['getResourceBundle']>) {
     return this.core.getResourceBundle(...p);
+  }
+  getAllBundle() {
+    return this.core.getAllBundle();
   }
   removeResourceBundle(...p: Parameters<TranslationCoreService['removeResourceBundle']>) {
     return this.core.removeResourceBundle(...p);

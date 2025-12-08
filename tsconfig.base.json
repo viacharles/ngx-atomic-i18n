@@ -13,11 +13,17 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "ngx-atomic-i18n": [
-        "projects/ngx-atomic-i18n/src/public-api"
+      "ngx-i18n": [
+        "projects/ngx-i18n/src/public-api"
       ],
-      "ngx-atomic-i18n/*": [
-        "projects/ngx-atomic-i18n/src/lib/*"
+      "ngx-i18n/*": [
+        "projects/ngx-i18n/src/lib/*"
+      ],
+      "@demo2-shared/*": [
+        "projects/ngx-i18n-demo/src/app/shared/*"
+      ],
+      "@demo2-assets/*": [
+        "projects/ngx-i18n-demo/src/assets/*"
       ]
     },
     "esModuleInterop": true,

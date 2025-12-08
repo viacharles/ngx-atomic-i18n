@@ -1,6 +1,6 @@
 @use "colors" as c;
 
-ul {
+div {
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -25,14 +25,30 @@ ul {
     border-radius: 8px 8px 0 0;
   }
 
+  &.mobile {
+    border-radius: 24px 24px 0 0;
+
+    ul {
+      overflow-y: auto;
+
+      li {
+        padding: 0.5rem 2rem;
+        font-size: 1.3rem;
+      }
+    }
+
+  }
+
   p {
-    color: c.$primary-500;
-    font-size: 14px;
+    padding-left: 1.5rem;
+    font-size: 1rem;
+    color: c.$neutral-50;
   }
 
   li {
     cursor: pointer;
-    padding: 0 0.5rem 0.5rem 0.5rem;
+    padding: 0.3rem;
+    padding-left: 1.5rem;
     font-size: 1rem;
 
     &:hover,

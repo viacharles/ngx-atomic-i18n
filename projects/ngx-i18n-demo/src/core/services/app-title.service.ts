@@ -1,18 +1,37 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import { TranslationService } from 'ngx-i18n';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppTitleService extends TitleStrategy {
+  private latestSnapshot?: RouterStateSnapshot;
 
-  constructor(private title: Title) { super() }
+  constructor(
+    private title: Title,
+    private translationService: TranslationService,
+  ) {
+    super();
+    this.translationService.onLangChange.subscribe(() => {
+      if (this.latestSnapshot) {
+        this.handleTitle(this.latestSnapshot);
+      }
+    });
+  }
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
-    const title = this.buildTitle(snapshot);
+    this.latestSnapshot = snapshot;
+    this.handleTitle(snapshot);
+  }
+
+  private handleTitle(snapshot: RouterStateSnapshot): void {
+    const title = this.translationService.t(this.buildTitle(snapshot) ?? '');
     if (title) {
       this.title.setTitle(`${title} | ngx-i18n`);
+    } else {
+      this.title.setTitle(`ngx-i18n`);
     }
   }
 }

@@ -128,11 +128,11 @@ describe('provideTranslationInit', () => {
     }
   });
 
-  it('SSR + loaderOptions.assetPath override → use override regardless of dev/prod', () => {
+  it('SSR + fsOptions.assetPath override → use override regardless of dev/prod', () => {
     (core.isDevMode as jest.Mock).mockReturnValue(true);
     try {
       const providers = provideTranslationLoader({
-        loaderOptions: { assetPath: '/custom/assets' },
+        fsOptions: { assetPath: '/custom/assets' },
       });
       const factory = (providers[0] as any).useFactory as (platformId: Object) => unknown;
       const loader = factory('server') as unknown as FsTranslationLoader;
@@ -273,7 +273,7 @@ describe('provideTranslationLoader (CSR)', () => {
         ...provideTranslationLoader({
           forceMode: 'csr',
           httpOptions: {
-            httpBaseUrl: '/custom/assets',
+            baseUrl: '/custom/assets',
             pathTemplates: 'custom/i18n/{{namespace}}/{{lang}}.json'
           }
         }),
@@ -299,7 +299,7 @@ describe('provideTranslationLoader (SSR)', () => {
     expect(loader).toBeInstanceOf(FsTranslationLoader);
   });
 
-  it('should use FsTranslationLoader with default options when no loaderOptions provided', async () => {
+  it('should use FsTranslationLoader with default options when no fsOptions provided', async () => {
     await TestBed.configureTestingModule({
       providers: [
         ...provideTranslationLoader({ forceMode: 'ssr' }),
@@ -345,14 +345,14 @@ describe('provideTranslationLoader (custom loader)', () => {
   });
 });
 
-describe('provideTranslationLoader (loaderOptions)', () => {
+describe('provideTranslationLoader (fsOptions)', () => {
   it('should pass custom options to FsTranslationLoader', async () => {
     await TestBed.configureTestingModule({
       providers: [
         ...provideTranslationLoader({
           forceMode: 'ssr',
-          loaderOptions: {
-            fsBaseDir: '/custom/base',
+          fsOptions: {
+            baseDir: '/custom/base',
             assetPath: 'my-assets',
             pathTemplates: ['custom/path/{{namespace}}/{{lang}}.json'],
             resolvePaths: jest.fn().mockReturnValue(['/test/path']),
@@ -372,8 +372,8 @@ describe('provideTranslationLoader (loaderOptions)', () => {
       providers: [
         ...provideTranslationLoader({
           forceMode: 'ssr',
-          loaderOptions: {
-            fsBaseDir: '/custom/base',
+          fsOptions: {
+            baseDir: '/custom/base',
             assetPath: 'my-assets'
           }
         }),
@@ -385,7 +385,7 @@ describe('provideTranslationLoader (loaderOptions)', () => {
     expect(loader).toBeInstanceOf(FsTranslationLoader);
   });
 
-  it('should handle process.cwd() fallback for fsBaseDir', async () => {
+  it('should handle process.cwd() fallback for baseDir', async () => {
     const originalCwd = process.cwd;
     process.cwd = jest.fn().mockReturnValue('/mock/cwd');
 
@@ -404,7 +404,7 @@ describe('provideTranslationLoader (loaderOptions)', () => {
     process.cwd = originalCwd;
   });
 
-  it('should handle process not defined for fsBaseDir', async () => {
+  it('should handle process not defined for baseDir', async () => {
     const originalProcess = global.process;
     delete (global as any).process;
 

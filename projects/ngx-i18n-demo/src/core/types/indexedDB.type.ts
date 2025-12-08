@@ -5,6 +5,9 @@ export interface StorageData {
 }
 export enum StoreObjectName {
   DataTheme = 'data-theme',
+  RenderType = 'render-type',
+  ProjectArchitectureType = 'project-architecture-type',
+  AppBootstrapMode = 'appBootstrap-mode'
 }
 
 export interface StorageValue<T> {

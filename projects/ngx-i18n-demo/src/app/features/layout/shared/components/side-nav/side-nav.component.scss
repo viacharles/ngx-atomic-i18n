@@ -1,0 +1,36 @@
+@use "colors" as c;
+@use "variables" as v;
+
+ul {
+  position: sticky;
+  top: 4rem;
+  left: 0;
+  width: 100%;
+
+  .parent-item {
+    p {
+      padding: 1rem 0;
+      color: c.$primary-500;
+      font-weight: 700;
+    }
+  }
+
+  .child-item {
+    cursor: pointer;
+    padding: 0.5rem 0 0.5rem 0.5rem;
+    color: c.$icon-font;
+    font-weight: normal;
+    border-radius: map-get(v.$border-radius , lg);
+
+    &.active {
+      a {
+        font-weight: 500;
+        color: c.$link
+      }
+    }
+
+    &:hover {
+      background-color: c.$bg-hover;
+    }
+  }
+}

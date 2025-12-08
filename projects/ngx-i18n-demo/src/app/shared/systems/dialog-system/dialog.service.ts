@@ -4,6 +4,7 @@ import { DIALOG_DATA } from './dialog.token';
 import { DialogTriggerStatus } from './dialog.trigger';
 import { DialogConfig } from './dialog.type';
 import { DialogList } from './dialog-list.model';
+import { DescribeDialogComponent } from './components/describe-dialog/describe-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -28,13 +29,19 @@ export class DialogService {
     config?: DialogConfig<T>,
     selfInjector?: Injector,
   ): DialogModel<C, T> {
-    const id = String(options.id ?? ++this.idCounter);
-    const model = new DialogModel<T>(id, this);
     const finalOptions = {
       ...options,
       animationTriggerStatus: DialogTriggerStatus.SlideInOutFromRight,
     };
     return this.open(content, finalOptions, config, selfInjector);
+  }
+
+  openDescribe(
+    describe: string,
+    config?: DialogConfig<string>,
+  ): DialogModel<DescribeDialogComponent, string> {
+    const finalConfig = { transparentBackdrop: true, ...config }
+    return this.open(DescribeDialogComponent, { data: describe }, finalConfig)
   }
 
   open<C, T = any>(
@@ -47,7 +54,9 @@ export class DialogService {
     selfInjector?: Injector,
   ): DialogModel<C, T> {
     const id = String(options.id ?? ++this.idCounter);
-    const model = new DialogModel<C, T>(id, this, config, content, options.data);
+    const model = new DialogModel<C, T>(id, this,
+      { closeOnBackdropClick: true, ...config },
+      content, options.data);
     const injector = Injector.create({
       providers: [
         { provide: DialogModel, useValue: model },

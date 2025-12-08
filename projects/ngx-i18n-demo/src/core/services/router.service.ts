@@ -11,6 +11,7 @@ export class RouterService {
   private _startUrlSubject = new BehaviorSubject<string>(this.router.url);
   private _endUrlSubject = new BehaviorSubject<string>(this.router.url);
   startUrl$ = this._startUrlSubject.asObservable();
+  /** ex. /overview/getting-started */
   endUrl$ = this._endUrlSubject.asObservable();
 
   constructor(

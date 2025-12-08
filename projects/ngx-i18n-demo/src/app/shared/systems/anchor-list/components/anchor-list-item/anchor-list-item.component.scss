@@ -1,0 +1,31 @@
+@use "colors" as c;
+@use "variables" as v;
+
+li {
+  padding: 0.9rem 0.2rem;
+
+  a.anchor-link {
+    cursor: pointer;
+    width: 170px;
+    line-height: 23px;
+    font-size: 14px;
+    padding: 0.2rem;
+    text-decoration: none;
+    border-radius: map-get(v.$border-radius , sm);
+
+    &:hover {
+      background-color: c.$bg-hover;
+    }
+  }
+
+  &.is-Sub {
+    border-left: 1.2px solid c.$focus-font;
+    padding: 0.3rem 0.2rem 0.3rem 0.6rem;
+
+    a.anchor-link {
+      color: c.$neutral-50;
+    }
+  }
+
+
+}

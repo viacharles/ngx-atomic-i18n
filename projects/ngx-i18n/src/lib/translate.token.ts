@@ -11,3 +11,5 @@ export const TRANSLATION_LOADER = new InjectionToken<TranslationLoader>('TRANSLA
 export const BUILD_VERSION = new InjectionToken<string | null>('BUILD_VERSION');
 /** Custom ICU formatter constructor injected by the host app when available. */
 export const ICU_FORMATTER_TOKEN = new InjectionToken<any>('ICU_FORMATTER_TOKEN');
+
+export const PAGE_TRANSLATION_ROOT = new InjectionToken<boolean>('PAGE_TRANSLATION_ROOT');

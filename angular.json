@@ -3,29 +3,29 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-atomic-i18n": {
+    "ngx-i18n": {
       "projectType": "library",
-      "root": "projects/ngx-atomic-i18n",
-      "sourceRoot": "projects/ngx-atomic-i18n/src",
+      "root": "projects/ngx-i18n",
+      "sourceRoot": "projects/ngx-i18n/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "projects/ngx-atomic-i18n/ng-package.json"
+            "project": "projects/ngx-i18n/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "tsConfig": "projects/ngx-atomic-i18n/tsconfig.spec.json",
+            "tsConfig": "projects/ngx-i18n/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "projects/ngx-atomic-i18n/src/favicon.ico",
-              "projects/ngx-atomic-i18n/src/assets"
+              "projects/ngx-i18n/src/favicon.ico",
+              "projects/ngx-i18n/src/assets"
             ],
             "scripts": [],
-            "jestConfig": "projects/ngx-atomic-i18n/jest.config.ts"
+            "jestConfig": "projects/ngx-i18n/jest.config.ts"
           }
         }
       }
@@ -116,42 +116,48 @@
         }
       }
     },
-    "demo-app-2": {
+    "ngx-i18n-demo": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "projects/demo-app-2",
-      "sourceRoot": "projects/demo-app-2/src",
+      "root": "projects/ngx-i18n-demo",
+      "sourceRoot": "projects/ngx-i18n-demo/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/demo-app-2",
-            "index": "projects/demo-app-2/src/index.html",
-            "browser": "projects/demo-app-2/src/main.ts",
+            "outputPath": "dist/ngx-i18n-demo",
+            "index": "projects/ngx-i18n-demo/src/index.html",
+            "browser": "projects/ngx-i18n-demo/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "projects/demo-app-2/tsconfig.app.json",
+            "tsConfig": "projects/ngx-i18n-demo/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/demo-app-2/public"
-              }
+                "input": "projects/ngx-i18n-demo/public"
+              },
+              "projects/ngx-i18n-demo/src/assets"
             ],
             "styles": [
-              "projects/demo-app-2/src/styles.scss"
+              "projects/ngx-i18n-demo/src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/ngx-i18n-demo/src/scss"
+              ]
+            },
             "scripts": [],
-            "server": "projects/demo-app-2/src/main.server.ts",
+            "server": "projects/ngx-i18n-demo/src/main.server.ts",
             "prerender": true,
             "ssr": {
-              "entry": "projects/demo-app-2/server.ts"
+              "entry": "projects/ngx-i18n-demo/server.ts"
             }
           },
           "configurations": {
@@ -182,10 +188,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "demo-app-2:build:production"
+              "buildTarget": "ngx-i18n-demo:build:production"
             },
             "development": {
-              "buildTarget": "demo-app-2:build:development"
+              "buildTarget": "ngx-i18n-demo:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -200,16 +206,16 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "projects/demo-app-2/tsconfig.spec.json",
+            "tsConfig": "projects/ngx-i18n-demo/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/demo-app-2/public"
+                "input": "projects/ngx-i18n-demo/public"
               }
             ],
             "styles": [
-              "projects/demo-app-2/src/styles.scss"
+              "projects/ngx-i18n-demo/src/styles.scss"
             ],
             "scripts": []
           }

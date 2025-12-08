@@ -1,0 +1,134 @@
+import zh_TW from "./zh-Hant";
+
+const en: typeof zh_TW = {
+  '＊ 符號表示重要常用功能': '＊ Indicates important and commonly used features',
+  "設定配置": "Configuration",
+  "全部參數": "All parameters",
+  "語系與namespace": "Languages & namespaces",
+  "必填": "Required",
+  "預設": "Default",
+  "預設:": "Default:",
+  "supportedLangs-des": "Supported language code list.\nUsed to validate requested languages.\nMust match the translation filename (en.json => en; ja.json => ja).",
+  "supportedLangs-ex": "ex. ['en', 'zh-Hant', 'ja'] means these three language codes are available.",
+  "候補語系。比對不到語系時用這個。": "Fallback language used when no detected language matches.",
+  "fallbackLang-ex": "ex. 'en' means any unknown language falls back to English.",
+  "enablePageFallback-des": "支援沿用父元件的翻譯資源。\n這樣 page 層級的 component 裡寫的翻譯資源都能被裡面的其他元件用到，比如select, table...之類的元件。\n需配合在 page component 的 translationProvider() 的第二個參數設定 true。",
+  "fallbackNamespace-des": "Global namespace / fallback namespace.\nUsed when the current namespace is missing a key.",
+  "fallbackNamespace-ex": "ex. ['common', 'main-menu'] allows every component to reuse these namespaces.",
+  "supportedLangs-des-1": "Detection order for discovering the language,\nvalidated against supportedLangs.\n",
+  "supportedLangs-des-2": " - (browser only) localStorage key 'lang'.\n",
+  "supportedLangs-des-3": " - (browser only) first path segment e.g. /zh-Hant/...\n",
+  "supportedLangs-des-4": " - (browser only) navigator.language preference.\n",
+  "supportedLangs-des-5": " - from provideTranslationInit ",
+  "supportedLangs-des-6": " parameter.\n",
+  " - provideTranslationInit 的 ": " - from provideTranslationInit ",
+  " 參數。": " parameter.",
+  "customLang-des": "One of the langDetectionOrder strategies.\nDefines the custom language source.",
+  "customLang-ex": "ex. () => (navigator.language?.startsWith('zh') ? 'zh-Hant' : 'en') uses the browser preference when customLang is evaluated.",
+  "翻譯資源與路徑": "Translation assets & paths",
+  "範例:": "Examples:",
+  "請選擇專案架構": "Select project architecture",
+  "assets 裡存放翻譯資料的母資料夾位置，可放多個依序查詢。\n對應": "Asset folders containing translations; multiple roots are checked sequentially.\nCorresponds to",
+  "裡的關鍵字 '{{root}}'。": "the '{{root}}' token.",
+  "i18nRoots-ex": "ex. ['i18n/features', 'i18n'] checks these folders and applies pathTemplates like {{root}}{{lang}}{{namespace}} to locate translations such as 'i18n/features/<lang>/<namespace>.json'.",
+  "路徑html。{{root}} 一定放第一個，代表 i18nRoots，{{lang}} {{namespace}} 則代表接在 i18nRoots 路徑之後的資料夾結構，可自由調整資料夾階層。\n記得最後一個要加上副檔名。\n 支援複數路徑候選。\n": "Path templates. {{root}} points to i18nRoots, while {{lang}} and {{namespace}} describe the folder layout that follows.\nAlways include the file extension.\n Supports multiple candidate paths.\n",
+  " - 對應 i18nRoots\n": " - maps to i18nRoots\n",
+  " - 從 provideTranslation(namespace) 中得到\n": " - provided via provideTranslation(namespace)\n",
+  " - 從 setLang(lang) 中得到": " - taken from setLang(lang)",
+  "行為": "Behavior",
+  "翻譯還沒生效時的顯示行為。": "What to show before translations are ready.",
+  " - 顯示 key": " - show the key",
+  " - 顯示 空字串": " - show an empty string",
+  " - 丟錯": " - throw an error。only for develop mode. the page will break.",
+  "預載": "Preload",
+  "啟動時預載的 namespace 名稱列表，預設不預載。": "Namespaces to preload during bootstrap; defaults to none.",
+  "preloadNamespaces-ex": "ex. ['common', 'landing', 'dashboard'] preloads these namespaces when the app starts.",
+  "Cache": "Cache",
+  "版本字串會加進 cache key， 在 Loader 裡用於解 cache。預設不帶版本。": "Version strings are appended to cache keys to invalidate loader caches. Defaults to none.",
+  "Loader": "Loader",
+  "套件會偵測目前環境自己決定使用 http loader 或 fs loader。": "The library detects the runtime and picks the HTTP or FS loader automatically.",
+  "可自訂 Http loader。\n會自動在 CSR 模式下使用。\n預設建立內建的 HttpTranslationLoader。\n使用 httpOptions 裡設定的路徑(baseUrl + i18nRoots + pathTemplates)下載翻譯資源。": "Custom HTTP loader hook.\nUsed automatically in CSR.\nBy default it instantiates HttpTranslationLoader.\nIt downloads translations using baseUrl + i18nRoots + pathTemplates from httpOptions.",
+  "csrLoader-ex": "ex. (http) => new CustomHttpLoader(http, ...) replaces the default HTTP loader.",
+  "內建的 csrLoader 的相關設定": "Options for the built-in csrLoader",
+  "內建 csrLoader 用。\n下載翻譯檔的 base URL，也可指向外部下載位置， 或自訂根路徑。\n後面接 pathTemplates，組合成一個完整路徑。": "Used by the built-in csrLoader.\nBase URL for downloading translations (can be CDN or custom root).\nCombined with pathTemplates to form complete URLs.",
+  "SSR/SSG 模式下自訂檔案系統 loader。\n預設建立內建的 FsTranslationLoader。": "Custom file-system loader for SSR/SSG.\nDefaults to the built-in FsTranslationLoader.",
+  "內建的 ssrLoader 的相關設定": "Options for the built-in ssrLoader",
+  "內建 ssrLoader 用。\n檔案系統 loader 解析翻譯檔時的專案根目錄，預設為目前工作目錄。": "Used by the built-in ssrLoader.\nProject root for resolving translation files; defaults to process.cwd().",
+  "內建 ssrLoader 用。\nSSR/SSG 時相對於 baseDir 的資源資料夾，記得開發與正式環境需自動切換。": "Used by the built-in ssrLoader.\nAssets folder relative to baseDir; switches between dev and prod paths automatically.",
+  "resolvePaths-des": "Used by the built-in SSR Loader.\nReturns a set of custom candidate paths.\nThe root will iterate through i18nRoots to import (or generate) parameters.",
+  "${baseDir}/${assetPath}/${root}/${lang}/${namespace}.json": "${baseDir}/${assetPath}/${root}/${lang}/${namespace}.json",
+  "${baseDir}/${assetPath}/${root}/${namespace}/${lang}.json": "${baseDir}/${assetPath}/${root}/${namespace}/${lang}.json",
+  "強制 loader 運作於 CSR 或 SSR，預設依平台自動切換。": "Force the loader to run in CSR or SSR; defaults to platform detection.",
+  "Log": "Log",
+  "forceMode-default": "Automatic (Determined by PLATFORM_ID based on CSR / SSR)",
+  "控制是否輸出偵錯資訊，預設在開發模式為 true、正式模式為 false。": "Toggle verbose logging; defaults to true in dev and false in production.",
+
+  // form
+  '一般獨立專案': 'Normal Single project',
+
+  // ex
+
+  translationAssetsEx_1: `Typical project examples:
+1-1. Flat - separated by namespace (feature or common) folders
+<Project root>
+└── src
+    └── assets
+        └── i18n
+            ├── feature-a
+            │     ├── en.json
+            │     └── zh-Hant.json
+            ├── feature-b
+            │     ├── en.json
+            │     └── zh-Hant.json
+            └── common
+                  ├── en.json
+                  └── zh-Hant.json
+Config example:
+i18nRoots: ['i18n']
+pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
+Description: root represents assets/i18n, namespace is the folder name, and lang is the file name.
+
+1-2. Flat - separated by lang folders
+    └── assets
+        └── i18n
+            ├── en
+            │    ├── feature-a.json
+            │    ├── feature-b.json
+            │.   └── common.json
+            └── zh-Hant
+                 ├── en.json
+                 └── zh-Hant.json
+
+Config example:
+i18nRoots: ['i18n']
+pathTemplates: ['{{root}}/{{lang}}/{{namespace}}.json']
+Description: root represents assets/i18n, lang is the folder name, and namespace is the file name.
+
+2. Nested
+<Project root>
+└── src
+    └── assets
+        └── translations
+            ├── features
+            │   ├── feature-a
+            │   └── feature-b
+            └── global
+                ├── common
+                └── main-menu
+Config example:
+i18nRoots: ['translations/features', 'translations/global']
+pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
+Description: Multiple roots can be provided; the loader will try them in order.`,
+  translationAssetsEx_2: `In a Monorepo project, translation assets are usually placed under each sub-project, for example:
+<root folder>
+└── <parent folder of sub-projects>
+    ├── admin-app/src/assets/i18n
+    └── store-app/src/assets/i18n
+Config example:
+i18nRoots: ['projects/admin-app/src/assets/i18n', 'projects/store-app/src/assets/i18n']
+pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
+Description: root directly specifies the i18n path of each app, and pathTemplates can be reused.
+`
+};
+
+export default en;

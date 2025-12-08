@@ -1,65 +1,65 @@
-
 <!doctype html>
 <html lang="en">
 
 <head>
-    <title>Code coverage report for translate.provider.ts</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type='text/css'>
-        .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
-        }
-    </style>
+  <title>Code coverage report for translate.provider.ts</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="prettify.css" />
+  <link rel="stylesheet" href="base.css" />
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style type='text/css'>
+    .coverage-summary .sorter {
+      background-image: url(sort-arrow-sprite.png);
+    }
+  </style>
 </head>
-    
+
 <body>
-<div class='wrapper'>
+  <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> translate.provider.ts</h1>
-        <div class='clearfix'>
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Statements</span>
-                <span class='fraction'>31/31</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>28/28</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Functions</span>
-                <span class='fraction'>7/7</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Lines</span>
-                <span class='fraction'>31/31</span>
-            </div>
-        
-            
+      <h1><a href="index.html">All files</a> translate.provider.ts</h1>
+      <div class='clearfix'>
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Statements</span>
+          <span class='fraction'>31/31</span>
         </div>
-        <p class="quiet">
-            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
-        </p>
-        <template id="filterTemplate">
-            <div class="quiet">
-                Filter:
-                <input type="search" id="fileSearch">
-            </div>
-        </template>
+
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Branches</span>
+          <span class='fraction'>28/28</span>
+        </div>
+
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Functions</span>
+          <span class='fraction'>7/7</span>
+        </div>
+
+
+        <div class='fl pad1y space-right2'>
+          <span class="strong">100% </span>
+          <span class="quiet">Lines</span>
+          <span class='fraction'>31/31</span>
+        </div>
+
+
+      </div>
+      <p class="quiet">
+        Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the
+        previous block.
+      </p>
+      <template id="filterTemplate">
+        <div class="quiet">
+          Filter:
+          <input type="search" id="fileSearch">
+        </div>
+      </template>
     </div>
     <div class='status-line high'></div>
     <pre><table class="coverage">
@@ -345,23 +345,23 @@ export function provideTranslationLoader(options: TranslationLoaderOptions = {})
       useFactory: (platformId: Object): TranslationLoader =&gt; {
         const isSSR = options.forceMode === 'ssr' || (options.forceMode !== 'csr' &amp;&amp; isPlatformServer(platformId));
         if (isSSR) {
-          const fsBaseDir =
-            options.loaderOptions?.fsBaseDir ??
+          const baseDir =
+            options.fsOptions?.baseDir ??
             (typeof process !== 'undefined' ? process.cwd() : '');
-          const assetPath = options.loaderOptions?.assetPath ?? (isDevMode() ? 'src/assets' : 'dist/browser/assets');
+          const assetPath = options.fsOptions?.assetPath ?? (isDevMode() ? 'src/assets' : 'dist/browser/assets');
           return options.ssrLoader?.()
             ?? new FsTranslationLoader({
-              fsBaseDir,
+              baseDir,
               assetPath,
-              pathTemplates: options.loaderOptions?.pathTemplates ?? [`i18n/${TempToken.Namespace}/${TempToken.Lang}.json`, `i18n/${TempToken.Lang}/${TempToken.Namespace}.json`],
-              resolvePaths: options.loaderOptions?.resolvePaths,
-              fsModule: options.loaderOptions?.fsModule
+              pathTemplates: options.fsOptions?.pathTemplates ?? [`i18n/${TempToken.Namespace}/${TempToken.Lang}.json`, `i18n/${TempToken.Lang}/${TempToken.Namespace}.json`],
+              resolvePaths: options.fsOptions?.resolvePaths,
+              fsModule: options.fsOptions?.fsModule
             });
         }
         const http = inject(HttpClient);
         return options.csrLoader?.(http)
           ?? new HttpTranslationLoader(http, {
-            httpBaseUrl: options.httpOptions?.httpBaseUrl ?? '/assets',
+            baseUrl: options.httpOptions?.baseUrl ?? '/assets',
             pathTemplates: options.httpOptions?.pathTemplates ?? `${TempToken.Root}/${TempToken.Namespace}/${TempToken.Lang}.json`
           });
       },
@@ -369,23 +369,27 @@ export function provideTranslationLoader(options: TranslationLoaderOptions = {})
     }
   ];
 }
-&nbsp;</pre></td></tr></table></pre>
+&nbsp;</pre>
+    </td>
+    </tr>
+    </table>
+    </pre>
 
-                <div class='push'></div><!-- for sticky footer -->
-            </div><!-- /wrapper -->
-            <div class='footer quiet pad2 space-top1 center small'>
-                Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-22T13:50:36.914Z
-            </div>
-        <script src="prettify.js"></script>
-        <script>
-            window.onload = function () {
-                prettyPrint();
-            };
-        </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
-    </body>
+    <div class='push'></div><!-- for sticky footer -->
+  </div><!-- /wrapper -->
+  <div class='footer quiet pad2 space-top1 center small'>
+    Code coverage generated by
+    <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+    at 2025-09-22T13:50:36.914Z
+  </div>
+  <script src="prettify.js"></script>
+  <script>
+    window.onload = function () {
+      prettyPrint();
+    };
+  </script>
+  <script src="sorter.js"></script>
+  <script src="block-navigation.js"></script>
+</body>
+
 </html>
-    
