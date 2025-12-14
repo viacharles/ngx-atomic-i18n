@@ -1,0 +1,125 @@
+@if (translationService.readySignal()) {
+<div #pageElem>
+  <h1>{{ OverviewPaths.Formatting | t }}</h1>
+  <p>{{ 'intro' | t }}</p>
+
+  <section>
+    <h2 class="title" id="0"><span>#</span> ICU</h2>
+    <section>
+      <h3 class="subTitle config-attr" id="0-0">{{ 'basic.title' | t }}</h3>
+      <p class="desc">{{ 'basic.sub' | t }}</p>
+      <div class="sample">
+        <div class="controls">
+          <label>
+            <span>name</span>
+            <input type="text" [(ngModel)]="basicName">
+          </label>
+          <label>
+            <span>count</span>
+            <input type="number" [(ngModel)]="basicCount">
+          </label>
+        </div>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'basic.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'basic.show' | t: { name: basicName, count: basicCount } }}</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="1-0">{{ 'plural.title' | t }}</h3>
+      <p class="desc">{{ 'plural.sub' | t }}</p>
+      <div class="sample">
+        <div class="controls">
+          <label>
+            <span>count</span>
+            <input type="number" [(ngModel)]="pluralCount">
+          </label>
+        </div>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'plural.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'plural.show' | t: { count: pluralCount } }}</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="2-0">{{ 'select.title' | t }}</h3>
+      <p class="desc">{{ 'select.sub' | t }}</p>
+      <div class="sample">
+        <app-select [(ngModel)]="selectKind" [options]="genderOptions"></app-select>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'select.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'select.show' | t: { kind: selectKind } }}</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="3-0">{{ 'exact.title' | t }}</h3>
+      <p class="desc">{{ 'exact.sub' | t }}</p>
+      <div class="sample">
+        <div class="controls">
+          <label>{{ 'label.count' | t }}
+            <input type="number" [(ngModel)]="exactCount">
+          </label>
+        </div>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'exact.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'exact.show' | t: { count: exactCount } }}</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="4-0">{{ 'nested.title' | t }}</h3>
+      <p class="desc">{{ 'nested.sub' | t }}</p>
+      <div class="sample">
+        <div class="controls">
+          <label>{{ 'label.count' | t }}
+            <input type="number" [(ngModel)]="nestedCount">
+          </label>
+          <app-select [(ngModel)]="nestedRole" [options]="roleOptions"></app-select>
+        </div>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'nested.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'nested.show' | t: { count: nestedCount, role: nestedRole } }}</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="5-0">{{ 'interpolation.title' | t }}</h3>
+      <p class="desc">{{ 'interpolation.sub' | t }}</p>
+      <div class="sample">
+        <div class="controls">
+          <label>{{ 'label.name' | t }}
+            <input type="text" [(ngModel)]="interpolationName">
+          </label>
+          <label>{{ 'label.count' | t }}
+            <input type="number" [(ngModel)]="interpolationCount">
+          </label>
+        </div>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'interpolation.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'interpolation.show' | t: { name: interpolationName, count:
+          interpolationCount } }}</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="6-0">{{ 'invalid.title' | t }}</h3>
+      <p class="desc">{{ 'invalid.sub' | t }}</p>
+      <div class="sample">
+        <div class="controls">
+          <label>{{ 'label.count' | t }}
+            <input type="number" [(ngModel)]="invalidCount">
+          </label>
+        </div>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'invalid.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'invalid.show' | t: { count: invalidCount } }}</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="7-0">{{ 'missing.title' | t }}</h3>
+      <p class="desc">{{ 'missing.sub' | t }}</p>
+      <div class="sample">
+        <div class="controls">
+          <label>{{ 'label.name' | t }}
+            <input type="text" [(ngModel)]="missingName">
+          </label>
+          <label>{{ 'label.count' | t }}
+            <input type="number" [(ngModel)]="missingCount">
+          </label>
+        </div>
+        <div class="tag-ex"><span>翻譯資源</span> {{ 'missing.show' | t}}</div>
+        <div class="tag-preview"><span>結果</span> {{ 'missing.show' | t: { name: missingName || undefined, count:
+          missingCount } }}</div>
+      </div>
+    </section>
+  </section>
+</div>
+}

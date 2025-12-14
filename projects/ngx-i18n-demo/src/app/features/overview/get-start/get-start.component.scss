@@ -2,7 +2,7 @@
 @use "variables" as v;
 @use "mixins" as m;
 
-@include m.push-off-sticky();
+@include m.page-with-sticky-titles();
 
 .web-type-form {
   display: grid;
@@ -31,19 +31,6 @@
     position: absolute;
     top: -5px;
     left: -10px;
-  }
-
-
-  span {
-    cursor: pointer;
-    margin-left: 0.4rem;
-    font-size: 16px;
-    background-color: light-dark(var(--brown-100), var(--brown-400));
-    color: c.$link;
-    border: 1px solid light-dark(var(--brown-400), var(--brown-400));
-    border-radius: map-get(v.$border-radius , sm);
-    padding: 0.1rem 0.2rem;
-
   }
 }
 

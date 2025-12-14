@@ -2,6 +2,7 @@ import zh_TW from "./zh-Hant";
 
 const en: typeof zh_TW = {
   '＊ 符號表示重要常用功能': '＊ Indicates important and commonly used features.You may ignore the others.',
+  "pipe-t-1": "The nearest namespace will be used automatically.\nThis applies to the same service",
   'lang-des':
     'Current active language as a signal.\nUsed for reactive bindings inside components that prefer signals over observables.\nAlways kept in sync with currentLang and onLangChange.',
 

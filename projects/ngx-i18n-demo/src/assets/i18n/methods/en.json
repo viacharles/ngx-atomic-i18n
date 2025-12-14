@@ -1,5 +1,6 @@
 {
   "＊ 符號表示重要常用功能": "＊ Indicates important and commonly used features.You may ignore the others.",
+  "pipe-t-1": "The nearest namespace will be used automatically.\nThis applies to the same service",
   "lang-des": "Current active language as a signal.\nUsed for reactive bindings inside components that prefer signals over observables.\nAlways kept in sync with currentLang and onLangChange.",
   "currentLang-des": "Current active language code.\nSnapshot value of the language, useful in imperative code paths.\nEquivalent to lang() but easier to use in plain TypeScript.",
   "currentLang-ex": "ex. 'en', 'zh-Hant', 'ja'.",

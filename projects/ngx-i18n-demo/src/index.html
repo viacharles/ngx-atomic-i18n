@@ -11,6 +11,39 @@
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+  <script>
+    (function () {
+      const SUPPORTED_LANGS = ['en', 'zh-Hant'];
+      const LANG_ALIASES = {
+        'en': 'en',
+        'en-US': 'en',
+        'en-GB': 'en',
+
+        'zh': 'zh-Hant',
+        'zh-TW': 'zh-Hant',
+        'zh-Hant': 'zh-Hant',
+        'zh-HK': 'zh-Hant',
+      };
+
+      const normalizeLangCode = (raw) => {
+        if (!raw) return null;
+        const key = raw.trim();
+        return LANG_ALIASES[key] ?? null;
+      }
+      const path = window.location.pathname;
+      if (path !== '/' && path !== '/index.html') return;
+      const stored = normalizeLangCode(localStorage.getItem('lang'));
+      if (SUPPORTED_LANGS.includes(stored)) {
+        window.location.replace(`/${stored}`);
+      };
+      const navLang = navigator.language;
+      const normalizeNavLang = normalizeLangCode(navLang);
+      if (normalizeNavLang) {
+        localStorage.setItem('lang', normalizeNavLang);
+        location.replace(`/${normalizeNavLang}`);
+      }
+    })();
+  </script>
 </head>
 
 <body>

@@ -1,0 +1,83 @@
+@use "mixins" as m;
+@use "colors" as c;
+
+@include m.page-with-sticky-titles();
+
+.tag-ex {
+  width: fit-content;
+  border: 1px solid c.$tag-outline;
+  border-radius: 6px 6px 0 0;
+  padding: 0.2rem 0.5rem;
+
+  span {
+    min-width: 70px;
+    width: 180px;
+    padding-right: 0.3rem;
+    margin-right: 0.3rem;
+    color: c.$neutral-50;
+    border-right: 1px solid c.$tag-outline;
+  }
+}
+
+.tag-preview {
+  display: flex;
+  width: fit-content;
+  border: 1px solid c.$tag-outline;
+  border-radius: 0 0 6px 6px;
+  padding: 0.2rem 0.5rem;
+  border-top: none;
+
+  span {
+    display: flex;
+    min-width: 70px;
+    padding-right: 0.3rem;
+    margin-right: 0.3rem;
+    color: c.$neutral-50;
+    border-right: 1px solid c.$tag-outline;
+  }
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  margin-bottom: 0.3rem;
+  padding: 0.3rem 0.2rem;
+  border: 1px solid gray;
+  border-radius: 6px;
+
+  &>*:not(:last-child) {
+    border-right: 1px solid gray;
+  }
+
+  label {
+    display: flex;
+    min-width: 100px;
+    width: 185px;
+    padding: 0.1rem 0.2rem;
+    color: c.$neutral-50;
+
+    input {
+      width: 80px;
+    }
+  }
+
+  app-select {
+    height: 25px;
+    margin-bottom: 0;
+
+    ::ng-deep {
+      fieldset {
+        padding: 0;
+        border: none;
+      }
+    }
+  }
+}
+
+app-select {
+  display: flex;
+  width: 185px;
+  height: 35.78px;
+  margin-bottom: 0.3rem;
+}

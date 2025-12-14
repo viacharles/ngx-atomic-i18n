@@ -1,23 +1,19 @@
 {
   "scripts": {
     "ng": "ng",
-    "start": "npm run i18n-init:demo-app && ng serve demo-app",
     "build": "ng build",
-    "postinstall": "node ./projects/demo-app/bin/translation-init.mjs",
-    "serve:ssr:demo-app": "node dist/demo-app/server/server.mjs",
-    "start:csr:demo-app": "npm run i18n-init:demo-app && ng serve demo-app",
-    "i18n-init:demo-app": "echo \"No build step needed for JSON-only mode.\"",
-    "watch": "ng build --watch --configuration development",
-    "test:ngx-i18n": "cd projects/ngx-i18n && npm run test",
+    "watch": "ng build --watch -- configuration development",
+    "node:ssr:ngx-i18n-demo": "node dist/ngx-i18n-demo/server/server.mjs",
+    "build:ssr:ngx-i18n-demo": "ng build ngx-i18n-demo",
+    "ssr:ngx-i18n-demo": "npm run i18n-build:ngx-i18n-demo && npm run build:ssr:ngx-i18n-demo && npm run node:ssr::ngx-i18n-demo",
+    "i18n-build:ngx-i18n-demo": "node projects/ngx-i18n-demo/bin/translation-build.mjs --src=projects/ngx-i18n-demo/src/app --out=projects/ngx-i18n-demo/src/assets/i18n",
+    "start:ngx-i18n-demo": "ng serve ngx-i18n-demo ",
+    "start:ngx-i18n-demo:with-i18n": "npm run i18n-build:ngx-i18n-demo && ng serve ngx-i18n-demo",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "start:demo-app": "ng serve demo-app",
-    "serve:ssr:ngx-i18n-demo": "node dist/ngx-i18n-demo/server/server.mjs",
-    "i18n-init:ngx-i18n-demo": "echo \"No build step needed for JSON-only mode.\"",
-    "i18n-build:ngx-i18n-demo": "node projects/ngx-i18n-demo/bin/translation-build.mjs --src=projects/ngx-i18n-demo/src/app --out=projects/ngx-i18n-demo/src/assets/i18n",
-    "start:ngx-i18n-demo": "ng serve ngx-i18n-demo ",
-    "start:ngx-i18n-demo:with-i18n": "npm run i18n-build:ngx-i18n-demo && ng serve ngx-i18n-demo"
+    "test:ngx-i18n": "cd projects/ngx-i18n && npm run test",
+    "postinstall": "node ./projects/demo-app/bin/translation-init.mjs"
   },
   "private": true,
   "dependencies": {

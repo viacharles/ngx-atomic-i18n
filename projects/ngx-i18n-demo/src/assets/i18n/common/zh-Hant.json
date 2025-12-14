@@ -5,6 +5,12 @@
   "operational-testing": "操作測試",
   "getting-started": "開始",
   "methods": "方法",
-  "configuration-options": "初始配置 - provideTranslationInit()",
-  "formatting": "格式化"
+  "init-configuration-options": "初始配置 - provideTranslationInit()",
+  "comp-configuration-options": "元件配置 - provideTranslation() ",
+  "formatting": "格式化",
+  "說明": "說明",
+  "展開": "展開",
+  "收合": "收合",
+  "複製": "複製",
+  "已複製": "已複製"
 }

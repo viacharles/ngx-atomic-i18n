@@ -2,7 +2,7 @@
 @use "colors" as c;
 
 /** h2 主標題, h3 副標題 **/
-@mixin push-off-sticky() {
+@mixin page-with-sticky-titles() {
   h2.title {
     position: sticky;
     top: 3.5rem;
@@ -30,6 +30,46 @@
     font-size: 20px;
     text-wrap-mode: nowrap;
   }
+
+  h3.subTitle {
+    display: flex;
+    padding-top: 1rem;
+    margin: 0; // override mixin
+    color: c.$primary-300;
+  }
+
+  .config-attr {
+    color: c.$icon-font;
+    font-size: 1rem;
+    text-transform: none;
+  }
+
+  .config-type {
+    display: flex;
+    font-weight: 600;
+    color: #57bbea;
+  }
+
+  .default-type {
+    display: flex;
+    font-weight: 600;
+    color: c.$primary-500;
+  }
+
+  pre {
+    margin: 0;
+    line-height: 22px;
+
+    &.config-ex {
+      flex: 1;
+      color: c.$neutral-50;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-bottom: 1px solid c.$outline-100;
+      padding-bottom: 0.5rem;
+    }
+  }
+
 }
 
 /** RWD **/

@@ -1,7 +1,7 @@
 @use "colors" as c;
 @use "mixins" as m;
 
-@include m.push-off-sticky();
+@include m.page-with-sticky-titles();
 
 h3.subTitle {
   display: flex;

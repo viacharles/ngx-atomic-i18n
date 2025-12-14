@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule, Routes } from '@angular/router';
 import { enumToName } from '@demo2-shared/systems/router-system/router.util';
-import { TranslationPipe } from 'ngx-i18n';
+import { TranslationPipe, TranslationService } from 'ngx-i18n';
 import { appRoutes } from 'projects/ngx-i18n-demo/src/app/app.routes';
 import { RouterService } from 'projects/ngx-i18n-demo/src/core/services/router.service';
 import { Subscription } from 'rxjs';
@@ -20,13 +20,14 @@ export interface NavItem {
   styleUrl: './side-nav.component.scss'
 })
 export class SideNavComponent implements OnInit, OnDestroy {
-  navItems = this.buildNavTree(appRoutes);
+  private readonly translationService = inject(TranslationService);
+  navItems = this.buildNavTree(appRoutes[1].children!, '/' + this.translationService.lang());
   currentUrl = signal<string>('');
   subscription = new Subscription();
   constructor(
     public activateRoute: ActivatedRoute,
     public router: Router,
-    public routerService: RouterService
+    public routerService: RouterService,
   ) { }
   ngOnInit(): void {
     this.subscription.add(

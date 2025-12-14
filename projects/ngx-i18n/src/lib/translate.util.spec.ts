@@ -14,14 +14,14 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 describe('translate.util (pure functions)', () => {
   describe('detectPreferredLang', () => {
-    it('should return initialLang if supported and langDetectionOrder is initialLang', () => {
+    it('should return customInitialLang if supported and langDetectionOrder is customInitialLang', () => {
       const config: TranslationConfig = {
         supportedLangs: ['en', 'zh-Hant'],
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'zh-Hant',
-        langDetectionOrder: ['initialLang', 'localStorage', 'url', 'browser', 'fallback'],
+        customInitialLang: () => 'zh-Hant',
+        langDetectionOrder: ['customInitialLang', 'localStorage', 'url', 'browser', 'fallback'],
       };
       localStorage.clear()
       expect(detectPreferredLang(config)).toBe('zh-Hant');
@@ -32,8 +32,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'fr',
-        langDetectionOrder: ['localStorage', 'url', 'browser', 'initialLang', 'fallback'],
+        customInitialLang: () => 'fr',
+        langDetectionOrder: ['localStorage', 'url', 'browser', 'customInitialLang', 'fallback'],
       };
       expect(detectPreferredLang(config)).toBe('en');
     });
@@ -43,8 +43,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'fr',
-        langDetectionOrder: ['initialLang'],
+        customInitialLang: () => 'fr',
+        langDetectionOrder: ['customInitialLang'],
       };
       // lang=fr, supportedLangs=['en']，會進入 if，但不 return，所以最後走到 return fallbackLang
       expect(detectPreferredLang(config)).toBe('en');
@@ -64,8 +64,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'zh-Hant',
-        langDetectionOrder: ['localStorage', 'initialLang'],
+        customInitialLang: () => 'zh-Hant',
+        langDetectionOrder: ['localStorage', 'customInitialLang'],
       };
       expect(detectPreferredLang(config)).toBe('en');
       // 恢復原 window、localStorage
@@ -82,8 +82,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'en',
-        langDetectionOrder: ['url', 'initialLang'],
+        customInitialLang: () => 'en',
+        langDetectionOrder: ['url', 'customInitialLang'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
       delete (global as any).window;
@@ -98,20 +98,32 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'en',
-        langDetectionOrder: ['browser', 'initialLang'],
+        customInitialLang: () => 'en',
+        langDetectionOrder: ['browser', 'customInitialLang'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
       delete (global as any).navigator;
     });
-    it('should detect language from initialLang', () => {
+    it('should detect language from customInitialLang', () => {
       const config: TranslationConfig = {
         supportedLangs: ['en', 'zh-Hant'],
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'zh-Hant',
-        langDetectionOrder: ['initialLang', 'fallback'],
+        customInitialLang: () => 'zh-Hant',
+        langDetectionOrder: ['customInitialLang', 'fallback'],
+      };
+      expect(detectPreferredLang(config)).toBe('zh-Hant');
+    });
+
+    it('should detect language from clientRequest when provided', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en', 'zh-Hant'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        clientRequestLang: 'zh-Hant',
+        langDetectionOrder: ['clientRequest', 'fallback'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
     });
@@ -243,7 +255,7 @@ describe('translate.util', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'en',
+        customInitialLang: () => 'en',
         langDetectionOrder: ['browser'],
       };
       const origNavigator = global.navigator;
@@ -260,8 +272,8 @@ describe('translate.util', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        initialLang: () => 'fr',
-        langDetectionOrder: ['initialLang', 'fallback'],
+        customInitialLang: () => 'fr',
+        langDetectionOrder: ['customInitialLang', 'fallback'],
       };
       expect(detectPreferredLang(config)).toBe('en');
     });
@@ -345,27 +357,27 @@ describe('detectPreferredLang (SSR scenarios)', () => {
     }
   });
 
-  it('should handle initialLang as string instead of function', () => {
+  it('should handle customInitialLang as string instead of function', () => {
     const config: TranslationConfig = {
       supportedLangs: ['en', 'zh-Hant'],
       fallbackLang: 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
-      initialLang: 'zh-Hant' as any, // 測試字串情況
-      langDetectionOrder: ['initialLang', 'fallback'],
+      customInitialLang: 'zh-Hant' as any, // 測試字串情況
+      langDetectionOrder: ['customInitialLang', 'fallback'],
     };
 
     expect(detectPreferredLang(config)).toBe('zh-Hant');
   });
 
-  it('should handle initialLang as undefined', () => {
+  it('should handle customInitialLang as undefined', () => {
     const config: TranslationConfig = {
       supportedLangs: ['en', 'zh-Hant'],
       fallbackLang: 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
-      initialLang: undefined,
-      langDetectionOrder: ['initialLang', 'fallback'],
+      customInitialLang: undefined,
+      langDetectionOrder: ['customInitialLang', 'fallback'],
     };
 
     expect(detectPreferredLang(config)).toBe('en');

@@ -7,14 +7,16 @@ export interface TranslationConfig {
   fallbackLang: string;
   i18nRoots: string[];
   pathTemplates: string[] | string;
-  fallbackNamespace: string | string[];
-  langDetectionOrder: ('localStorage' | 'url' | 'browser' | 'customLang' | 'fallback')[];
+  fallbackNamespace: string;
+  langDetectionOrder: ('localStorage' | 'url' | 'browser' | 'customLang' | 'fallback' | 'clientRequest')[];
   /** Enable verbose logging. Defaults to true in dev mode. */
   debug?: boolean;
   /** Enable use  */
   enablePageFallback: boolean;
   preloadNamespaces?: string[];
   customLang?: (() => string) | string;
+  /** Language passed from SSR request and reused on the client. */
+  clientRequestLang?: string | null;
   missingTranslationBehavior?: MissingTranslationBehavior;
 }
 
@@ -65,7 +67,7 @@ export interface FsModuleLike {
 export interface FsLoaderOptions {
   /**  only for SSR , e.g. process.cwd() */
   baseDir?: string;
-  /** e.g. 'projects/app/src/assets' (dev) or 'dist/app/browser/assets' (prod) */
+  /** e.g. 'projects/app/src/assets' (dev) or 'dist/app/browser/assets' */
   assetPath?: string;
   /** Custom resolver that returns an ordered list of candidate absolute paths. */
   resolvePaths?: (ctx: {

@@ -1,0 +1,63 @@
+@use 'sass:color';
+@use "colors" as c;
+@use "mixins" as m;
+
+@include m.page-with-sticky-titles();
+
+
+.column {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.25rem 0 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  align-items: flex-start;
+  border-left: 1px solid #eccccc;
+
+  div,
+  h3 {
+    width: 100%;
+  }
+
+  .column {
+    width: 100%;
+  }
+
+
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &>*:not(:first-child) {
+    padding-left: 0.5rem;
+  }
+
+  &.group {
+    background: rgba(255, 255, 255, 0.02);
+    font-weight: 600;
+  }
+
+  h2.title {
+    color: c.$primary-500;
+  }
+
+  h3.subTitle {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+
+.braces {
+  font-weight: 700;
+  color: #fac5c5
+}
+
+p {
+  display: flex;
+}
+
+.row {
+  display: flex;
+}

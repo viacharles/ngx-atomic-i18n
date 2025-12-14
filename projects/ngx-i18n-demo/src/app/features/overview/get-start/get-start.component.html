@@ -5,24 +5,27 @@
     <h2 class="title" id="0"><span>#</span> {{' 最簡單 / 最高效 達成 Lazy load 的 Angular 翻譯套件'|t}}</h2>
     <section>
       <h3 class="subTitle" id="0-0">{{'需求'|t}}</h3>
-      <div class="tag demand">{{'Angular 16+ (無 peerDependencies)'|t}}<span>{{'說明'|t}}
+      <div class="tag demand">{{'需求-1'|t}}<button (click)="openDescribeDialog('des-dialog-需求')">{{'說明'|t}}
           <!-- 說明popup： pipe(TranslationPipe) / directive(TranslationDirective) 是 standalone，並且套件裡有使用 signal 與 inject 等 API -->
-        </span></div>
+        </button></div>
       <!-- 優點 tags -->
       <h3 class="subTitle" id="0-1">{{'優點'|t}}</h3>
       <div class="advantage">
-        <div class="tag"><app-icon-star></app-icon-star>{{'預設 lazy load'|t}}</div>
+        <div class="tag"><app-icon-star></app-icon-star>{{'預設 lazy load'|t}}<button
+            (click)="openDescribeDialog('des-dialog-lazy-load')">{{'說明'|t}}</button></div>
         <div class="tag"><app-icon-star></app-icon-star>{{'動態切換語系'|t}}</div>
-        <div class="tag"><app-icon-star></app-icon-star>{{'極簡設定'|t}} <span>{{'說明'|t}}</span></div>
+        <div class="tag"><app-icon-star></app-icon-star>{{'極簡設定'|t}} <button
+            (click)="openDescribeDialog('des-dialog-極簡設定')">{{'說明'|t}}</button></div>
         <div class="tag"><app-icon-star></app-icon-star>{{'支援 CSR/SSR/SSG'|t}}</div>
-        <div class="tag"><app-icon-star></app-icon-star>{{'可設定沿用父元件的翻譯資源'|t}}</div>
-        <div class="tag"><app-icon-star></app-icon-star>{{'體積最小化'|t}} <span>{{'說明'|t}}
-            <!-- 說明popup：tree-shake + standalone API，體積最小化 -->
-          </span></div>
-        <div class="tag"><app-icon-star></app-icon-star>{{'效能最佳化'|t}} <span>{{'說明'|t}}
-            <!-- 說明popup：自動快取+signals，強效能 -->
-          </span></div>
-        <div class="tag"><app-icon-star></app-icon-star>{{'不閃 key'|t}}</div>
+        <div class="tag"><app-icon-star></app-icon-star>{{'頁面作為翻譯根'|t}}<button
+            (click)="openDescribeDialog('des-dialog-頁面作為翻譯根')">{{'說明'|t}}</button></div>
+        <div class="tag"><app-icon-star></app-icon-star>{{'體積最小化'|t}} </div>
+        <div class="tag"><app-icon-star></app-icon-star>{{'效能最佳化'|t}} <button
+            (click)="openDescribeDialog('des-dialog-效能最佳化')">{{'說明'|t}}
+          </button></div>
+        <div class="tag"><app-icon-star></app-icon-star>{{'不閃 key'|t}} <button
+            (click)="openDescribeDialog('des-dialog-不閃key')">{{'說明'|t}}
+          </button></div>
       </div>
     </section>
   </section>
@@ -47,8 +50,9 @@
       }
       <p>{{'在' | t}} {{isStandalone ? 'app.config.ts' : 'app.module.ts'}} {{'上設置' | t}}
         provideTranslationInit():</p>
-      <app-code-block [title]="'極簡設定' | t" language="typescript" [code]="text.initConfigCode()"></app-code-block>
       }
+      <app-code-block [title]="'極簡設定' | t" language="typescript"
+        [code]="configForm.valid ? text.initConfigCode() : ''"></app-code-block>
       <h3 class="subTitle" id="1-2"><span>STEP 3</span> {{'存放翻譯資源'|t}}</h3>
       <pre>{{'getStart.storageNote' | t}}</pre>
       <app-code-block [title]="'翻譯資源資料夾範例' | t" language="typescript"
@@ -57,7 +61,8 @@
       <app-code-block [title]="'翻譯資料範例' | t" language="typescript"
         [code]="'getStart.jsonArchitecture'|t"></app-code-block>
       <h3 class="subTitle" id="1-3"><span>STEP 4</span> {{'載入翻譯資源'|t}}</h3>
-      <app-select id="111" [title]="'從何處載入翻譯' | t" [options]="lazyLoadOptions"
+      <!-- 從何處載入翻譯: {{'從何處載入翻譯' | t}} -->
+      <app-select id="111" [title]="'從何處載入翻譯'|t" [options]="lazyLoadOptions"
         [formControl]="lazyLoadControl"></app-select>
       <app-code-block [title]="'載入設置範例' | t" language="typescript"
         [code]="text.sourceLoadProvider()|t"></app-code-block>

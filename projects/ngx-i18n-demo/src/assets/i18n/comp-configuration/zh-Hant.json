@@ -1,0 +1,7 @@
+{
+  "＊ 符號表示重要常用功能": "＊ 符號表示重要常用功能",
+  "全部參數": "全部參數",
+  "namespace-des": "此元件的翻譯資源的代號（例如 'getting-started'。）\n這個值會告訴 TranslationService 應該載入哪一個命名空間，以及到哪裡查找翻譯鍵。\n必須與此功能的資料夾名稱相同（例如 翻譯資源在 header/en.json, 對應的元件 header 就須在 providers 裡設定 provideTranslation('header') ",
+  "頁層級": "頁層級",
+  "isPage-des": "成為所有子元件的翻譯 fallback，子元件找不到的翻譯 key 會從這裡補，這裡找不到才去找全域('common')。\n此功能是為了資料驅動 UI 的情況，比如 Data-Driven Table, Data-Driven Forms...之類。\n讓這些元件能吃到 page 元件的翻譯"
+}

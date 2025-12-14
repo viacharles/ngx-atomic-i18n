@@ -1,0 +1,3 @@
+@use "mixins" as m;
+
+@include m.page-with-sticky-titles();

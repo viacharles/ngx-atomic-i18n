@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { IconCrossComponent } from '@demo2-shared/icons/icon-cross/icon-cross.component';
 import { DialogModel } from '../../dialog.model';
 import { DIALOG_DATA } from '../../dialog.token';
+import { TranslationPipe } from 'ngx-i18n';
 
 @Component({
   selector: 'app-describe-dialog',
   standalone: true,
-  imports: [IconCrossComponent],
+  imports: [IconCrossComponent, TranslationPipe],
   templateUrl: './describe-dialog.component.html',
   styleUrl: './describe-dialog.component.scss'
 })

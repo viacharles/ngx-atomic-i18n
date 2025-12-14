@@ -8,11 +8,16 @@ const zh_TW = {
   'operational-testing': '操作測試',
   'getting-started': '開始',
   methods: '方法',
-  'configuration-options': '初始配置 - provideTranslationInit()',
+  'init-configuration-options': '初始配置 - provideTranslationInit()',
+  'comp-configuration-options': '元件配置 - provideTranslation() ',
   formatting: '格式化',
 
-  // 請選擇: '請選擇'
-};
-
+  //button
+  '說明': '說明',
+  '展開': '展開',
+  "收合": "收合",
+  "複製": "複製",
+  "已複製": "已複製"
+}
 
 export default zh_TW;

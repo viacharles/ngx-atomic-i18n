@@ -1,6 +1,8 @@
-@if (translationService.readySignal()) {}
+@if (translationService.readySignal()) {
 <div #pageElem>
-  <h1>{{OverviewPaths.ConfigurationOptions|t}}</h1>
+  <h1>{{OverviewPaths.InitConfigurationOptions|t}}</h1>
+  <app-code-block
+    [code]="'provideTranslationInit(\config?: ProvideTranslationInitOptions\n): Provider[]'"></app-code-block>
   <p>{{'全部參數'|t}}</p>
   <p>{{"＊ 符號表示重要常用功能"|t}}</p>
   <section>
@@ -17,7 +19,7 @@
 
       <!-- ＊ fallbackNamespace -->
       <h3 class="subTitle config-attr" id="0-1">＊ fallbackNamespace</h3>
-      <p class="config-type">string | string[] <span class="default-type">{{'預設:'|t}} <span>
+      <p class="config-type">string <span class="default-type">{{'預設:'|t}} <span>
             'common'
           </span></span>
       </p>
@@ -41,27 +43,32 @@
 
       <!-- langDetectionOrder -->
       <h3 class="subTitle config-attr" id="0-4">langDetectionOrder</h3>
-      <p class="config-type">('localStorage' | 'url' | 'browser' | 'customLang' | 'fallback')[] </p>
+      <p class="config-type">('localStorage' | 'clientRequest' | 'url' | 'browser' | 'customInitialLang' | 'fallback')[]
+      </p>
       <div class="default-type">{{'預設'|t}}: <span>
-          ['localStorage', 'url', 'browser', 'customLang', 'fallback']
+          ['url', 'clientRequest', 'localStorage', 'browser', 'customInitialLang', 'fallback']
         </span></div>
-      <pre>{{"supportedLangs-des-1"|t}}<strong>localStorage</strong>{{"supportedLangs-des-2"|t}}<strong>url</strong>{{"supportedLangs-des-3"|t}}<strong>browser</strong>{{"supportedLangs-des-4"|t}}<strong>customLang</strong>{{"supportedLangs-des-5"|t}}<a class="link"[routerLink]="[]" [fragment]="'0-5'"> customLang</a>{{"supportedLangs-des-6"|t}}<strong>fallbackLang</strong>{{" - provideTranslationInit 的 "|t}}<a class="link" [routerLink]="[]" [fragment]="'0-3'">fallbackLang</a>{{" 參數。"|t}}</pre>
+      <pre>{{"supportedLangs-des-1"|t}}<strong>url</strong>{{"supportedLangs-des-3"|t}}<strong>clientRequest</strong>{{"supportedLangs-des-7"|t}}<strong>localStorage</strong>{{"supportedLangs-des-2"|t}}<strong>browser</strong>{{"supportedLangs-des-4"|t}}<strong>customInitialLang</strong>{{"supportedLangs-des-5"|t}}<a class="link"[routerLink]="[]" [fragment]="'0-5'"> customInitialLang</a>{{"supportedLangs-des-6"|t}}<strong>fallbackLang</strong>{{" - provideTranslationInit 的 "|t}}<a class="link" [routerLink]="[]" [fragment]="'0-3'">fallbackLang</a>{{" 參數。"|t}}
+</pre>
+      <p>{{'langDetectionOrder-ex-button'|t}}</p>
+      <app-code-block [hasExpandBtn]="true" [code]="'langDetectionOrder-ex'|t"></app-code-block>
+
       <pre class="config-ex"></pre>
 
-      <!-- customLang -->
-      <h3 class="subTitle config-attr" id="0-5">customLang</h3>
+      <!-- customInitialLang -->
+      <h3 class="subTitle config-attr" id="0-5">customInitialLang</h3>
       <div class="config-type">{{'(). => string'}} <span class="default-type">{{'預設'|t}}: <span>
             undefined
           </span></span></div>
-      <pre>{{'customLang-des'|t}}</pre>
-      <pre class="config-ex">{{"customLang-ex"|t}}</pre>
+      <pre>{{'customInitialLang-des'|t}}</pre>
+      <pre class="config-ex">{{"customInitialLang-ex"|t}}<span>t</span></pre>
     </section>
   </section>
   <section>
     <!-- 翻譯資源與路徑 -->
     <h2 class="title" id="1"><span>#</span>{{'翻譯資源與路徑'|t}}</h2>
     <p>{{'範例:' | t}}</p>
-    <app-select [title]="'請選擇專案架構'" [options]="structureOptions" [(ngModel)]="structureSelectValue"
+    <app-select [title]="'請選擇專案架構'|t" [options]="structureOptions" [(ngModel)]="structureSelectValue"
       (ngModelChange)="changeStructure($event)"></app-select>
     <app-code-block [code]="structureText | t"></app-code-block>
     <section>
@@ -302,3 +309,4 @@
   </section>
 
 </div>
+}

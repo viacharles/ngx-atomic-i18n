@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { provideTranslation, TranslationPipe } from 'ngx-i18n';
 import { DialogService } from '@demo2-shared/systems/dialog-system/dialog.service';
 import { SelectComponent } from '@demo2-shared/systems/form-system/components/selects/select/select.component';
@@ -18,7 +18,7 @@ import { enumToOptions } from '@demo2-shared/utils/common.util';
   selector: 'app-get-start',
   standalone: true,
   imports: [ReactiveFormsModule, CodeBlockComponent, TranslationPipe, SelectComponent, IconStarComponent],
-  providers: [provideTranslation('get-start')],
+  providers: [provideTranslation('get-start', true)],
   templateUrl: './get-start.component.html',
   styleUrl: './get-start.component.scss'
 })
@@ -48,6 +48,7 @@ export class GetStartComponent extends PageBase implements OnInit {
 
   constructor(
     private dialogService: DialogService,
+    private injector: Injector
   ) {
     super()
   }
@@ -109,7 +110,7 @@ export class GetStartComponent extends PageBase implements OnInit {
   }
 
   openDescribeDialog(describe: string): void {
-    this.dialogService.openDescribe(describe)
+    this.dialogService.openDescribe(describe, undefined, this.injector)
   }
 
 }

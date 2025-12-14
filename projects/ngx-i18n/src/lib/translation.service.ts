@@ -9,7 +9,7 @@ export class TranslationService {
   /** Shared translation configuration resolved from the host application. */
   private readonly config = inject(TRANSLATION_CONFIG);
   private readonly parent = inject(TranslationService, { skipSelf: true, optional: true });
-  private readonly isPageRoot = inject(PAGE_TRANSLATION_ROOT, { skipSelf: true, optional: true }) ?? false;
+  private readonly isPageRoot = inject(PAGE_TRANSLATION_ROOT, { self: true, optional: true }) ?? false;
   /** Core translation engine that handles lookups and formatter lifecycle. */
   private readonly core = inject(TranslationCoreService);
   /** Loader implementation responsible for fetching translation payloads. */
@@ -55,15 +55,14 @@ export class TranslationService {
   }
 
   constructor(
-    @Inject(TRANSLATION_NAMESPACE) public readonly namespaceInput: string | string[],
+    @Inject(TRANSLATION_NAMESPACE) public readonly namespaceInput: string,
   ) {
-    const primary = Array.isArray(namespaceInput) ? namespaceInput[0] : namespaceInput as string;
-    this.namespace = primary;
+    this.namespace = namespaceInput;
     effect(() => {
       const nsKey = this.getNskey;
       if (!this.ready) {
         this.info(`Namespace "${this.namespace}" is not ready. Loading for "${this.lang()}" using key "${nsKey}".`);
-        this.core.load(nsKey, () => this.loader.load(this.config.i18nRoots, this.namespace, this.lang()))
+        this.core.load(nsKey, () => this.loader.load(this.config.i18nRoots, this.namespace, this.lang()));
       }
     })
   }
@@ -86,10 +85,8 @@ export class TranslationService {
       return '';
     }
     const formatResult = this.core.getAndCreateFormatter(nsKey, key);
-    if (key === 'getStart.config.supportedLangHint') {
-      console.log('aa-nsKey', nsKey)
-    }
     if (formatResult) return formatResult.format(params);
+
     if (this.config.enablePageFallback && !this.isPageRoot && this.parent) {
       return this.parent.t(key, params);
     }

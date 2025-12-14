@@ -53,7 +53,7 @@ describe('Translation Integration Tests', () => {
       fallbackLang: 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
-      langDetectionOrder: ['localStorage', 'url', 'browser', 'customLang', 'fallback'],
+      langDetectionOrder: ['localStorage', 'url', 'browser', 'customInitialLang', 'fallback'],
       missingTranslationBehavior: 'show-key',
       pathTemplates: ['i18n/{namespace}/{lang}.json'],
       enablePageFallback: false

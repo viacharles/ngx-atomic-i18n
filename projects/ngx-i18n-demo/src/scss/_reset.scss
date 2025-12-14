@@ -1,0 +1,46 @@
+@use "colors" as c;
+@use "variables" as v;
+
+pre,
+code,
+kbd,
+samp {
+  font-family: inherit;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+body,
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  border: none;
+  outline: none;
+
+  &::placeholder {
+    color: c.$neutral-50;
+  }
+}
+
+ul,
+li,
+p {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

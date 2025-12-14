@@ -4,7 +4,7 @@ import { CustomNgForm, getCustomNgFormProvider } from '../../../value-accessor';
 import { Option } from 'projects/ngx-i18n-demo/src/app/shared/interfaces/common.interface';
 import { DropdownDialogComponent } from '../../../../dialog-system/components/dropdown-dialog/dropdown-dialog.component';
 import { DialogService } from '../../../../dialog-system/dialog.service';
-import { TranslationPipe } from 'ngx-i18n';
+import { provideTranslation, TranslationPipe } from 'ngx-i18n';
 
 @Component({
   selector: 'app-select',
@@ -12,7 +12,7 @@ import { TranslationPipe } from 'ngx-i18n';
   standalone: true,
   templateUrl: './select.component.html',
   styleUrl: './select.component.scss',
-  providers: [getCustomNgFormProvider(SelectComponent)],
+  providers: [getCustomNgFormProvider(SelectComponent), provideTranslation('select')],
 })
 export class SelectComponent extends CustomNgForm {
   private readonly selfInject = inject(Injector);

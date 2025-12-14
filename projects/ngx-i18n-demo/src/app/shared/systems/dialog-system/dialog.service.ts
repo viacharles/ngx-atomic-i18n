@@ -16,7 +16,6 @@ export class DialogService {
   list = new DialogList();
 
   constructor(
-    private globalInjector: Injector,
     private enInjector: EnvironmentInjector
   ) { }
 
@@ -39,9 +38,10 @@ export class DialogService {
   openDescribe(
     describe: string,
     config?: DialogConfig<string>,
+    selfInjector?: Injector
   ): DialogModel<DescribeDialogComponent, string> {
     const finalConfig = { transparentBackdrop: true, ...config }
-    return this.open(DescribeDialogComponent, { data: describe }, finalConfig)
+    return this.open(DescribeDialogComponent, { data: describe }, finalConfig, selfInjector)
   }
 
   open<C, T = any>(

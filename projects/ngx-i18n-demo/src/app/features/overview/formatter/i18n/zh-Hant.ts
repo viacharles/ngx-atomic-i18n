@@ -1,0 +1,68 @@
+const zh_Hant = {
+  intro: '透過下方互動範例，練習 ICU formatter 的各種情境。',
+  section: {
+    basic: { title: '基本插值' },
+    plural: { title: '複數（plural）格式化' },
+    select: { title: 'Select 分支格式化' },
+    exact: { title: '精確匹配與 other 回退' },
+    nested: { title: '巢狀 ICU 結構' },
+    interpolation: { title: 'ICU 選項中的變數插值' },
+    invalid: { title: '錯誤格式與原樣保留' },
+    missing: { title: '缺少參數時的輸出' },
+  },
+  basic: {
+    title: '基本插值',
+    sub: '單純把 {{name}}、{{count}} 等變數替換成參數值。',
+    show: '哈囉，{{name}}！你有 {{count}} 筆待辦。',
+  },
+  plural: {
+    title: '複數（plural）格式化',
+    sub: '測試 {count, plural, one {...} other {...}} 與 # 置換數字的行為。',
+    show: '{count, plural, =0 {目前沒有項目} one {1 個項目} other {# 個項目}}',
+  },
+  select: {
+    title: 'Select 分支格式化',
+    sub: '透過 {kind, select, ...} 根據字串值（如性別、角色、狀態）切換不同內容。',
+    show: '{kind, select, male {他在線上} female {她在線上} other {他們在線上}}',
+  },
+  exact: {
+    title: '精確匹配與 other 回退',
+    sub: '測試 =0、=1 等精確值選項，以及 other 當作預設回退的行為。',
+    show: '{count, plural, =0 {沒人} =1 {一個人} =2 {一對} =3 {三人小隊} =4 {四人團} other {#人，當作大團}}',
+  },
+  nested: {
+    title: '巢狀 ICU 結構',
+    sub: '將 plural 與 select 彼此巢狀，測試解析器的遞迴處理能力。',
+    show: '{count, plural, one {{role, select, vip {VIP 有 1 張票} member {會員有 1 張票} other {訪客有 1 張票}}} other {{role, select, vip {VIP 有 # 張票} member {會員有 # 張票} other {訪客有 # 張票}}}}',
+  },
+  interpolation: {
+    title: 'ICU 選項中的變數插值',
+    sub: '在 plural/select 的各個分支中使用 {{name}}、{count} 等變數佔位符。',
+    show: '{count, plural, one {{name} 有 1 張票} other {{name} 有 # 張票}}',
+  },
+  invalid: {
+    title: '錯誤格式與原樣保留',
+    sub: '觀察不符合語法的 ICU 片段如何被處理，以及在什麼情況下會保留原始文字。',
+    show: '{count, plural, one {1 個項目} other {# 個項目}',
+  },
+  missing: {
+    title: '缺少參數時的輸出',
+    sub: '測試當部分變數未提供時，格式化結果的呈現方式。',
+    show: '嗨 {{name}}，你有 {{count}} 則訊息。',
+  },
+  label: {
+    name: '名字',
+    count: '數量',
+    kind: '類別',
+    role: '角色',
+  },
+  // options
+  vip: 'VIP',
+  member: '會員',
+  guest: '訪客',
+  female: '女性',
+  male: '男性',
+  other: '其他',
+};
+
+export default zh_Hant;

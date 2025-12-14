@@ -1,6 +1,6 @@
 <fieldset #selectElem class="select field {{size()}}" [class.error]="error()" (click)="openDropdown(selectElem)">
   @if(title()) {
-  <legend>{{title() | t}}</legend>
+  <legend>{{title()}}</legend>
   }
   <input [value]="this.showName() | t" [placeholder]="placeholder()|t">
   <em class="icon-arrow-down1"></em>

@@ -7,7 +7,8 @@ export enum FeaturePaths {
 export enum OverviewPaths {
   GettingStarted = 'getting-started',
   Methods = 'methods',
-  ConfigurationOptions = 'configuration-options',
+  InitConfigurationOptions = 'init-configuration-options',
+  CompConfigurationOptions = 'comp-configuration-options',
   Formatting = 'formatting',
 }
 

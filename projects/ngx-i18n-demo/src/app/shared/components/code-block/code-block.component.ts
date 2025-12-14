@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, effect, input, Input, signal } from
 import { CommonModule } from '@angular/common';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
+import { TranslationPipe } from 'ngx-i18n';
 
 @Component({
   selector: 'app-code-block',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslationPipe],
   templateUrl: './code-block.component.html',
   styleUrls: ['./code-block.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -15,22 +16,11 @@ export class CodeBlockComponent {
   code = input('');
   @Input() language = 'typescript';
   @Input() title = '';
+  @Input() hasExpandBtn: boolean | null = null;
 
+  toggleExpand: boolean = false;
   highlightedCode = signal('');
-  copied = false;
-
-  availableLanguages = [
-    { value: 'typescript', label: 'TypeScript' },
-    { value: 'javascript', label: 'JavaScript' },
-    { value: 'html', label: 'HTML' },
-    { value: 'css', label: 'CSS' },
-    { value: 'json', label: 'JSON' },
-    { value: 'xml', label: 'XML' },
-    { value: 'markdown', label: 'Markdown' },
-    { value: 'bash', label: 'Bash' },
-    { value: 'shell', label: 'Shell' },
-    { value: 'yaml', label: 'YAML' }
-  ];
+  copied = signal(false);
 
   constructor() {
     effect(() => {
@@ -38,19 +28,12 @@ export class CodeBlockComponent {
     }, { allowSignalWrites: true })
   }
 
-  // onLanguageChange(event: Event): void {
-  //   const select = event.target as HTMLSelectElement;
-  //   this.language = select.value;
-  //   this._highlightedCode = ''; // 清除快取，強制重新高亮
-  //   this.highlightedCode; // 觸發重新高亮
-  // }
-
   async copyCode(): Promise<void> {
     try {
       await navigator.clipboard.writeText(this.code());
-      this.copied = true;
+      this.copied.set(true);
       setTimeout(() => {
-        this.copied = false;
+        this.copied.set(false);
       }, 2000);
     } catch (err) {
       console.error('Failed to copy code:', err);

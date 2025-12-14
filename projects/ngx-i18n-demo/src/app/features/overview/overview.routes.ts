@@ -17,13 +17,18 @@ export const OverviewRoutes: Routes = [
     title: OverviewPaths.Methods,
   },
   {
-    path: OverviewPaths.ConfigurationOptions,
-    loadComponent: () => import('./configuration/configuration.component').then(m => m.ConfigurationComponent),
-    title: OverviewPaths.ConfigurationOptions,
+    path: OverviewPaths.InitConfigurationOptions,
+    loadComponent: () => import('./init-configuration/init-configuration.component').then(m => m.InitConfigurationComponent),
+    title: OverviewPaths.InitConfigurationOptions,
+  },
+  {
+    path: OverviewPaths.CompConfigurationOptions,
+    loadComponent: () => import('./comp-configuration/comp-configuration.component').then(m => m.CompConfigurationComponent),
+    title: OverviewPaths.CompConfigurationOptions,
   },
   {
     path: OverviewPaths.Formatting,
-    loadComponent: () => import('./get-start/get-start.component').then(m => m.GetStartComponent),
+    loadComponent: () => import('./formatter/formatter.component').then(m => m.FormatterComponent),
     title: OverviewPaths.Formatting,
   },
 ];

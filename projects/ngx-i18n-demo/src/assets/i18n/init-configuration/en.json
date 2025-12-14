@@ -1,7 +1,5 @@
-import zh_TW from "./zh-Hant";
-
-const en: typeof zh_TW = {
-  '＊ 符號表示重要常用功能': '＊ Indicates important and commonly used features',
+{
+  "＊ 符號表示重要常用功能": "＊ Indicates important and commonly used features",
   "設定配置": "Configuration",
   "全部參數": "All parameters",
   "語系與namespace": "Languages & namespaces",
@@ -12,19 +10,22 @@ const en: typeof zh_TW = {
   "supportedLangs-ex": "ex. ['en', 'zh-Hant', 'ja'] means these three language codes are available.",
   "候補語系。比對不到語系時用這個。": "Fallback language used when no detected language matches.",
   "fallbackLang-ex": "ex. 'en' means any unknown language falls back to English.",
-  "enablePageFallback-des": "支援沿用父元件的翻譯資源。\n這樣 page 層級的 component 裡寫的翻譯資源都能被裡面的其他元件用到，比如select, table...之類的元件。\n需配合在 page component 的 translationProvider() 的第二個參數設定 true。",
+  "enablePageFallback-des": "Supports the reuse of translation resources from ancestor components.\nThis allows translation resources defined within page-level components to be utilized by other nested components, such such as those for selection fields (select), tables, and similar components.\nThis feature must be enabled by setting the second parameter in the page component's translationProvider() call to true.",
   "fallbackNamespace-des": "Global namespace / fallback namespace.\nUsed when the current namespace is missing a key.",
-  "fallbackNamespace-ex": "ex. ['common', 'main-menu'] allows every component to reuse these namespaces.",
+  "fallbackNamespace-ex": "ex. 'common' allows every component to reuse this namespace.",
   "supportedLangs-des-1": "Detection order for discovering the language,\nvalidated against supportedLangs.\n",
   "supportedLangs-des-2": " - (browser only) localStorage key 'lang'.\n",
   "supportedLangs-des-3": " - (browser only) first path segment e.g. /zh-Hant/...\n",
   "supportedLangs-des-4": " - (browser only) navigator.language preference.\n",
   "supportedLangs-des-5": " - from provideTranslationInit ",
   "supportedLangs-des-6": " parameter.\n",
+  "supportedLangs-des-7": " SSR-specific. Used to record the Accept-Language from the request header by setting the CLIENT_REQUEST_LANG token in server.ts.\n",
   " - provideTranslationInit 的 ": " - from provideTranslationInit ",
   " 參數。": " parameter.",
-  "customLang-des": "One of the langDetectionOrder strategies.\nDefines the custom language source.",
-  "customLang-ex": "ex. () => (navigator.language?.startsWith('zh') ? 'zh-Hant' : 'en') uses the browser preference when customLang is evaluated.",
+  "customInitialLang-des": "One of the langDetectionOrder strategies.\nDefines the custom language source.",
+  "customInitialLang-ex": "ex. () => (navigator.language?.startsWith('zh') ? 'zh-Hant' : 'en') uses the browser preference when customInitialLang is evaluated.",
+  "langDetectionOrder-ex-button": "clientRequest - server.ts example",
+  "langDetectionOrder-ex": "\n  import { APP_BASE_HREF } from '@angular/common';\n  import { CommonEngine } from '@angular/ssr';\n  server.get('**', (req, res, next) => {\n  const { protocol, originalUrl, baseUrl, headers } = req;\n  const acceptLangHeader = Array.isArray(headers['accept-language']) // get accept-language\n    ? headers['accept-language'][0]\n    : headers['accept-language'];\n  const requestLang = typeof acceptLangHeader === 'string'\n    ? acceptLangHeader.split(',')[0]?.trim() ?? null\n    : null;\n  commonEngine\n    .render({\n      bootstrap,\n      documentFilePath: indexHtml,\n      url: '${protocol}://${headers.host}${originalUrl}',\n      publicPath: browserDistFolder,\n      providers: [\n        { provide: APP_BASE_HREF, useValue: baseUrl },\n        { provide: CLIENT_REQUEST_LANG, useValue: requestLang }, // via CLIENT_REQUEST_LANG token\n      ],\n    })\n    .then((html) => res.send(html))\n    .catch((err) => next(err));\n});",
   "翻譯資源與路徑": "Translation assets & paths",
   "範例:": "Examples:",
   "請選擇專案架構": "Select project architecture",
@@ -62,73 +63,7 @@ const en: typeof zh_TW = {
   "Log": "Log",
   "forceMode-default": "Automatic (Determined by PLATFORM_ID based on CSR / SSR)",
   "控制是否輸出偵錯資訊，預設在開發模式為 true、正式模式為 false。": "Toggle verbose logging; defaults to true in dev and false in production.",
-
-  // form
-  '一般獨立專案': 'Normal Single project',
-
-  // ex
-
-  translationAssetsEx_1: `Typical project examples:
-1-1. Flat - separated by namespace (feature or common) folders
-<Project root>
-└── src
-    └── assets
-        └── i18n
-            ├── feature-a
-            │     ├── en.json
-            │     └── zh-Hant.json
-            ├── feature-b
-            │     ├── en.json
-            │     └── zh-Hant.json
-            └── common
-                  ├── en.json
-                  └── zh-Hant.json
-Config example:
-i18nRoots: ['i18n']
-pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
-Description: root represents assets/i18n, namespace is the folder name, and lang is the file name.
-
-1-2. Flat - separated by lang folders
-    └── assets
-        └── i18n
-            ├── en
-            │    ├── feature-a.json
-            │    ├── feature-b.json
-            │.   └── common.json
-            └── zh-Hant
-                 ├── en.json
-                 └── zh-Hant.json
-
-Config example:
-i18nRoots: ['i18n']
-pathTemplates: ['{{root}}/{{lang}}/{{namespace}}.json']
-Description: root represents assets/i18n, lang is the folder name, and namespace is the file name.
-
-2. Nested
-<Project root>
-└── src
-    └── assets
-        └── translations
-            ├── features
-            │   ├── feature-a
-            │   └── feature-b
-            └── global
-                ├── common
-                └── main-menu
-Config example:
-i18nRoots: ['translations/features', 'translations/global']
-pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
-Description: Multiple roots can be provided; the loader will try them in order.`,
-  translationAssetsEx_2: `In a Monorepo project, translation assets are usually placed under each sub-project, for example:
-<root folder>
-└── <parent folder of sub-projects>
-    ├── admin-app/src/assets/i18n
-    └── store-app/src/assets/i18n
-Config example:
-i18nRoots: ['projects/admin-app/src/assets/i18n', 'projects/store-app/src/assets/i18n']
-pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
-Description: root directly specifies the i18n path of each app, and pathTemplates can be reused.
-`
-};
-
-export default en;
+  "一般獨立專案": "Normal Single project",
+  "translationAssetsEx_1": "Typical project examples:\n1-1. Flat - separated by namespace (feature or common) folders\n<Project root>\n└── src\n    └── assets\n        └── i18n\n            ├── feature-a\n            │     ├── en.json\n            │     └── zh-Hant.json\n            ├── feature-b\n            │     ├── en.json\n            │     └── zh-Hant.json\n            └── common\n                  ├── en.json\n                  └── zh-Hant.json\nConfig example:\ni18nRoots: ['i18n']\npathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']\nDescription: root represents assets/i18n, namespace is the folder name, and lang is the file name.\n\n1-2. Flat - separated by lang folders\n    └── assets\n        └── i18n\n            ├── en\n            │    ├── feature-a.json\n            │    ├── feature-b.json\n            │.   └── common.json\n            └── zh-Hant\n                 ├── en.json\n                 └── zh-Hant.json\n\nConfig example:\ni18nRoots: ['i18n']\npathTemplates: ['{{root}}/{{lang}}/{{namespace}}.json']\nDescription: root represents assets/i18n, lang is the folder name, and namespace is the file name.\n\n2. Nested\n<Project root>\n└── src\n    └── assets\n        └── translations\n            ├── features\n            │   ├── feature-a\n            │   └── feature-b\n            └── global\n                ├── common\n                └── main-menu\nConfig example:\ni18nRoots: ['translations/features', 'translations/global']\npathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']\nDescription: Multiple roots can be provided; the loader will try them in order.",
+  "translationAssetsEx_2": "In a Monorepo project, translation assets are usually placed under each sub-project, for example:\n<root folder>\n└── <parent folder of sub-projects>\n    ├── admin-app/src/assets/i18n\n    └── store-app/src/assets/i18n\nConfig example:\ni18nRoots: ['projects/admin-app/src/assets/i18n', 'projects/store-app/src/assets/i18n']\npathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']\nDescription: root directly specifies the i18n path of each app, and pathTemplates can be reused.\n"
+}

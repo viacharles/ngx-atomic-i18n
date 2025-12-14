@@ -48,73 +48,10 @@
   }
 }
 
-.code-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.85rem 1.2rem;
-  background: var(--cb-surface);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--cb-border-strong);
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.title {
-  font-size: 0.85rem;
-  color: var(--cb-muted);
-  letter-spacing: 0.02em;
-}
-
-.language-selector {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.language-icon {
-  position: absolute;
-  left: 0.6rem;
-  color: var(--cb-muted);
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-}
-
-.language-selector select {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--cb-border);
-  border-radius: 6px;
-  padding: 0.35rem 2.4rem 0.35rem 2rem;
-  font-size: 0.78rem;
-  color: var(--cb-text);
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23abb2bf' d='M6 8.825L1.175 4 2.05 3.125 6 7.075 9.95 3.125 10.825 4z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.5rem center;
-  transition: all 0.2s ease;
-  min-width: 120px;
-}
-
-.language-selector select:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: var(--cb-border-strong);
-}
-
-.language-selector select:focus {
-  outline: none;
-  border-color: var(--cb-accent);
-  box-shadow: 0 0 0 2px rgba(122, 162, 247, 0.2);
-}
-
 .copy-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--cb-border);
   border-radius: 6px;
@@ -137,13 +74,19 @@ pre {
   overflow-x: auto;
 }
 
-code {
-  font-size: 0.89rem;
-  line-height: 1.55;
-  color: var(--cb-text);
+.code-content {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+
+  &.expand {
+    flex-direction: column;
+  }
 }
 
 .placeholder {
+  margin: auto;
   text-align: center;
 }
 
@@ -218,9 +161,9 @@ code {
     background: rgba(158, 206, 106, 0.22);
   }
 
-  .hljs-emphasis {
-    font-style: italic;
-  }
+  // .hljs-emphasis {
+  //   font-style: italic;
+  // }
 
   .hljs-strong {
     font-weight: bold;

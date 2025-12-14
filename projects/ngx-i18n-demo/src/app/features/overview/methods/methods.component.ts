@@ -10,14 +10,13 @@ import { provideTranslation, TranslationPipe } from 'ngx-i18n';
   imports: [RouterModule, TranslationPipe,],
   templateUrl: './methods.component.html',
   styleUrl: './methods.component.scss',
-  providers: [provideTranslation('api', true)]
+  providers: [provideTranslation('methods', true)]
 })
 export class MethodsComponent extends PageBase {
   FeaturePaths = FeaturePaths;
   OverviewPaths = OverviewPaths;
   constructor() {
     super()
-    console.log('aa-getAllBundle', this.translationService.getAllBundle(),)
   }
 
 }

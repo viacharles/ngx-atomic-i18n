@@ -4,6 +4,7 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
+import { CLIENT_REQUEST_LANG } from 'ngx-i18n';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
@@ -20,7 +21,7 @@ export function app(): express.Express {
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
-  server.get('**', express.static(browserDistFolder, {
+  server.get('*.*', express.static(browserDistFolder, {
     maxAge: '1y',
     index: 'index.html',
   }));
@@ -28,14 +29,22 @@ export function app(): express.Express {
   // All regular routes use the Angular engine
   server.get('**', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
-
+    const acceptLangHeader = Array.isArray(headers['accept-language'])
+      ? headers['accept-language'][0]
+      : headers['accept-language'];
+    const requestLang = typeof acceptLangHeader === 'string'
+      ? acceptLangHeader.split(',')[0]?.trim() ?? null
+      : null;
     commonEngine
       .render({
         bootstrap,
         documentFilePath: indexHtml,
         url: `${protocol}://${headers.host}${originalUrl}`,
         publicPath: browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+        providers: [
+          { provide: APP_BASE_HREF, useValue: baseUrl },
+          { provide: CLIENT_REQUEST_LANG, useValue: requestLang },
+        ],
       })
       .then((html) => res.send(html))
       .catch((err) => next(err));

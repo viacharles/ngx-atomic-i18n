@@ -5,6 +5,12 @@
   "operational-testing": "Operational testing",
   "getting-started": "Getting started",
   "methods": "Methods",
-  "configuration-options": "initial configuration - provideTranslationInit() ",
-  "formatting": "Formatting"
+  "init-configuration-options": "initial configuration - provideTranslationInit() ",
+  "comp-configuration-options": "component configuration - provideTranslation() ",
+  "formatting": "Formatting",
+  "說明": "Info",
+  "展開": "Expand",
+  "收合": "Collapse",
+  "複製": "Copy",
+  "已複製": "Copied"
 }

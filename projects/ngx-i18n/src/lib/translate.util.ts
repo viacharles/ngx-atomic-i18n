@@ -29,11 +29,15 @@ export function detectPreferredLang(config: TranslationConfig): string {
   for (const source of langDetectionOrder) {
     let lang: string | null;
     switch (source) {
-      case 'localStorage':
-        lang = typeof window !== 'undefined' ? localStorage.getItem('lang') : null;
-        break;
+
       case 'url':
         lang = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : null;
+        break;
+      case 'clientRequest':
+        lang = config.clientRequestLang ?? null;
+        break;
+      case 'localStorage':
+        lang = typeof window !== 'undefined' ? localStorage.getItem('lang') : null;
         break;
       case 'browser':
         const langTag = (globalThis as any)?.navigator?.language ?? '';
@@ -56,10 +60,10 @@ export function detectPreferredLang(config: TranslationConfig): string {
 
 /** Lightweight ICU parser that supports nested select/plural structures. */
 export function parseICU(templateText: string, params?: Record<string, string | number>): string {
-  if (!params) return templateText;
+  if (typeof params === 'object' ? !Object.keys(params).length : true) return templateText;
 
   const paramMap: Record<string, string> = {};
-  for (const [key, val] of Object.entries(params)) {
+  for (const [key, val] of Object.entries(params!)) {
     paramMap[key] = String(val);
   }
 

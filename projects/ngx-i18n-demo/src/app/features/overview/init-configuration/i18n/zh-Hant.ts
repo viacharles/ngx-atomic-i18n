@@ -1,5 +1,5 @@
-{
-  "＊ 符號表示重要常用功能": "＊ 符號表示重要常用功能",
+const zh_TW = {
+  '＊ 符號表示重要常用功能': '＊ 符號表示重要常用功能',
   "設定配置": "設定配置",
   "全部參數": "全部參數",
   "語系與namespace": "語系與namespace",
@@ -12,17 +12,44 @@
   "fallbackLang-ex": "ex. 'en' 代表如果被設定了查不到的語系，用 en 來頂替",
   "enablePageFallback-des": "支援沿用父元件的翻譯資源。\n這樣 page 層級的 component 裡寫的翻譯資源都能被裡面的其他元件用到，比如select, table...之類的元件。\n需配合在 page component 的 translationProvider() 的第二個參數設定 true。",
   "fallbackNamespace-des": "全域 namespace / fallback namespace.\n當目前的 namespace 找不到翻譯時使用.",
-  "fallbackNamespace-ex": "ex. ['common', 'main-menu'] 代表任何地方都能吃這兩個翻譯資源",
+  "fallbackNamespace-ex": "ex. 'common' 代表任何地方的 key 都能吃這個翻譯資源",
   "supportedLangs-des-1": "偵測語系用什麼方式被指定的順序，\n並比對 supportedLangs 來判斷是否合法。\n",
   "supportedLangs-des-2": " - （在瀏覽器環境才生效）localStorage 的 key 'lang'。\n",
   "supportedLangs-des-3": " - （須在瀏覽器環境才生效）路徑為 <domain>/<語系code>/...，例如 /zh-Hant/...\n",
   "supportedLangs-des-4": " - （須在瀏覽器環境才生效）瀏覽器偏好語言。\n",
   "supportedLangs-des-5": " - provideTranslationInit 的  ",
   "supportedLangs-des-6": " 參數。\n",
+  "supportedLangs-des-7": " SSR 專用。藉由在 server.ts 設定 token CLIENT_REQUEST_LANG 紀錄 request header 的 accept-language \n",
   " - provideTranslationInit 的 ": " - provideTranslationInit 的 ",
   " 參數。": " 參數。",
-  "customLang-des": "langDetectionOrder 的其中一個參數。\n自訂語系來源。",
-  "customLang-ex": "ex. () => (navigator.language?.startsWith('zh') ? 'zh-Hant' : 'en')，代表 langDetectionOrder 使用 customLang 的話會依照瀏覽器偏好。",
+  "customInitialLang-des": "langDetectionOrder 的其中一個參數。\n自訂語系來源。",
+  "customInitialLang-ex": "ex. () => (navigator.language?.startsWith('zh') ? 'zh-Hant' : 'en')，代表 langDetectionOrder 使用 customInitialLang 的話會依照瀏覽器偏好。",
+  'langDetectionOrder-ex-button': 'clientRequest - server.ts 範例',
+  'langDetectionOrder-ex': `
+  import { APP_BASE_HREF } from '@angular/common';
+  import { CommonEngine } from '@angular/ssr';
+  server.get('**', (req, res, next) => {
+  const { protocol, originalUrl, baseUrl, headers } = req;
+  const acceptLangHeader = Array.isArray(headers['accept-language']) // 拿到 accept-language
+    ? headers['accept-language'][0]
+    : headers['accept-language'];
+  const requestLang = typeof acceptLangHeader === 'string'
+    ? acceptLangHeader.split(',')[0]?.trim() ?? null
+    : null;
+  commonEngine
+    .render({
+      bootstrap,
+      documentFilePath: indexHtml,
+      url: '\${protocol}://\${headers.host}\${originalUrl}',
+      publicPath: browserDistFolder,
+      providers: [
+        { provide: APP_BASE_HREF, useValue: baseUrl },
+        { provide: CLIENT_REQUEST_LANG, useValue: requestLang }, // 用 CLIENT_REQUEST_LANG 遞值
+      ],
+    })
+    .then((html) => res.send(html))
+    .catch((err) => next(err));
+});`,
   "翻譯資源與路徑": "翻譯資源與路徑",
   "範例:": "範例:",
   "請選擇專案架構": "請選擇專案架構",
@@ -60,7 +87,71 @@
   "Log": "Log",
   "forceMode-default": "自動（依據 PLATFORM_ID 判斷 CSR / SSR）",
   "控制是否輸出偵錯資訊，預設在開發模式為 true、正式模式為 false。": "控制是否輸出偵錯資訊，預設在開發模式為 true、正式模式為 false。",
-  "一般獨立專案": "一般獨立專案",
-  "translationAssetsEx_1": "一般專案的範例如下:\n1-1. 扁平 - 用 namespace (feature 或 common) 資料夾區分\n<專案根目錄>\n└── src\n    └── assets\n        └── i18n\n            ├── feature-a\n            │     ├── en.json\n            │     └── zh-Hant.json\n            ├── feature-b\n            │     ├── en.json\n            │     └── zh-Hant.json\n            └── common\n                  ├── en.json\n                  └── zh-Hant.json\n設定範例:\ni18nRoots: ['i18n']\npathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']\n說明: root 代表 assets/i18n，namespace 為資料夾名稱，lang 為檔名。\n\n1-2. 扁平 - 用 lang 資料夾區分\n    └── assets\n        └── i18n\n            ├── en\n            │    ├── feature-a.json\n            │    ├── feature-b.json\n            │.   └── common.json\n            └── zh-Hant\n                 ├── en.json\n                 └── zh-Hant.json\n\n設定範例:\ni18nRoots: ['i18n']\npathTemplates: ['{{root}}/{{lang}}/{{namespace}}.json']\n說明: root 代表 assets/i18n，lang 為資料夾名稱， namespace為檔名。\n\n2. 巢狀\n<專案根目錄>\n└── src\n    └── assets\n        └── translations\n            ├── features\n            │   ├── feature-a\n            │   └── feature-b\n            └── global\n                ├── common\n                └── main-menu\n設定範例:\ni18nRoots: ['translations/features', 'translations/global']\npathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']\n說明: 同時提供多個 root，loader 會依序嘗試。",
-  "translationAssetsEx_2": "在 Monorepo 專案的話，翻譯資源通常放在每個子專案底下，例如:\n<根資料夾>\n└── <子專案群的母資料夾>\n    ├── admin-app/src/assets/i18n\n    └── store-app/src/assets/i18n\n設定範例:\ni18nRoots: ['projects/admin-app/src/assets/i18n', 'projects/store-app/src/assets/i18n']\npathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']\n說明: root 直接寫各 app 的 i18n 路徑即可，pathTemplates 也能重複利用。"
-}
+
+  // form
+  '一般獨立專案': '一般獨立專案',
+
+  // examples
+  translationAssetsEx_1: `一般專案的範例如下:
+1 - 1. 扁平 - 用 namespace(feature 或 common) 資料夾區分
+  <專案根目錄>
+└── src
+    └── assets
+        └── i18n
+            ├── feature - a
+            │     ├── en.json
+            │     └── zh - Hant.json
+            ├── feature - b
+            │     ├── en.json
+            │     └── zh - Hant.json
+            └── common
+                  ├── en.json
+                  └── zh - Hant.json
+設定範例:
+i18nRoots: ['i18n']
+pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
+說明: root 代表 assets / i18n，namespace 為資料夾名稱，lang 為檔名。
+
+1 - 2. 扁平 - 用 lang 資料夾區分
+    └── assets
+        └── i18n
+            ├── en
+            │    ├── feature - a.json
+            │    ├── feature - b.json
+            │.   └── common.json
+            └── zh - Hant
+                 ├── en.json
+                 └── zh - Hant.json
+
+設定範例:
+i18nRoots: ['i18n']
+pathTemplates: ['{{root}}/{{lang}}/{{namespace}}.json']
+說明: root 代表 assets / i18n，lang 為資料夾名稱， namespace為檔名。
+
+2. 巢狀
+  <專案根目錄>
+└── src
+    └── assets
+        └── translations
+            ├── features
+            │   ├── feature - a
+            │   └── feature - b
+            └── global
+                ├── common
+                └── main - menu
+設定範例:
+i18nRoots: ['translations/features', 'translations/global']
+pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
+說明: 同時提供多個 root，loader 會依序嘗試。`,
+  translationAssetsEx_2: `在 Monorepo 專案的話，翻譯資源通常放在每個子專案底下，例如:
+<根資料夾>
+└── <子專案群的母資料夾>
+    ├── admin - app / src / assets / i18n
+    └── store - app / src / assets / i18n
+設定範例:
+i18nRoots: ['projects/admin-app/src/assets/i18n', 'projects/store-app/src/assets/i18n']
+pathTemplates: ['{{root}}/{{namespace}}/{{lang}}.json']
+說明: root 直接寫各 app 的 i18n 路徑即可，pathTemplates 也能重複利用。`
+};
+
+export default zh_TW;

@@ -111,10 +111,6 @@ export class TranslationCoreService {
     if (this._formatterCache.has(cacheKey)) return this._formatterCache.get(cacheKey);
     const [lang, namespace] = nsKey.split(':');
     const raw = getNested(this._jsonCache().get(lang)?.get(namespace), key);
-    if (key === 'getStart.config.supportedLangHint') {
-      console.log('aa-raw', raw, lang, namespace, this._jsonCache().get(lang)?.get(namespace))
-    }
-
     if (raw === undefined) return;
     let result: FormatResult;
     if (this._ICU) {

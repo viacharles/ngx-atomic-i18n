@@ -5,15 +5,16 @@ jest.mock('@angular/core', () => {
     isDevMode: jest.fn(),
   };
 });
-import { APP_INITIALIZER, PLATFORM_ID } from '@angular/core';
+import { APP_INITIALIZER, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { provideTranslationInit, provideTranslationLoader, provideTranslation } from './translate.provider';
 import { TranslationService } from './translation.service';
 import { TestBed } from '@angular/core/testing';
-import { TRANSLATION_LOADER, TRANSLATION_NAMESPACE, TRANSLATION_CONFIG } from './translate.token';
+import { TRANSLATION_LOADER, TRANSLATION_NAMESPACE, TRANSLATION_CONFIG, CLIENT_REQUEST_LANG } from './translate.token';
 import { HttpTranslationLoader } from './translation.loader.csr';
 import { FsTranslationLoader } from './translation.loader.ssr';
 import { provideHttpClient } from '@angular/common/http';
 import * as core from '@angular/core';
+import { TranslationConfig } from './translate.type';
 
 
 describe('provideTranslationInit', () => {
@@ -21,8 +22,22 @@ describe('provideTranslationInit', () => {
     jest.restoreAllMocks();
   });
 
+  const createTransferStateStub = () => {
+    const state: Record<string, any> = {};
+    return {
+      get: jest.fn((key: any, fallback: any) => {
+        const k = key?.key ?? key;
+        return k in state ? state[k] : fallback;
+      }),
+      set: jest.fn((key: any, value: any) => {
+        const k = key?.key ?? key;
+        state[k] = value;
+      })
+    } as any;
+  };
+
   it('should return providers with correct config', async () => {
-    const providers = provideTranslationInit({ supportedLangs: ['en', 'zh-Hant'], initialLang: () => 'zh-Hant', preloadNamespaces: ['ns1', 'ns2'] });
+    const providers = provideTranslationInit({ supportedLangs: ['en', 'zh-Hant'], customInitialLang: () => 'zh-Hant', preloadNamespaces: ['ns1', 'ns2'] });
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide && p.provide.toString().includes('TRANSLATION_CONFIG'));
     expect(configProvider).toBeTruthy();
@@ -72,7 +87,7 @@ describe('provideTranslationInit', () => {
     expect(configProvider.useValue.fallbackLang).toBe('en');
     expect(configProvider.useValue.i18nRoots).toEqual(['i18n']);
     expect(configProvider.useValue.missingTranslationBehavior).toBe('show-key');
-    expect(configProvider.useValue.langDetectionOrder).toEqual(['localStorage', 'url', 'browser', 'initialLang', 'fallback']);
+    expect(configProvider.useValue.langDetectionOrder).toEqual(['url', 'clientRequest', 'localStorage', 'browser', 'customLang', 'fallback']);
   });
 
   it('should merge userConfig with default config', () => {
@@ -96,8 +111,8 @@ describe('provideTranslationInit', () => {
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
     expect(configProvider).toBeTruthy();
-    expect(typeof configProvider.useValue.initialLang).toBe('string');
-    expect(configProvider.useValue.initialLang).toBe('en');
+    expect(typeof configProvider.useValue.customLang).toBe('string');
+    expect(configProvider.useValue.customLang).toBe('en');
   });
 
   it('SSR + dev mode → assetPath = "src/assets" (no override)', () => {
@@ -147,25 +162,25 @@ describe('provideTranslationInit', () => {
   it('should handle initialLang as function', () => {
     const userConfig = {
       supportedLangs: ['en', 'zh'],
-      initialLang: () => 'zh'
+      customInitialLang: () => 'zh'
     };
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-    expect(configProvider.useValue.initialLang).toBeDefined();
-    expect(typeof configProvider.useValue.initialLang).toBe('string');
+    expect(configProvider.useValue.customLang).toBeDefined();
+    expect(typeof configProvider.useValue.customLang).toBe('string');
   });
 
   it('should handle initialLang as string', () => {
     const userConfig = {
       supportedLangs: ['en', 'zh'],
-      initialLang: () => 'zh'
+      customInitialLang: 'zh'
     };
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-    expect(configProvider.useValue.initialLang).toBeDefined();
-    expect(typeof configProvider.useValue.initialLang).toBe('string');
+    expect(configProvider.useValue.customLang).toBeDefined();
+    expect(typeof configProvider.useValue.customLang).toBe('string');
   });
 
   it('should handle different supportedLangs configurations', () => {
@@ -182,12 +197,12 @@ describe('provideTranslationInit', () => {
 
   it('should handle custom langDetectionOrder', () => {
     const userConfig = {
-      langDetectionOrder: ['fallback', 'initialLang'] as ('initialLang' | 'localStorage' | 'url' | 'browser' | 'fallback')[]
+      langDetectionOrder: ['fallback', 'customLang'] as TranslationConfig['langDetectionOrder']
     };
     const providers = provideTranslationInit(userConfig);
     const flatProviders = providers.flat ? providers.flat() : providers;
     const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
-    expect(configProvider.useValue.langDetectionOrder).toEqual(['fallback', 'initialLang']);
+    expect(configProvider.useValue.langDetectionOrder).toEqual(['fallback', 'customLang']);
   });
 
   it('should handle custom missingTranslationBehavior', () => {
@@ -460,28 +475,44 @@ describe('provideTranslationLoader (edge cases)', () => {
   });
 
   it('should test default initialLang function execution', () => {
-    // Create a spy on detectPreferredLang to capture the config
     let capturedConfig: any;
-
     const spyDetectPreferredLang = jest.spyOn(require('./translate.util'), 'detectPreferredLang')
       .mockImplementation((config: any) => {
         capturedConfig = config;
-        // Call the original initialLang function to test line 21
-        if (typeof config.initialLang === 'function') {
-          return config.initialLang();
+        if (typeof config.customLang === 'function') {
+          return config.customLang();
         }
         return config.fallbackLang;
       });
 
     const providers = provideTranslationInit();
-
-    // Verify that detectPreferredLang was called and the default function was executed
     expect(spyDetectPreferredLang).toHaveBeenCalled();
-    expect(typeof capturedConfig.initialLang).toBe('function');
-    expect(capturedConfig.initialLang()).toBe('en'); // This tests line 21
+    expect(typeof capturedConfig.customLang).toBe('function');
+    expect(capturedConfig.customLang()).toBe('en');
 
     spyDetectPreferredLang.mockRestore();
   });
+
+  it('should carry clientRequestLang via TransferState on SSR', () => {
+    const transfer = createTransferStateStub();
+    const providers = provideTranslationInit({ supportedLangs: ['en', 'zh-Hant'] });
+    const flatProviders = providers.flat ? providers.flat() : providers;
+    const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
+    const configFactory = configProvider.useFactory as any;
+    const result = configFactory('server', transfer, 'zh-Hant');
+    expect(result.clientRequestLang).toBe('zh-Hant');
+    expect(transfer.set).toHaveBeenCalled();
+  });
+
+  it('should read clientRequestLang from TransferState on CSR', () => {
+    const transfer = createTransferStateStub();
+    const key = makeStateKey<string | null>('NGX_I18N_CLIENT_REQUEST_LANG');
+    transfer.set(key, 'en');
+    const providers = provideTranslationInit({ supportedLangs: ['en', 'zh-Hant'] });
+    const flatProviders = providers.flat ? providers.flat() : providers;
+    const configProvider = flatProviders.find((p: any) => p && p.provide === TRANSLATION_CONFIG);
+    const configFactory = configProvider.useFactory as any;
+    const result = configFactory('browser', transfer, null);
+    expect(result.clientRequestLang).toBe('en');
+  });
 });
-
-

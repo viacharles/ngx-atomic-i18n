@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideTranslationInit({
       supportedLangs: ['en', 'zh-Hant'],
-      fallbackLang: 'zh-Hant',
+      enablePageFallback: true,
       loader: {
         fsOptions: {
           assetPath: isDevMode()

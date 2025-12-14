@@ -1,0 +1,28 @@
+@if (translationService.readySignal()) {
+<div #pageElem>
+  <h1>{{OverviewPaths.CompConfigurationOptions|t}}</h1>
+  <app-code-block
+    [code]="'provideTranslation(\nnamespace: string, isPage: boolean = false\n): Provider[]'"></app-code-block>
+  <p></p>
+  <p>{{'全部參數'|t}}</p>
+  <p>{{"＊ 符號表示重要常用功能"|t}}</p>
+  <section>
+    <h2 class="title" id="0"><span>#</span> {{'namespace'|t}}</h2>
+    <section>
+      <h3 class="subTitle config-attr" id="0-0">＊ namespace
+      </h3>
+      <p class="config-type">string </p>
+      <pre>{{'namespace-des' | t}}</pre>
+    </section>
+  </section>
+  <section>
+    <h2 class="title" id="1"><span>#</span> {{'頁層級'|t}}</h2>
+    <section>
+      <h3 class="subTitle config-attr" id="1-0">＊ isPage
+      </h3>
+      <p class="config-type">boolean </p>
+      <pre>{{'isPage-des' | t}}</pre>
+    </section>
+  </section>
+</div>
+}

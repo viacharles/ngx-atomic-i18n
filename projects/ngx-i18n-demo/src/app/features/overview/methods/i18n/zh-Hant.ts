@@ -1,5 +1,6 @@
 const zh_TW = {
   '＊ 符號表示重要常用功能': '＊ 符號表示重要常用功能，其他的不看沒關係。',
+  "pipe-t-1": "會自動使用最近的 namespace。同 service 的，",
   'lang-des':
     '以 signal 表示目前啟用中的語言。\n會與 currentLang 和 onLangChange 保持同步。',
   'currentLang-des':

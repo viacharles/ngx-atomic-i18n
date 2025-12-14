@@ -29,19 +29,16 @@ export class GetStartText {
     const needsIsDevMode = !isCSR;
     const loaderBlock = this.buildLoaderConfig('      ', isCSR, isMonorepo);
     const loaderSection = loaderBlock ? `${loaderBlock}\n` : '';
-    return `${needsIsDevMode ? `import { NgModule, isDevMode } from '@angular/core';` : `import { NgModule } from '@angular/core';`}
-import { BrowserModule } from '@angular/platform-browser';
+    return `${needsIsDevMode ? `import { isDevMode } from '@angular/core';` : ``}
 import { provideTranslationInit } from 'ngx-i18n';
 
 @NgModule({
-  imports: [BrowserModule],
   providers: [
     provideTranslationInit({
       supportedLangs: ['en', 'zh-Hant'], // ${this.translationService.t(this.supportedLangText)}
 ${loaderSection}    }),
   ],
 })
-export class AppModule { }
 `;
   }
 
