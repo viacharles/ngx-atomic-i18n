@@ -70,9 +70,7 @@
             "scripts": [],
             "server": "projects/ngx-i18n-demo/src/main.server.ts",
             "prerender": true,
-            "ssr": {
-              "entry": "projects/ngx-i18n-demo/server.ts"
-            }
+            "ssr": false
           },
           "configurations": {
             "production": {

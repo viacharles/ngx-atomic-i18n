@@ -1,18 +1,37 @@
 {
-  "scripts": {
-    "test": "jest"
-  },
-  "name": "ngx-i18n",
-  "version": "0.0.1",
+  "name": "ngx-atomic-i18n",
+  "version": "0.1.0",
+  "description": "Atomic, lazy-loadable i18n for Angular (SSR/SSG-friendly).",
   "peerDependencies": {
     "@angular/common": "^18.2.0",
-    "@angular/core": "^18.2.0"
+    "@angular/core": "^18.2.0",
+    "rxjs": "^7.8.0"
   },
+  "keywords": [
+    "angular",
+    "ngx",
+    "i18n",
+    "internationalization",
+    "translation",
+    "localization",
+    "icu",
+    "ssr",
+    "ssg"
+  ],
+  "license": "MIT",
+  "author": "charles viacharles@gmail.com",
   "dependencies": {
     "tslib": "^2.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charles"
   },
   "sideEffects": false,
   "devDependencies": {
     "@types/jest": "^30.0.0"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
