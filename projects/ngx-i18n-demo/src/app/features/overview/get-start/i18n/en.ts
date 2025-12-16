@@ -10,7 +10,7 @@ const en: typeof zh_TW = {
   'des-dialog-頁面作為翻譯根': "Mark a page component with\nprovideTranslation('namespace', true)\nand all child components will automatically fall back to this page’s namespace when their own namespace doesn’t define the key.",
   'des-dialog-lazy-load': "Each namespace is loaded on demand. When a component with\nprovideTranslation('namespace') is rendered for the first time, the library fetches only the required language resources.",
   'des-dialog-效能最佳化': "1. You can use preloadNamespaces() to pre-load translation resources before the initial page render in CSR, preventing delays during the first load.\n2. An internal cache is used to avoid redundant downloading. The same combination of language, namespace, and optional build version ($\text{lang} + \text{namespace} + (\text{buildVersion})$) will only be loaded once and the result shared.\n3. Formatter caching is employed to reduce the repeated execution of ICU message formatting and string lookups.\n4.Build version support (buildVersion) is included to invalidate the cache when a new version is deployed, thereby preventing the use of outdated translations.\n5. use signal.",
-  'des-dialog-不閃key': 'Before a namespace finishes loading, the UI renders empty strings instead of raw keys. Once loading completes, it shows the translated text or the configured fallback.',
+  'des-dialog-不閃key': 'Before a namespace finishes loading, the UI renders empty strings instead of raw keys. \nOnce loading completes, it shows the translated text or the configured fallback.',
   '說明': 'Details',
   '優點': 'Benefits',
   '預設 lazy load': 'Lazy load by default',

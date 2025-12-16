@@ -1,4 +1,10 @@
 // Root Jest config to run library tests from the workspace root
+const { pathsToModuleNameMapper } = require('ts-jest');
+const { readFileSync } = require('fs');
+const tsconfig = JSON.parse(
+  readFileSync('./tsconfig.base.json', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+);
+
 module.exports = {
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/projects/ngx-i18n/setup-jest.ts'],

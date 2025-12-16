@@ -19,11 +19,12 @@ describe('TranslationCoreService', () => {
     configMock = {
       supportedLangs: ['en', 'zh-Hant'],
       fallbackLang: 'en',
-      customInitialLang: () => 'en',
+      customLang: () => 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
       missingTranslationBehavior: 'show-key',
-      langDetectionOrder: ['localStorage', 'url', 'browser', 'customInitialLang', 'fallback'],
+      langDetectionOrder: ['localStorage', 'url', 'browser', 'customLang', 'fallback'],
+      debug: true,
     };
     loaderMock = {
       load: jest.fn().mockResolvedValue({ hello: 'world' })
@@ -106,7 +107,7 @@ describe('TranslationCoreService', () => {
       service.setLang('zh-Hant');
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
       const callArgs = consoleWarnSpy.mock.calls[0];
-      expect(callArgs[0]).toBe('[i18n] Failed to write to localStorage');
+      expect(callArgs[0]).toBe('[ngx-i18n] Failed to persist language to localStorage.');
       expect(callArgs[1]).toBeInstanceOf(Error);
 
       Object.defineProperty(global, 'localStorage', { value: orig, configurable: true });
@@ -124,6 +125,13 @@ describe('TranslationCoreService', () => {
     it('should load translations for namespace', async () => {
       await service.load('en:test', () => Promise.resolve({ key: 'value' }));
       expect(loaderMock.load).not.toHaveBeenCalled();
+    });
+
+    it('should log error when load fails', async () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      await expect(service.load('en:test', () => Promise.reject(new Error('fail')))).rejects.toThrow('fail');
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
     });
   });
 
@@ -562,6 +570,71 @@ describe('TranslationCoreService', () => {
       expect(f2).toBeDefined();
       expect(f1?.format({})).toBe('hello');
       expect(f2?.format({})).toBe('hello');
+    });
+  });
+
+  describe('logging helpers', () => {
+    it('should log with and without details when debug enabled', () => {
+      (service as any).debugEnabled = true;
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      (service as any).log('msg-only');
+      (service as any).log('msg-with-detail', { a: 1 });
+      (service as any).error('err', new Error('boom'));
+      (service as any).warn('warn-only');
+      (service as any).warn('warn-detail', { b: 2 });
+      expect(infoSpy).toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalled();
+      infoSpy.mockRestore();
+      warnSpy.mockRestore();
+      errorSpy.mockRestore();
+    });
+
+    it('should log cache detail when debug enabled', () => {
+      (service as any).debugEnabled = true;
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
+      (service as any).handleNewTranslations({ a: '1' }, 'en', 'ns', undefined);
+      expect(infoSpy).toHaveBeenCalled();
+      infoSpy.mockRestore();
+    });
+
+    it('should run error/warn when debug enabled', () => {
+      (service as any).debugEnabled = true;
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      (service as any).error('oops', new Error('fail'));
+      (service as any).warn('warn-msg');
+      expect(errorSpy).toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
+      warnSpy.mockRestore();
+    });
+
+    it('should skip error/warn/log when debug disabled', () => {
+      (service as any).debugEnabled = false;
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      (service as any).handleNewTranslations({ a: '1' }, 'en', 'ns', undefined);
+      (service as any).error('oops', new Error('fail'));
+      (service as any).warn('warn-msg');
+      expect(infoSpy).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
+      expect(errorSpy).not.toHaveBeenCalled();
+      infoSpy.mockRestore();
+      warnSpy.mockRestore();
+      errorSpy.mockRestore();
+    });
+  });
+
+  describe('getAllBundle', () => {
+    it('should return underlying json cache map', () => {
+      service.addResourceBundle('en', 'ns', { a: '1' });
+      const map = service.getAllBundle();
+      expect(map instanceof Map).toBe(true);
+      expect(map.get('en')?.get('ns')).toEqual({ a: '1' });
     });
   });
 });

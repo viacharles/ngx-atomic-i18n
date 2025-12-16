@@ -86,7 +86,7 @@ export function provideTranslationInit(userConfig?: ProvideTranslationInitOption
 
 
 /** Provides the component-scoped namespace injection for component-registered service.
- * @param namespace The namespace or namespaces owned by the component.
+ * @param namespace The namespace owned by the component.
  * @param isPage Whether the component is a top-level page (defaults to false).
 */
 export function provideTranslation(namespace: string, isPage: boolean = false): Provider[] {

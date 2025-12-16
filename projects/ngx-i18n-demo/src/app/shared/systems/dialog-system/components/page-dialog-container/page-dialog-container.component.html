@@ -1,6 +1,6 @@
-<div class="dialog" [style.background]="backbround()">
+<div class="dialog" [style.background]="background()">
   <header class="{{align()}}">
-    <em class="icon-arrow-left" (click)="back()"></em>
+    <app-icon-cross (click)="back()"></app-icon-cross>
     <div>
       <h3>{{ title() }}</h3>
       <p>{{ subTitle() }}</p>

@@ -17,7 +17,8 @@ describe('TranslationService', () => {
       fallbackLang: 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'test',
-      missingTranslationBehavior: 'show-key'
+      missingTranslationBehavior: 'show-key',
+      debug: true
     };
     coreServiceMock = {
       lang: jest.fn().mockReturnValue('en'),
@@ -34,6 +35,7 @@ describe('TranslationService', () => {
       hasResourceBundle: jest.fn(),
       getResource: jest.fn(),
       getResourceBundle: jest.fn(),
+      getAllBundle: jest.fn(),
       removeResourceBundle: jest.fn(),
       preloadNamespaces: jest.fn(),
       load: jest.fn(),
@@ -123,7 +125,7 @@ describe('TranslationService', () => {
     it('should return missing translation when not ready', () => {
       coreServiceMock.readySignal.mockReturnValue(signal(false));
       const result = service.t('hello');
-      expect(result).toBe('hello');
+      expect(result).toBe('');
     });
 
     it('should handle params', () => {
@@ -178,7 +180,18 @@ describe('TranslationService', () => {
         return coreServiceMock.getAndCreateFormatter('en:test', key);
       });
       const result = service.t('hello');
-      expect(result).toBe('hello');
+      expect(result).toBe('');
+    });
+
+    it('should delegate to parent when page fallback enabled', () => {
+      coreServiceMock.readySignal.mockImplementation(() => signal(true));
+      coreServiceMock.getAndCreateFormatter.mockReturnValue(undefined);
+      coreServiceMock.findFallbackFormatter = jest.fn().mockReturnValue(undefined);
+      (configMock as any).enablePageFallback = true;
+      (service as any).isPageRoot = false;
+      (service as any).parent = { t: jest.fn().mockReturnValue('from-parent') };
+      const result = service.t('hello');
+      expect(result).toBe('from-parent');
     });
   });
 
@@ -186,6 +199,39 @@ describe('TranslationService', () => {
     it('should delegate to core service', () => {
       service.addResourceBundle('en', 'test', { key: 'value' });
       expect(coreServiceMock.addResourceBundle).toHaveBeenCalledWith('en', 'test', { key: 'value' });
+    });
+  });
+
+  describe('utility delegates and logging', () => {
+    it('should expose getAllBundle from core', () => {
+      coreServiceMock.getAllBundle.mockReturnValue(new Map([['en', new Map()]]));
+      expect(service.getAllBundle()).toBeInstanceOf(Map);
+    });
+
+    it('should log info/warn when debug enabled', () => {
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      (service as any).debugEnabled = true;
+      (service as any).info('msg');
+      (service as any).info('msg', { x: 1 });
+      (service as any).warn('warn');
+      (service as any).warn('warn', { y: 2 });
+      expect(infoSpy).toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalled();
+      infoSpy.mockRestore();
+      warnSpy.mockRestore();
+    });
+
+    it('should skip info/warn when debug disabled', () => {
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      (service as any).debugEnabled = false;
+      (service as any).info('msg');
+      (service as any).warn('warn');
+      expect(infoSpy).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
+      infoSpy.mockRestore();
+      warnSpy.mockRestore();
     });
   });
 
@@ -240,7 +286,7 @@ describe('TranslationService', () => {
 
   describe('missing translation behavior', () => {
     it('should throw error when configured', () => {
-      configMock.missingTranslationBehavior = 'throw';
+      configMock.missingTranslationBehavior = 'throw-error';
       coreServiceMock.readySignal.mockReturnValue(signal(false));
       expect(() => service.t('hello')).toThrow();
     });
@@ -252,31 +298,30 @@ describe('TranslationService', () => {
       expect(service.t('hello')).toBe(expected);
     });
 
+    it('should show key when ready but missing and show-key mode', () => {
+      coreServiceMock.readySignal.mockImplementation(() => signal(true));
+      coreServiceMock.getAndCreateFormatter.mockReturnValue(undefined);
+      const result = service.t('missing-key');
+      expect(result).toBe('missing-key');
+    });
+
     it('should return custom string when configured', () => {
       configMock.missingTranslationBehavior = '--';
       coreServiceMock.readySignal.mockReturnValue(signal(false));
-      expect(service.t('hello')).toBe('--');
+      expect(service.t('hello')).toBe('');
+    });
+
+    it('should use fallback formatter when available', () => {
+      coreServiceMock.readySignal.mockImplementation(() => signal(true));
+      const fb = { format: () => 'from-fallback' };
+      coreServiceMock.getAndCreateFormatter.mockReturnValue(undefined);
+      coreServiceMock.findFallbackFormatter = jest.fn().mockReturnValue(fb as any);
+      const result = service.t('missing-key');
+      expect(result).toBe('from-fallback');
     });
   });
 
   describe('Edge cases for uncovered branches', () => {
-    it('should handle array namespace input (line 42)', () => {
-      TestBed.resetTestingModule();
-      TestBed.configureTestingModule({
-        providers: [
-          { provide: TRANSLATION_CONFIG, useValue: configMock },
-          { provide: TRANSLATION_LOADER, useValue: loaderMock },
-          { provide: TRANSLATION_NAMESPACE, useValue: ['primary', 'secondary'] }, // 陣列
-          { provide: TranslationCoreService, useValue: coreServiceMock },
-          TranslationService
-        ]
-      });
-
-      const service = TestBed.inject(TranslationService);
-      // 應該使用陣列的第一個元素作為 namespace
-      expect(service.getNskey).toBe('en:primary');
-    });
-
     it('should use default missingTranslationBehavior when undefined (line 68)', () => {
       TestBed.resetTestingModule();
       const configWithoutBehavior = {
@@ -298,7 +343,7 @@ describe('TranslationService', () => {
 
       // 應該使用預設的 'show-key' 行為
       const result = service.t('hello');
-      expect(result).toBe('hello');
+      expect(result).toBe('');
     });
 
     it('should return empty string when key is undefined in show-key forceMode (line 73)', () => {

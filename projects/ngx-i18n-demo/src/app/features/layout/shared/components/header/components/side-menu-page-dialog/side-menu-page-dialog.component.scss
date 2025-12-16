@@ -1,0 +1,10 @@
+:host {
+  width: 100%;
+  height: calc(100vh - 59px);
+  margin-top: 59px; // 留出 header 空間
+  background-color: white;
+
+  main {
+    padding-left: 1rem;
+  }
+}

@@ -29,7 +29,6 @@ export function detectPreferredLang(config: TranslationConfig): string {
   for (const source of langDetectionOrder) {
     let lang: string | null;
     switch (source) {
-
       case 'url':
         lang = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : null;
         break;

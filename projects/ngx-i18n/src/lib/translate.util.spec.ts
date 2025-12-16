@@ -14,14 +14,14 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 describe('translate.util (pure functions)', () => {
   describe('detectPreferredLang', () => {
-    it('should return customInitialLang if supported and langDetectionOrder is customInitialLang', () => {
+    it('should return customLang if supported and langDetectionOrder is customLang', () => {
       const config: TranslationConfig = {
         supportedLangs: ['en', 'zh-Hant'],
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'zh-Hant',
-        langDetectionOrder: ['customInitialLang', 'localStorage', 'url', 'browser', 'fallback'],
+        customLang: () => 'zh-Hant',
+        langDetectionOrder: ['customLang', 'localStorage', 'url', 'browser', 'fallback'],
       };
       localStorage.clear()
       expect(detectPreferredLang(config)).toBe('zh-Hant');
@@ -32,8 +32,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'fr',
-        langDetectionOrder: ['localStorage', 'url', 'browser', 'customInitialLang', 'fallback'],
+        customLang: () => 'fr',
+        langDetectionOrder: ['localStorage', 'url', 'browser', 'customLang', 'fallback'],
       };
       expect(detectPreferredLang(config)).toBe('en');
     });
@@ -43,8 +43,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'fr',
-        langDetectionOrder: ['customInitialLang'],
+        customLang: () => 'fr',
+        langDetectionOrder: ['customLang'],
       };
       // lang=fr, supportedLangs=['en']，會進入 if，但不 return，所以最後走到 return fallbackLang
       expect(detectPreferredLang(config)).toBe('en');
@@ -64,8 +64,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'zh-Hant',
-        langDetectionOrder: ['localStorage', 'customInitialLang'],
+        customLang: () => 'zh-Hant',
+        langDetectionOrder: ['localStorage', 'customLang'],
       };
       expect(detectPreferredLang(config)).toBe('en');
       // 恢復原 window、localStorage
@@ -82,8 +82,8 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'en',
-        langDetectionOrder: ['url', 'customInitialLang'],
+        customLang: () => 'en',
+        langDetectionOrder: ['url', 'customLang'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
       delete (global as any).window;
@@ -98,20 +98,20 @@ describe('translate.util (pure functions)', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'en',
-        langDetectionOrder: ['browser', 'customInitialLang'],
+        customLang: () => 'en',
+        langDetectionOrder: ['browser', 'customLang'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
       delete (global as any).navigator;
     });
-    it('should detect language from customInitialLang', () => {
+    it('should detect language from customLang', () => {
       const config: TranslationConfig = {
         supportedLangs: ['en', 'zh-Hant'],
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'zh-Hant',
-        langDetectionOrder: ['customInitialLang', 'fallback'],
+        customLang: () => 'zh-Hant',
+        langDetectionOrder: ['customLang', 'fallback'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
     });
@@ -126,6 +126,28 @@ describe('translate.util (pure functions)', () => {
         langDetectionOrder: ['clientRequest', 'fallback'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
+    });
+
+    it('should return fallback when order is empty', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en'],
+        fallbackLang: 'en',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        langDetectionOrder: [],
+      };
+      expect(detectPreferredLang(config)).toBe('en');
+    });
+
+    it('should return raw fallbackLang when normalization fails', () => {
+      const config: TranslationConfig = {
+        supportedLangs: ['en'],
+        fallbackLang: 'fr',
+        i18nRoots: ['i18n'],
+        fallbackNamespace: 'common',
+        langDetectionOrder: [],
+      };
+      expect(detectPreferredLang(config)).toBe('fr');
     });
   });
 
@@ -169,7 +191,10 @@ describe('translate.util (pure functions)', () => {
 
     it('should continue when block is empty', () => {
       // 這行會觸發 line97-98
-      expect(parseICU('Test {}', {})).toBe('Test');
+      expect(parseICU('Test {}', {})).toBe('Test {}');
+    });
+    it('should skip empty block even when params provided', () => {
+      expect(parseICU('Hello {} world', { x: 1 })).toBe('Hello  world');
     });
     it('should return rest string when block is not closed', () => {
       // 應該回傳原始未關閉的 block
@@ -255,7 +280,7 @@ describe('translate.util', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'en',
+        customLang: () => 'en',
         langDetectionOrder: ['browser'],
       };
       const origNavigator = global.navigator;
@@ -272,8 +297,8 @@ describe('translate.util', () => {
         fallbackLang: 'en',
         i18nRoots: ['i18n'],
         fallbackNamespace: 'common',
-        customInitialLang: () => 'fr',
-        langDetectionOrder: ['customInitialLang', 'fallback'],
+        customLang: () => 'fr',
+        langDetectionOrder: ['customLang', 'fallback'],
       };
       expect(detectPreferredLang(config)).toBe('en');
     });
@@ -357,27 +382,27 @@ describe('detectPreferredLang (SSR scenarios)', () => {
     }
   });
 
-  it('should handle customInitialLang as string instead of function', () => {
+  it('should handle customLang as string instead of function', () => {
     const config: TranslationConfig = {
       supportedLangs: ['en', 'zh-Hant'],
       fallbackLang: 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
-      customInitialLang: 'zh-Hant' as any, // 測試字串情況
-      langDetectionOrder: ['customInitialLang', 'fallback'],
+      customLang: 'zh-Hant' as any, // 測試字串情況
+      langDetectionOrder: ['customLang', 'fallback'],
     };
 
     expect(detectPreferredLang(config)).toBe('zh-Hant');
   });
 
-  it('should handle customInitialLang as undefined', () => {
+  it('should handle customLang as undefined', () => {
     const config: TranslationConfig = {
       supportedLangs: ['en', 'zh-Hant'],
       fallbackLang: 'en',
       i18nRoots: ['i18n'],
       fallbackNamespace: 'common',
-      customInitialLang: undefined,
-      langDetectionOrder: ['customInitialLang', 'fallback'],
+      customLang: undefined,
+      langDetectionOrder: ['customLang', 'fallback'],
     };
 
     expect(detectPreferredLang(config)).toBe('en');
@@ -392,13 +417,17 @@ describe('parseICU (edge cases)', () => {
 
   it('should handle missing variable in ICU expression', () => {
     const template = '{missing, plural, one {1 item} other {# items}}';
-    expect(parseICU(template, {})).toBe('items');
+    expect(parseICU(template, {})).toBe('{missing, plural, one {1 item} other {# items}}');
   });
 
-  it('should handle parameter replacement in nested ICU with missing params', () => {
-    const template = '{count, plural, one {{name} has one} other {{missing} has #}}';
-    expect(parseICU(template, { count: 2, name: 'Tom' })).toBe('has 2');
-  });
+    it('should handle parameter replacement in nested ICU with missing params', () => {
+      const template = '{count, plural, one {{name} has one} other {{missing} has #}}';
+      expect(parseICU(template, { count: 2, name: 'Tom' })).toBe(' has 2');
+    });
+    it('should handle missing count but non-empty params', () => {
+      const template = '{count, plural, one {1 item} other {# items}}';
+      expect(parseICU(template, { other: 1 })).toBe(' items');
+    });
 
   it('should handle exact value match in select', () => {
     const template = '{value, select, =5 {exactly five} other {not five}}';
@@ -421,17 +450,17 @@ describe('toObservable (error cases)', () => {
 
 describe('toArray', () => {
   it('should return array as is when input is array', () => {
-    const { toArray } = require('./translate.util');
+    const { tempToArray } = require('./translate.util');
     expect(tempToArray(['a', 'b'])).toEqual(['a', 'b']);
   });
 
   it('should wrap string in array', () => {
-    const { toArray } = require('./translate.util');
+    const { tempToArray } = require('./translate.util');
     expect(tempToArray('single')).toEqual(['single']);
   });
 
   it('should return undefined for falsy values', () => {
-    const { toArray } = require('./translate.util');
+    const { tempToArray } = require('./translate.util');
     expect(tempToArray(null)).toBeUndefined();
     expect(tempToArray(undefined)).toBeUndefined();
     expect(tempToArray('')).toBeUndefined();

@@ -1,4 +1,9 @@
 <div class="row">
+  @if (isMobile()) {
+  <app-icon-button (click)="toggleMenu()">
+    <app-icon-menu></app-icon-menu>
+  </app-icon-button>
+  }
   <span class="logo"></span>
   <h3>ngx-i18n</h3>
 </div>

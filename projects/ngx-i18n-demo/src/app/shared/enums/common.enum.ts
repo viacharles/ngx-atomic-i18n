@@ -1,16 +1,17 @@
-/** 請同步 scss variables $breakpoints */
-export enum SCREEN_WIDTH {
-  xsmall = 300,
-  small = 430,
-  xxmedium = 560,
-  xmedium = 630,
-  medium = 768,
-  large = 1024,
-  xlarge = 1440,
-  xxlarge = 2000,
+/** TODO: 請確保同步 scss variables $breakpoints */
+export const SCREEN_WIDTH = {
+  xsmall: 300,
+  small: 430,
+  xxmedium: 560,
+  xmedium: 630,
+  medium: 768,
+  large: 1024,
+  xlarge: 1440,
+  xxlarge: 2000,
 }
 
 export type BreakpointKey = keyof typeof SCREEN_WIDTH;
+export type ScreenWidthValue = (typeof SCREEN_WIDTH)[BreakpointKey];
 
 export enum ACTION {
   CANCEL = 'cancel',

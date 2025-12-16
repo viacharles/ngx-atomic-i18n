@@ -40,7 +40,7 @@ export class DialogService {
     config?: DialogConfig<string>,
     selfInjector?: Injector
   ): DialogModel<DescribeDialogComponent, string> {
-    const finalConfig = { transparentBackdrop: true, ...config }
+    const finalConfig = { transparentBackdrop: true, closeOnBackdropClick: true, ...config }
     return this.open(DescribeDialogComponent, { data: describe }, finalConfig, selfInjector)
   }
 

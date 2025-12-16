@@ -2,16 +2,13 @@
 @use "mixins" as m;
 @use "variables" as v;
 
-:host {
-  max-width: 90%;
-}
-
 .describe-dialog {
   position: relative;
   background-color: c.$bg;
   padding: 1rem;
   border: 1px solid c.$outline;
   border-radius: map-get(v.$border-radius , lg);
+  filter: drop-shadow(0 3px 4px rgba(14, 16, 22, 0.35));
 
   app-icon-cross {
     position: absolute;

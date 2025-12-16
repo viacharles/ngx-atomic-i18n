@@ -6,7 +6,7 @@
   "des-dialog-頁面作為翻譯根": "在頁面層級元件使用\nprovideTranslation('namespace', true)\n將該元件標記為翻譯根後，底下所有子元件在自身 namespace 找不到 key 時，會自動 fallback 到這個頁面的翻譯資源。",
   "des-dialog-lazy-load": "每個 namespace 預設採用 lazy load。當元件呼叫\nprovideTranslation('namespace') 並第一次被渲染時，才會載入對應語言的翻譯資源。",
   "des-dialog-效能最佳化": "1. 可使用 preloadNamespaces() 在 CSR 初始頁面前預先載入翻譯資源，避免初次載入造成延遲。\n2. 內部使用快取避免重複下載，同一組 lang + namespace (+ buildVersion) 只會載入一次並共用結果。\n3. formatter 快取，減少重複執行 ICU / 搜尋字串。\n4. 支援 build 版本（buildVersion），在版本更新時切斷快取，避免舊版翻譯。\n5. 使用 signal.",
-  "des-dialog-不閃key": "在命名空間尚未載入前，畫面顯示空字串，不會短暫顯示 key。載入完成後，才依照實際是否有找到資源來決定顯示翻譯或 fallback。",
+  "des-dialog-不閃key": "在命名空間尚未載入前，畫面顯示空字串，不會短暫顯示 key。\n載入完成後，才依照實際是否有找到資源來決定顯示翻譯或 fallback。",
   "需求": "需求",
   "需求-1": "Angular 16+ (peerDependencies 無第三方依賴)",
   "說明": "說明",

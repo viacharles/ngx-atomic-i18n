@@ -1,15 +1,17 @@
 @use "colors" as c;
+
 :host {
   width: 100%;
   height: 100%;
   display: flex;
 }
+
 .dialog {
   width: 100vw;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: c.$surface;
+  background-color: c.$bg;
 }
 
 header {
@@ -25,25 +27,27 @@ header {
       width: 100%;
     }
   }
+
   &.right {
     div {
       justify-content: flex-end;
     }
   }
-  em {
-    font-size: 1rem;
-    font-weight: 600;
-    color: c.$primary-700;
-    margin-right: 0.875rem;
-  }
+
   h3 {
     font-size: 1.5rem;
     font-weight: 400;
     line-height: 2rem;
-    color: c.$on-surface;
+    color: c.$neutral-50;
   }
+
   p {
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
+
+  app-icon-cross {
+    margin-left: auto;
+  }
+
 }

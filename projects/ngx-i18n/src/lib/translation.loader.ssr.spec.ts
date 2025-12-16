@@ -1,5 +1,6 @@
 import 'jest';
 import { FsTranslationLoader } from './translation.loader.ssr';
+import { defaultConfig } from './translate.provider';
 import { TestBed } from '@angular/core/testing';
 import { TRANSLATION_LOADER } from './translate.token';
 import { vol } from 'memfs';
@@ -36,10 +37,10 @@ describe('FsTranslationLoader', () => {
   beforeEach(() => {
     vol.reset();
     vol.fromJSON({
-      [baseDir + assetPath + '/i18n/en/common.json']: JSON.stringify({ hello: 'Hello from fs!' }),
-      [baseDir + assetPath + '/i18n/zh/common.json']: JSON.stringify({ hello: '你好！' }),
-      [baseDir + assetPath + '/i18n/en/auth.json']: JSON.stringify({ login: 'Login', logout: 'Logout' }),
-      [baseDir + assetPath + '/i18n/en/home.json']: JSON.stringify({ welcome: 'Welcome home!' })
+      [baseDir + assetPath + '/i18n/common/en.json']: JSON.stringify({ hello: 'Hello from fs!' }),
+      [baseDir + assetPath + '/i18n/common/zh.json']: JSON.stringify({ hello: '你好！' }),
+      [baseDir + assetPath + '/i18n/auth/en.json']: JSON.stringify({ login: 'Login', logout: 'Logout' }),
+      [baseDir + assetPath + '/i18n/home/en.json']: JSON.stringify({ welcome: 'Welcome home!' })
     });
   });
 
@@ -52,7 +53,7 @@ describe('FsTranslationLoader', () => {
       providers: [
         {
           provide: TRANSLATION_LOADER,
-          useValue: new FsTranslationLoader({ baseDir, assetPath }, mockFs)
+          useValue: new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs)
         }
       ]
     }).compileComponents();
@@ -64,32 +65,32 @@ describe('FsTranslationLoader', () => {
   });
 
   it('should load translation file with different language', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
     const result = await loader.load(['i18n'], 'common', 'zh');
     expect(result).toEqual({ hello: '你好！' });
   });
 
   it('should load translation file with different namespace', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
     const result = await loader.load(['i18n'], 'auth', 'en');
     expect(result).toEqual({ login: 'Login', logout: 'Logout' });
   });
 
   it('should handle string i18nRoots parameter', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
     const result = await loader.load('i18n', 'common', 'en');
     expect(result).toEqual({ hello: 'Hello from fs!' });
   });
 
   it('should throw error if translation file not found in any i18nRoot', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
     await expect(loader.load(['nonexistentRoot'], 'common', 'en'))
       .rejects
       .toThrow('[SSR i18n] common.json for en not found in any i18nRoot');
   });
 
   it('should throw error if translation file not found with string i18nRoots', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
     await expect(loader.load('nonexistentRoot', 'common', 'en'))
       .rejects
       .toThrow('[SSR i18n] common.json for en not found in any i18nRoot');
@@ -102,11 +103,11 @@ describe('FsTranslationLoader', () => {
     const tmp = await import('node:os');
     const tmpDir = await fs.mkdtemp(path.join(tmp.tmpdir(), 'test-i18n-'));
 
-    const testFilePath = path.join(tmpDir, 'dist/browser/assets/i18n/en/common.json');
+    const testFilePath = path.join(tmpDir, 'dist/browser/assets/i18n/common/en.json');
     await fs.mkdir(path.dirname(testFilePath), { recursive: true });
     await fs.writeFile(testFilePath, JSON.stringify({ hello: 'real fs fallback' }), 'utf8');
 
-    const loader = new FsTranslationLoader({ baseDir: tmpDir });
+    const loader = new FsTranslationLoader({ baseDir: tmpDir }, defaultConfig.pathTemplates);
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'real fs fallback' });
 
@@ -114,13 +115,29 @@ describe('FsTranslationLoader', () => {
     await fs.rm(tmpDir, { recursive: true, force: true });
   });
 
+  it('should fallback to default pathTemplates when omitted', async () => {
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, undefined as any, mockFs);
+    const result = await loader.load(['i18n'], 'common', 'en');
+    expect(result).toEqual({ hello: 'Hello from fs!' });
+  });
+
+  it('should instantiate with explicit defaults', () => {
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates);
+    expect(loader).toBeInstanceOf(FsTranslationLoader);
+  });
+
+  it('should instantiate with minimal args', () => {
+    const loader = new FsTranslationLoader(undefined as any, defaultConfig.pathTemplates, undefined as any);
+    expect(loader).toBeInstanceOf(FsTranslationLoader);
+  });
+
   it('should skip missing root and succeed with fallback root', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
     const fallbackRoot = 'i18nFallback';
 
     // 加一個 fallback root 中的檔案
     vol.fromJSON({
-      [`${baseDir + assetPath}/${fallbackRoot}/en/common.json`]: JSON.stringify({ hello: 'from fallback' })
+      [`${baseDir + assetPath}/${fallbackRoot}/common/en.json`]: JSON.stringify({ hello: 'from fallback' })
     });
 
     const result = await loader.load(['nonexistentRoot', fallbackRoot], 'common', 'en');
@@ -130,9 +147,9 @@ describe('FsTranslationLoader', () => {
   it('should use process.cwd() when baseDir is not provided', async () => {
     const cwd = process.cwd();
     vol.fromJSON({
-      [`${cwd}/dist/browser/assets/i18n/en/common.json`]: JSON.stringify({ hello: 'Hello from fs!' })
+      [`${cwd}/dist/browser/assets/i18n/common/en.json`]: JSON.stringify({ hello: 'Hello from fs!' })
     });
-    const loader = new FsTranslationLoader({ assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ assetPath }, defaultConfig.pathTemplates, mockFs);
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'Hello from fs!' });
 
@@ -141,25 +158,25 @@ describe('FsTranslationLoader', () => {
   it('should use custom assetPath when provided', async () => {
     const customAssetPath = '/custom/assets';
     vol.fromJSON({
-      [`${baseDir}${customAssetPath}/i18n/en/common.json`]: JSON.stringify({ hello: 'custom path' })
+      [`${baseDir}${customAssetPath}/i18n/common/en.json`]: JSON.stringify({ hello: 'custom path' })
     });
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath: customAssetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath: customAssetPath }, defaultConfig.pathTemplates, mockFs);
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'custom path' });
   });
 
   it('should use custom pathTemplates when provided', async () => {
-    const customTemplates = ['custom/{{lang}}/{{namespace}}.json'];
+    const customTemplates = ['custom/{{namespace}}/{{lang}}.json'];
     vol.fromJSON({
-      [`${baseDir}${assetPath}/custom/en/common.json`]: JSON.stringify({ hello: 'custom template' })
+      [`${baseDir}${assetPath}/custom/common/en.json`]: JSON.stringify({ hello: 'custom template' })
     });
 
-    const loader = new FsTranslationLoader({
-      baseDir,
-      assetPath,
-      pathTemplates: customTemplates
-    }, mockFs);
+    const loader = new FsTranslationLoader(
+      { baseDir, assetPath },
+      customTemplates,
+      mockFs
+    );
 
     const result = await loader.load(['custom'], 'common', 'en');
     expect(result).toEqual({ hello: 'custom template' });
@@ -171,11 +188,11 @@ describe('FsTranslationLoader', () => {
       '/custom/path/file.json': JSON.stringify({ hello: 'custom resolve' })
     });
 
-    const loader = new FsTranslationLoader({
-      baseDir,
-      assetPath,
-      resolvePaths: customResolvePaths
-    }, mockFs);
+    const loader = new FsTranslationLoader(
+      { baseDir, assetPath, resolvePaths: customResolvePaths },
+      defaultConfig.pathTemplates,
+      mockFs
+    );
 
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'custom resolve' });
@@ -194,11 +211,7 @@ describe('FsTranslationLoader', () => {
       statSync: jest.fn().mockReturnValue({ mtimeMs: Date.now() })
     };
 
-    const loader = new FsTranslationLoader({
-      baseDir,
-      assetPath,
-      fsModule: customFs
-    });
+    const loader = new FsTranslationLoader({ baseDir, assetPath, fsModule: customFs }, defaultConfig.pathTemplates);
 
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'custom fs' });
@@ -211,7 +224,7 @@ describe('FsTranslationLoader', () => {
       statSync: jest.fn().mockReturnValue({ mtimeMs: Date.now() })
     };
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, customFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, customFs);
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'constructor fs' });
     expect(customFs.readFileSync).toHaveBeenCalled();
@@ -227,7 +240,7 @@ describe('FsTranslationLoader', () => {
             default: { join: (...parts: any[]) => parts.join('/') }
           }), { virtual: true });
           const { FsTranslationLoader } = await import('./translation.loader.ssr');
-          const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+          const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
           const result = await loader.load(['i18n'], 'common', 'en');
           expect(result).toEqual({ hello: 'Hello from fs!' });
           resolve();
@@ -248,14 +261,14 @@ describe('FsTranslationLoader', () => {
       },
     };
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, fsMtimeOnly);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, fsMtimeOnly);
 
     // 第一次讀取：命中新檔內容
     const r1 = await loader.load(['i18n'], 'common', 'en');
     expect(r1).toEqual({ hello: 'Hello from fs!' });
 
     // 修改檔案內容，並確保 mtime 會前進（memfs 解析度可能較粗）
-    const target = baseDir + assetPath + '/i18n/en/common.json';
+    const target = baseDir + assetPath + '/i18n/common/en.json';
     vol.writeFileSync(target, JSON.stringify({ hello: 'Modified content!' }), { encoding: 'utf8' });
     await new Promise((r) => setTimeout(r, 5));       // 給 fs 一點時間更新時間戳
     if (typeof (vol as any).utimesSync === 'function') {
@@ -277,7 +290,7 @@ describe('FsTranslationLoader', () => {
       },
     };
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, fsNoTimes);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, fsNoTimes);
 
     // 能正常讀到內容即可（覆蓋 "?? 0" 的回退邏輯）
     const res = await loader.load(['i18n'], 'common', 'en');
@@ -292,7 +305,7 @@ describe('FsTranslationLoader', () => {
             join: (...parts: any[]) => parts.join('/')
           }), { virtual: true });
           const { FsTranslationLoader } = await import('./translation.loader.ssr');
-          const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+          const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
           const res = await loader.load(['i18n'], 'common', 'en');
           expect(res).toEqual({ hello: 'Hello from fs!' });
           resolve();
@@ -308,7 +321,7 @@ describe('FsTranslationLoader', () => {
     const g = globalThis as any;
     const desc = Object.getOwnPropertyDescriptor(globalThis, 'process');
     vol.fromJSON({
-      ['/dist/browser/assets/i18n/en/common.json']: JSON.stringify({ hello: 'Hello from fs!' })
+      ['/dist/browser/assets/i18n/common/en.json']: JSON.stringify({ hello: 'Hello from fs!' })
     });
     try {
       if (desc?.configurable) {
@@ -317,7 +330,7 @@ describe('FsTranslationLoader', () => {
       } else if (desc?.writable) {
         g.process = undefined;
       } else { }
-      const loader = new FsTranslationLoader({ assetPath }, mockFs);
+      const loader = new FsTranslationLoader({ assetPath }, defaultConfig.pathTemplates, mockFs);
       const result = await loader.load(['i18n'], 'common', 'en');
       expect(result).toBeDefined();
     } finally {
@@ -331,26 +344,26 @@ describe('FsTranslationLoader', () => {
 
   it('should handle assetPath fallback', async () => {
     vol.fromJSON({
-      [`${baseDir}/dist/browser/assets/i18n/en/common.json`]: JSON.stringify({ hello: 'default asset path' })
+      [`${baseDir}/dist/browser/assets/i18n/common/en.json`]: JSON.stringify({ hello: 'default asset path' })
     });
 
-    const loader = new FsTranslationLoader({ baseDir }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir }, defaultConfig.pathTemplates, mockFs);
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'default asset path' });
   });
 
   it('should handle pathTemplates fallback', async () => {
     vol.fromJSON({
-      [`${baseDir}${assetPath}/i18n/en/common.json`]: JSON.stringify({ hello: 'default templates' })
+      [`${baseDir}${assetPath}/i18n/common/en.json`]: JSON.stringify({ hello: 'default templates' })
     });
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'default templates' });
   });
 
   it('should handle cache hit', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
 
     // First load to populate cache
     const result1 = await loader.load(['i18n'], 'common', 'en');
@@ -362,7 +375,7 @@ describe('FsTranslationLoader', () => {
   });
 
   it('should handle cache miss when file is modified', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
 
     // First load
     const result1 = await loader.load(['i18n'], 'common', 'en');
@@ -370,7 +383,7 @@ describe('FsTranslationLoader', () => {
 
     // Modify file
     vol.fromJSON({
-      [baseDir + assetPath + '/i18n/en/common.json']: JSON.stringify({ hello: 'Modified content!' })
+      [baseDir + assetPath + '/i18n/common/en.json']: JSON.stringify({ hello: 'Modified content!' })
     });
 
     // Second load should get new content
@@ -380,11 +393,11 @@ describe('FsTranslationLoader', () => {
 
   it('should handle multiple roots with fallback', async () => {
     vol.fromJSON({
-      [`${baseDir}${assetPath}/root1/en/common.json`]: JSON.stringify({ hello: 'root1' }),
-      [`${baseDir}${assetPath}/root2/en/common.json`]: JSON.stringify({ hello: 'root2' })
+      [`${baseDir}${assetPath}/root1/common/en.json`]: JSON.stringify({ hello: 'root1' }),
+      [`${baseDir}${assetPath}/root2/common/en.json`]: JSON.stringify({ hello: 'root2' })
     });
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
 
     // Should find in first root
     const result1 = await loader.load(['root1', 'root2'], 'common', 'en');
@@ -397,10 +410,10 @@ describe('FsTranslationLoader', () => {
 
   it('should handle JSON parse errors gracefully', async () => {
     vol.fromJSON({
-      [baseDir + assetPath + '/i18n/en/common.json']: 'invalid json content'
+      [baseDir + assetPath + '/i18n/common/en.json']: 'invalid json content'
     });
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
 
     // Should skip invalid JSON and try next candidate
     await expect(loader.load(['i18n'], 'common', 'en'))
@@ -416,7 +429,7 @@ describe('FsTranslationLoader', () => {
       })
     };
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFsWithError);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFsWithError);
 
     // Should skip files with stat errors and try next candidate
     await expect(loader.load(['i18n'], 'common', 'en'))
@@ -432,7 +445,7 @@ describe('FsTranslationLoader', () => {
       statSync: mockFs.statSync
     };
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFsWithError);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFsWithError);
 
     // Should skip files with read errors and try next candidate
     await expect(loader.load(['i18n'], 'common', 'en'))
@@ -449,7 +462,7 @@ describe('FsTranslationLoader', () => {
           jest.doMock('node:fs', () => { throw new Error('FS module not found'); }, { virtual: true });
           const { FsTranslationLoader } = await import('./translation.loader.ssr');
 
-          const loader = new FsTranslationLoader({ baseDir, assetPath }); // <-- 不要傳 mockFs
+          const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates); // <-- 不要傳 mockFs
           await expect(loader.load(['i18n'], 'common', 'en'))
             .rejects.toThrow('[SSR i18n] common.json for en not found in any i18nRoot');
 
@@ -467,7 +480,7 @@ describe('FsTranslationLoader', () => {
           const { FsTranslationLoader } = await import('./translation.loader.ssr');
 
           // 這裡保留 mockFs，且 memfs 有檔案
-          const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+          const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
           await expect(loader.load(['i18n'], 'common', 'en'))
             .resolves.toEqual({ hello: 'Hello from fs!' });
 
@@ -478,7 +491,7 @@ describe('FsTranslationLoader', () => {
   });
 
   it('should handle empty i18nRoots array', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
 
     await expect(loader.load([], 'common', 'en'))
       .rejects
@@ -486,7 +499,7 @@ describe('FsTranslationLoader', () => {
   });
 
   it('should handle empty string i18nRoots', async () => {
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFs);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFs);
 
     await expect(loader.load('', 'common', 'en'))
       .rejects
@@ -494,17 +507,17 @@ describe('FsTranslationLoader', () => {
   });
 
   it('should handle constructor with no options', () => {
-    const loader = new FsTranslationLoader();
+    const loader = new FsTranslationLoader({}, defaultConfig.pathTemplates);
     expect(loader).toBeInstanceOf(FsTranslationLoader);
   });
 
   it('should handle constructor with empty options', () => {
-    const loader = new FsTranslationLoader({});
+    const loader = new FsTranslationLoader({}, defaultConfig.pathTemplates);
     expect(loader).toBeInstanceOf(FsTranslationLoader);
   });
 
   it('should handle constructor with customFs only', () => {
-    const loader = new FsTranslationLoader(undefined, mockFs);
+    const loader = new FsTranslationLoader({}, defaultConfig.pathTemplates, mockFs);
     expect(loader).toBeInstanceOf(FsTranslationLoader);
   });
 
@@ -517,7 +530,7 @@ describe('FsTranslationLoader', () => {
       statSync: jest.fn().mockReturnValue({ mtimeMs: mtime })
     };
 
-    const loader = new FsTranslationLoader({ baseDir, assetPath }, mockFsWithSameMtime);
+    const loader = new FsTranslationLoader({ baseDir, assetPath }, defaultConfig.pathTemplates, mockFsWithSameMtime);
 
     // First load to populate cache
     const result1 = await loader.load(['i18n'], 'common', 'en');

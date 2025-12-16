@@ -60,7 +60,7 @@ export class DropdownDialogComponent implements AfterViewInit {
   }
 
   private detectMobile(): boolean {
-    return this.viewPortService.isCoarse() || this.viewPortService.lessThan(SCREEN_WIDTH.xmedium);
+    return this.viewPortService.isCoarseSig() || this.viewPortService.lessThan(SCREEN_WIDTH.xmedium);
   }
 
   private reposition(): void {

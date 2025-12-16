@@ -1,0 +1,5 @@
+@use "mixins" as m;
+
+svg {
+  @include m.icon;
+}
