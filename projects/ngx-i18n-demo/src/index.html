@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>ngx-i18n</title>
+  <title>ngx-atomic-i18n</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
@@ -13,6 +13,7 @@
   <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
   <script>
     (function () {
+      console.log('aa-index-0')
       const SUPPORTED_LANGS = ['en', 'zh-Hant'];
       const LANG_ALIASES = {
         'en': 'en',
@@ -31,6 +32,7 @@
         return LANG_ALIASES[key] ?? null;
       }
       const path = window.location.pathname;
+      console.log('aa-path', path)
       if (path !== '/' && path !== '/index.html') return;
       const stored = normalizeLangCode(localStorage.getItem('lang'));
       if (SUPPORTED_LANGS.includes(stored)) {
@@ -38,9 +40,11 @@
       };
       const navLang = navigator.language;
       const normalizeNavLang = normalizeLangCode(navLang);
+      console.log('aa-index-1', normalizeNavLang)
       if (normalizeNavLang) {
         localStorage.setItem('lang', normalizeNavLang);
         location.replace(`/${normalizeNavLang}`);
+        console.log('aa-index-2', normalizeNavLang)
       }
     })();
   </script>

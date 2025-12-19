@@ -1,20 +1,20 @@
 // Root Jest config to run library tests from the workspace root
-const { pathsToModuleNameMapper } = require('ts-jest');
-const { readFileSync } = require('fs');
+const { pathsToModuleNameMapper } = require('ts-jest')
+const { readFileSync } = require('fs')
 const tsconfig = JSON.parse(
   readFileSync('./tsconfig.base.json', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
-);
+)
 
 module.exports = {
   preset: 'jest-preset-angular',
-  setupFilesAfterEnv: ['<rootDir>/projects/ngx-i18n/setup-jest.ts'],
-  testMatch: ['<rootDir>/projects/ngx-i18n/src/**/*.spec.ts'],
+  setupFilesAfterEnv: ['<rootDir>/projects/ngx-atomic-i18n/setup-jest.ts'],
+  testMatch: ['<rootDir>/projects/ngx-atomic-i18n/src/**/*.spec.ts'],
   moduleFileExtensions: ['ts', 'js', 'html'],
   transform: {
     '^.+\\.(ts|js|mjs|html)$': [
       'jest-preset-angular',
       {
-        tsconfig: '<rootDir>/projects/ngx-i18n/tsconfig.spec.json',
+        tsconfig: '<rootDir>/projects/ngx-atomic-i18n/tsconfig.spec.json',
         stringifyContentPathRegex: '\\.html$'
       }
     ]
@@ -28,11 +28,11 @@ module.exports = {
     ...pathsToModuleNameMapper(tsconfig.compilerOptions.paths || {}, {
       prefix: '<rootDir>/'
     }),
-    '^ngx-i18n$': '<rootDir>/projects/ngx-i18n/src/public-api.ts',
-    '^ngx-i18n/(.*)$': '<rootDir>/projects/ngx-i18n/src/lib/$1',
+    '^ngx-atomic-i18n$': '<rootDir>/projects/ngx-atomic-i18n/src/public-api.ts',
+    '^ngx-atomic-i18n/(.*)$': '<rootDir>/projects/ngx-atomic-i18n/src/lib/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|webp|svg)$':
-      '<rootDir>/projects/ngx-i18n/__mocks__/fileMock.js'
+      '<rootDir>/projects/ngx-atomic-i18n/__mocks__/fileMock.js'
   },
   testTimeout: 15000,
   maxConcurrency: 5,

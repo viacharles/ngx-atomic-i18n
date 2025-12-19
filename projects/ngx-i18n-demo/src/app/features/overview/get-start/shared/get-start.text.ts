@@ -1,11 +1,12 @@
-import { TranslationService } from './../../../../../../../ngx-i18n/src/lib/translation.service';
+
 import { computed, Signal, signal, WritableSignal } from "@angular/core";
+import { TranslationService } from "ngx-atomic-i18n";
 
 export class GetStartText {
   initConfig: WritableSignal<string> = signal('');
   readonly initConfigCode: Signal<string> = computed(() => this.initConfig());
   installCLI = `    // npm
-    npm install @ngx-i18n;
+    npm install @ngx-atomic-i18n;
     // yarn
     yarn add @npx-i18n;
     // pnpm
@@ -30,10 +31,11 @@ export class GetStartText {
     const loaderBlock = this.buildLoaderConfig('      ', isCSR, isMonorepo);
     const loaderSection = loaderBlock ? `${loaderBlock}\n` : '';
     return `${needsIsDevMode ? `import { isDevMode } from '@angular/core';` : ``}
-import { provideTranslationInit } from 'ngx-i18n';
+import { provideTranslationInit } from 'ngx-atomic-i18n';
 
 @NgModule({
   providers: [
+    HttpClient(), // must have
     provideTranslationInit({
       supportedLangs: ['en', 'zh-Hant'], // ${this.translationService.t(this.supportedLangText)}
 ${loaderSection}    }),
@@ -47,10 +49,11 @@ ${loaderSection}    }),
     const loaderBlock = this.buildLoaderConfig('      ', isCSR, isMonorepo);
     const loaderSection = loaderBlock ? `${loaderBlock}\n` : '';
     return `${needsIsDevMode ? `import { ApplicationConfig, isDevMode } from '@angular/core';` : `import { ApplicationConfig } from '@angular/core';`}
-import { provideTranslationInit } from 'ngx-i18n';
+import { provideTranslationInit } from 'ngx-atomic-i18n';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(), // must have
     provideTranslationInit({
       supportedLangs: ['en', 'zh-Hant'], // ${this.translationService.t(this.supportedLangText)}
 ${loaderSection}    }),

@@ -1,6 +1,6 @@
 {
   "name": "ngx-i18n-demo",
-  "short_name": "ngx-i18n",
+  "short_name": "ngx-atomic-i18n",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "Atomic, lazy-loadable i18n for Angular (SSR/SSG-friendly).",
   "peerDependencies": {
-    "@angular/common": "^18.2.0",
-    "@angular/core": "^18.2.0",
+    "@angular/common": ">=16.0.0 <19.0.0",
+    "@angular/core": ">=16.0.0 <19.0.0",
     "rxjs": "^7.8.0"
   },
   "keywords": [
@@ -25,8 +25,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/charles"
+    "url": "git+https://git@github.com:viacharles/ngx-atomic-i18n.git"
   },
+  "bugs": {
+    "url": "https://git@github.com:viacharles/ngx-atomic-i18n/issues"
+  },
+  "homepage": "https://git@github.com:viacharles/ngx-atomic-i18n#readme",
   "sideEffects": false,
   "devDependencies": {
     "@types/jest": "^30.0.0"

@@ -1,5 +1,5 @@
 import { Component, Injector, OnInit } from '@angular/core';
-import { provideTranslation, TranslationPipe } from 'ngx-i18n';
+import { provideTranslation, TranslationPipe } from 'ngx-atomic-i18n';
 import { DialogService } from '@demo2-shared/systems/dialog-system/dialog.service';
 import { SelectComponent } from '@demo2-shared/systems/form-system/components/selects/select/select.component';
 import { Option } from '@demo2-shared/interfaces/common.interface';

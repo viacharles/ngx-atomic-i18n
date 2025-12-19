@@ -1,6 +1,6 @@
 {
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/FIFO.model.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/FIFO.model.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/FIFO.model.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/FIFO.model.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -726,8 +726,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.pipe.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.pipe.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.pipe.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.pipe.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -864,8 +864,8 @@
         },
         "b": {}
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.provider.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.provider.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.provider.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.provider.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -1951,8 +1951,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.token.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.token.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.token.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.token.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -2028,8 +2028,8 @@
         "f": {},
         "b": {}
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.type.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.type.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.type.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.type.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -2150,8 +2150,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.util.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.util.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.util.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.util.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -6012,8 +6012,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation-core.service.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation-core.service.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation-core.service.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation-core.service.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -9317,8 +9317,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.directive.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.directive.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.directive.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.directive.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -9573,8 +9573,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.loader.csr.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.loader.csr.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.loader.csr.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.loader.csr.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -10281,8 +10281,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.loader.ssr.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.loader.ssr.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.loader.ssr.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.loader.ssr.ts",
         "statementMap": {
             "0": {
                 "start": {
@@ -11798,8 +11798,8 @@
             ]
         }
     },
-    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.service.ts": {
-        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.service.ts",
+    "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.service.ts": {
+        "path": "/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.service.ts",
         "statementMap": {
             "0": {
                 "start": {

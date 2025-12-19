@@ -3,7 +3,7 @@ import { provideRouter, TitleStrategy, withInMemoryScrolling } from '@angular/ro
 
 import { appRoutes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideTranslationInit } from 'ngx-i18n';
+import { provideTranslationInit } from 'ngx-atomic-i18n';
 import { provideHttpClient } from '@angular/common/http';
 import { AppTitleService } from '../core/services/app-title.service';
 

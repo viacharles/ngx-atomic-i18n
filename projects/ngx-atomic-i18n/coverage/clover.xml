@@ -2,7 +2,7 @@
 <coverage generated="1758549036945" clover="3.2.0">
   <project timestamp="1758549036946" name="All files">
     <metrics statements="461" coveredstatements="461" conditionals="255" coveredconditionals="255" methods="102" coveredmethods="101" elements="818" coveredelements="817" complexity="0" loc="461" ncloc="461" packages="1" files="11" classes="11"/>
-    <file name="FIFO.model.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/FIFO.model.ts">
+    <file name="FIFO.model.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/FIFO.model.ts">
       <metrics statements="27" coveredstatements="27" conditionals="5" coveredconditionals="5" methods="11" coveredmethods="11"/>
       <line num="1" count="7" type="stmt"/>
       <line num="2" count="62" type="stmt"/>
@@ -32,7 +32,7 @@
       <line num="56" count="4" type="stmt"/>
       <line num="59" count="6" type="stmt"/>
     </file>
-    <file name="translate.pipe.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.pipe.ts">
+    <file name="translate.pipe.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.pipe.ts">
       <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <line num="1" count="2" type="stmt"/>
       <line num="3" count="2" type="stmt"/>
@@ -40,7 +40,7 @@
       <line num="6" count="8" type="stmt"/>
       <line num="8" count="14" type="stmt"/>
     </file>
-    <file name="translate.provider.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.provider.ts">
+    <file name="translate.provider.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.provider.ts">
       <metrics statements="31" coveredstatements="31" conditionals="28" coveredconditionals="28" methods="7" coveredmethods="7"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="stmt"/>
@@ -74,7 +74,7 @@
       <line num="92" count="3" type="stmt"/>
       <line num="93" count="3" type="cond" truecount="2" falsecount="0"/>
     </file>
-    <file name="translate.token.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.token.ts">
+    <file name="translate.token.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.token.ts">
       <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <line num="1" count="7" type="stmt"/>
       <line num="5" count="7" type="stmt"/>
@@ -83,14 +83,14 @@
       <line num="8" count="7" type="stmt"/>
       <line num="9" count="7" type="stmt"/>
     </file>
-    <file name="translate.type.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.type.ts">
+    <file name="translate.type.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.type.ts">
       <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
       <line num="98" count="7" type="cond" truecount="2" falsecount="0"/>
       <line num="99" count="7" type="stmt"/>
       <line num="100" count="7" type="stmt"/>
       <line num="101" count="7" type="stmt"/>
     </file>
-    <file name="translate.util.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translate.util.ts">
+    <file name="translate.util.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translate.util.ts">
       <metrics statements="133" coveredstatements="133" conditionals="89" coveredconditionals="89" methods="21" coveredmethods="21"/>
       <line num="1" count="13" type="stmt"/>
       <line num="3" count="13" type="stmt"/>
@@ -226,7 +226,7 @@
       <line num="240" count="38" type="stmt"/>
       <line num="242" count="1" type="stmt"/>
     </file>
-    <file name="translation-core.service.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation-core.service.ts">
+    <file name="translation-core.service.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation-core.service.ts">
       <metrics statements="130" coveredstatements="130" conditionals="47" coveredconditionals="47" methods="25" coveredmethods="24"/>
       <line num="1" count="6" type="stmt"/>
       <line num="2" count="6" type="stmt"/>
@@ -359,7 +359,7 @@
       <line num="232" count="1" type="stmt"/>
       <line num="236" count="2" type="stmt"/>
     </file>
-    <file name="translation.directive.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.directive.ts">
+    <file name="translation.directive.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.directive.ts">
       <metrics statements="13" coveredstatements="13" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
       <line num="1" count="2" type="stmt"/>
       <line num="2" count="2" type="stmt"/>
@@ -375,7 +375,7 @@
       <line num="19" count="7" type="stmt"/>
       <line num="21" count="21" type="stmt"/>
     </file>
-    <file name="translation.loader.csr.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.loader.csr.ts">
+    <file name="translation.loader.csr.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.loader.csr.ts">
       <metrics statements="22" coveredstatements="22" conditionals="17" coveredconditionals="17" methods="3" coveredmethods="3"/>
       <line num="2" count="2" type="stmt"/>
       <line num="3" count="2" type="stmt"/>
@@ -400,7 +400,7 @@
       <line num="33" count="9" type="stmt"/>
       <line num="39" count="3" type="stmt"/>
     </file>
-    <file name="translation.loader.ssr.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.loader.ssr.ts">
+    <file name="translation.loader.ssr.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.loader.ssr.ts">
       <metrics statements="41" coveredstatements="41" conditionals="40" coveredconditionals="40" methods="9" coveredmethods="9"/>
       <line num="1" count="6" type="stmt"/>
       <line num="9" count="6" type="stmt"/>
@@ -444,7 +444,7 @@
       <line num="113" count="73" type="cond" truecount="3" falsecount="0"/>
       <line num="115" count="8" type="stmt"/>
     </file>
-    <file name="translation.service.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-i18n/src/lib/translation.service.ts">
+    <file name="translation.service.ts" path="/Users/viacharles/Documents/code/@Side-Project/ngx-component-translate/projects/ngx-atomic-i18n/src/lib/translation.service.ts">
       <metrics statements="49" coveredstatements="49" conditionals="25" coveredconditionals="25" methods="21" coveredmethods="21"/>
       <line num="1" count="5" type="stmt"/>
       <line num="2" count="5" type="stmt"/>

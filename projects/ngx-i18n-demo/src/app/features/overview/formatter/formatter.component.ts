@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { OverviewPaths } from '@demo2-shared/enums/routes.enum';
-import { provideTranslation, TranslationPipe } from 'ngx-i18n';
+import { provideTranslation, TranslationPipe } from 'ngx-atomic-i18n';
 import { FormsModule } from '@angular/forms';
 import { PageBase } from '@demo2-shared/base/page-base/page-base';
 import { Option } from '@demo2-shared/interfaces/common.interface';

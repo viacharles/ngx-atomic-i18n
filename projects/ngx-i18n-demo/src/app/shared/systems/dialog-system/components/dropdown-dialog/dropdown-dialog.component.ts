@@ -7,7 +7,7 @@ import { DIALOG_DATA } from '../../dialog.token';
 import { DropdownData } from '../../dialog.type';
 import { SCREEN_WIDTH } from 'projects/ngx-i18n-demo/src/app/shared/enums/common.enum';
 import { NgStyle } from '@angular/common';
-import { TranslationPipe } from 'ngx-i18n';
+import { TranslationPipe } from 'ngx-atomic-i18n';
 
 @Component({
   selector: 'app-dropdown-dialog',

@@ -1,5 +1,5 @@
 /*
- * Public API Surface of ngx-i18n
+ * Public API Surface of ngx-atomic-i18n
  */
 
 export * from './lib/translation.service';

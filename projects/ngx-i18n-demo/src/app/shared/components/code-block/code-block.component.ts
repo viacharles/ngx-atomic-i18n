@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, input, Input, signal } from
 import { CommonModule } from '@angular/common';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
-import { TranslationPipe } from 'ngx-i18n';
+import { TranslationPipe } from 'ngx-atomic-i18n';
 
 @Component({
   selector: 'app-code-block',

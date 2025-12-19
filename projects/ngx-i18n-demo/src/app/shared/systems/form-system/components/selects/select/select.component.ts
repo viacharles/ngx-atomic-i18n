@@ -4,7 +4,7 @@ import { CustomNgForm, getCustomNgFormProvider } from '../../../value-accessor';
 import { Option } from 'projects/ngx-i18n-demo/src/app/shared/interfaces/common.interface';
 import { DropdownDialogComponent } from '../../../../dialog-system/components/dropdown-dialog/dropdown-dialog.component';
 import { DialogService } from '../../../../dialog-system/dialog.service';
-import { provideTranslation, TranslationPipe } from 'ngx-i18n';
+import { provideTranslation, TranslationPipe } from 'ngx-atomic-i18n';
 
 @Component({
   selector: 'app-select',

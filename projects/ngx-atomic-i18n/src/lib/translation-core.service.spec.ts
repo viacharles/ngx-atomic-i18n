@@ -107,7 +107,7 @@ describe('TranslationCoreService', () => {
       service.setLang('zh-Hant');
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
       const callArgs = consoleWarnSpy.mock.calls[0];
-      expect(callArgs[0]).toBe('[ngx-i18n] Failed to persist language to localStorage.');
+      expect(callArgs[0]).toBe('[ngx-atomic-i18n] Failed to persist language to localStorage.');
       expect(callArgs[1]).toBeInstanceOf(Error);
 
       Object.defineProperty(global, 'localStorage', { value: orig, configurable: true });

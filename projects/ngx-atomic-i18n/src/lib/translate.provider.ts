@@ -18,7 +18,7 @@ export type ProvideTranslationInitOptions =
 export const defaultConfig: TranslationConfig = {
   supportedLangs: ['en'],
   fallbackNamespace: 'common',
-  fallbackLang: 'en',
+  fallbackLang: '',
   i18nRoots: ['i18n'],
   pathTemplates: [`${TempToken.Root}/${TempToken.Namespace}/${TempToken.Lang}.json`],
   enablePageFallback: false,
@@ -46,9 +46,9 @@ function resolveClientRequestLang(
 /** Bootstraps the entire translation infrastructure for an application. */
 export function provideTranslationInit(userConfig?: ProvideTranslationInitOptions): Provider[] {
   const debugEnabled = userConfig?.debug ?? isDevMode();
-  const baseConfig = { ...defaultConfig, ...(userConfig ?? {}), debug: debugEnabled } as TranslationConfig;
+  const baseConfig = { ...defaultConfig, ...(userConfig ?? {}), fallbackLang: defaultConfig.supportedLangs[0], debug: debugEnabled } as TranslationConfig;
   if (debugEnabled) {
-    console.info('[ngx-i18n] Debug logging is enabled.');
+    console.info('[ngx-atomic-i18n] Debug logging is enabled.');
   }
   return [
     {
@@ -57,6 +57,7 @@ export function provideTranslationInit(userConfig?: ProvideTranslationInitOption
         const requestLang = resolveClientRequestLang(platformId, transferState, clientRequestLang ?? baseConfig.clientRequestLang ?? null);
         const finalConfig = { ...baseConfig, clientRequestLang: requestLang } as TranslationConfig;
         const preferredLang = detectPreferredLang(finalConfig);
+        console.log('aa-preferredLang', preferredLang)
         return { ...finalConfig, customLang: preferredLang };
       },
       deps: [PLATFORM_ID, [new Optional(), TransferState], [new Optional(), CLIENT_REQUEST_LANG]],
@@ -113,9 +114,10 @@ export function provideTranslationLoader(config: ProvideTranslationInitOptions):
         const finalPathTemplates = config.pathTemplates ?? defaultConfig.pathTemplates;
         const isSSR = options.forceMode === 'ssr' || (options.forceMode !== 'csr' && isPlatformServer(platformId));
         if (isSSR) {
+          const nodeProcess = (globalThis as any).process as { cwd?: () => string } | undefined;
           const baseDir =
             options.fsOptions?.baseDir ??
-            (typeof process !== 'undefined' ? process.cwd() : '');
+            (typeof nodeProcess?.cwd === 'function' ? nodeProcess.cwd() : '');
           const assetPath = options.fsOptions?.assetPath ?? (isDevMode() ? 'src/assets' : 'dist/browser/assets');
           return options.ssrLoader?.()
             ?? new FsTranslationLoader({

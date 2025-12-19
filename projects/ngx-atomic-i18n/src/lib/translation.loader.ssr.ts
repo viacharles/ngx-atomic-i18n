@@ -26,7 +26,8 @@ export class FsTranslationLoader implements TranslationLoader {
     const fsLike: FsModuleLike | undefined =
       this.pickFs(this.customFs) ?? this.pickFs(this.fsOptions.fsModule) ?? this.pickFs(fsImported);
 
-    const baseDir = this.fsOptions.baseDir ?? (globalThis.process?.cwd?.() ?? '/');
+    const nodeProcess = (globalThis as any).process as { cwd?: () => string } | undefined;
+    const baseDir = this.fsOptions.baseDir ?? (nodeProcess?.cwd?.() ?? '/');
     const assetPathRaw = this.fsOptions.assetPath ?? 'dist/browser/assets';
     const assetPath = stripLeadingSep(assetPathRaw);
 
@@ -85,14 +86,12 @@ export class FsTranslationLoader implements TranslationLoader {
 
   /** Attempts to import a Node built-in without throwing when unavailable (e.g. CSR). */
   private async importSafely(specifier: string): Promise<any | undefined> {
-    const isNode = typeof process !== 'undefined' && !!process?.versions?.node;
+    const nodeProcess = (globalThis as any).process as { versions?: { node?: string } } | undefined;
+    const isNode = !!nodeProcess?.versions?.node;
     if (!isNode) return undefined;
     try {
-      if (specifier === 'node:path') {
-        return await import('node:path'); // Static specifier keeps bundlers happy.
-      } else {
-        return await import('node:fs');
-      }
+      const importer = new Function('s', 'return import(s)');
+      return await importer(specifier);
     } catch {
       return undefined;
     }

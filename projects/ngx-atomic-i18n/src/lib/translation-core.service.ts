@@ -297,23 +297,23 @@ export class TranslationCoreService {
   private log(message: string, ...details: unknown[]): void {
     if (!this.debugEnabled) return;
     if (details.length) {
-      console.info(`[ngx-i18n] ${message}`, ...details);
+      console.info(`[ngx-atomic-i18n] ${message}`, ...details);
     } else {
-      console.info(`[ngx-i18n] ${message}`);
+      console.info(`[ngx-atomic-i18n] ${message}`);
     }
   }
 
   private error(message: string, error: unknown): void {
     if (!this.debugEnabled) return;
-    console.error(`[ngx-i18n] ${message}`, error);
+    console.error(`[ngx-atomic-i18n] ${message}`, error);
   }
 
   private warn(message: string, ...details: unknown[]): void {
     if (!this.debugEnabled) return;
     if (details.length) {
-      console.warn(`[ngx-i18n] ${message}`, ...details);
+      console.warn(`[ngx-atomic-i18n] ${message}`, ...details);
     } else {
-      console.warn(`[ngx-i18n] ${message}`);
+      console.warn(`[ngx-atomic-i18n] ${message}`);
     }
   }
 }

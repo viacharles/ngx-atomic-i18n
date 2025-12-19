@@ -3,10 +3,9 @@ import { RouterModule } from '@angular/router';
 import { Component } from '@angular/core';
 import { PageBase } from '@demo2-shared/base/page-base/page-base';
 import { CodeBlockComponent } from '@demo2-shared/components/code-block/code-block.component';
-import { provideTranslation, TranslationPipe } from 'ngx-i18n';
+import { provideTranslation, TranslationPipe } from 'ngx-atomic-i18n';
 import { ProjectArchitectureType } from '../get-start/shared/get-start.enum';
 import { enumToOptions } from '@demo2-shared/utils/common.util';
-import { ConfigurationText } from './shared/init-configuration.text';
 import { FormsModule } from '@angular/forms';
 import { LComponent } from '@demo2-shared/components/l/l.component';
 import { OverviewPaths } from '@demo2-shared/enums/routes.enum';
@@ -28,7 +27,6 @@ export class InitConfigurationComponent extends PageBase {
   OverviewPaths = OverviewPaths;
 
   constructor(
-    private text: ConfigurationText
   ) { super() }
 
   changeStructure(value: ProjectArchitectureType): void {

@@ -5,11 +5,11 @@ jest.mock('@angular/core', () => {
     isDevMode: jest.fn(),
   };
 });
-import { APP_INITIALIZER, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
+import { APP_INITIALIZER, PLATFORM_ID, makeStateKey } from '@angular/core';
 import { provideTranslationInit, provideTranslationLoader, provideTranslation } from './translate.provider';
 import { TranslationService } from './translation.service';
 import { TestBed } from '@angular/core/testing';
-import { TRANSLATION_LOADER, TRANSLATION_NAMESPACE, TRANSLATION_CONFIG, CLIENT_REQUEST_LANG, PAGE_TRANSLATION_ROOT } from './translate.token';
+import { TRANSLATION_LOADER, TRANSLATION_NAMESPACE, TRANSLATION_CONFIG, PAGE_TRANSLATION_ROOT } from './translate.token';
 import { HttpTranslationLoader } from './translation.loader.csr';
 import { FsTranslationLoader } from './translation.loader.ssr';
 import { provideHttpClient } from '@angular/common/http';
@@ -46,7 +46,7 @@ describe('provideTranslationInit', () => {
   it('should log debug enabled when debug is true', () => {
     const spy = jest.spyOn(console, 'info').mockImplementation(() => { });
     provideTranslationInit({ debug: true });
-    expect(spy).toHaveBeenCalledWith('[ngx-i18n] Debug logging is enabled.');
+    expect(spy).toHaveBeenCalledWith('[ngx-atomic-i18n] Debug logging is enabled.');
     spy.mockRestore();
   });
   afterEach(() => {

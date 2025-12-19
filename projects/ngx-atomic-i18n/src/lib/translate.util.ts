@@ -31,6 +31,7 @@ export function detectPreferredLang(config: TranslationConfig): string {
     switch (source) {
       case 'url':
         lang = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : null;
+        console.log('aa-url', lang)
         break;
       case 'clientRequest':
         lang = config.clientRequestLang ?? null;

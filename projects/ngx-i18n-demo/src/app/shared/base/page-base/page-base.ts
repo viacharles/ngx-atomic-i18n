@@ -2,7 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Directive, effect, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AnchorListService } from '@demo2-shared/systems/anchor-list/anchor-list.service';
-import { TranslationService } from 'ngx-i18n';
+import { TranslationService } from 'ngx-atomic-i18n';
 import { timer, Subscription } from 'rxjs';
 
 @Directive()

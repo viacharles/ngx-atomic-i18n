@@ -1,4 +1,4 @@
-// projects/ngx-i18n/src/jest.config.ts
+// projects/ngx-atomic-i18n/src/jest.config.ts
 
 module.exports = {
   preset: 'jest-preset-angular',
@@ -17,8 +17,8 @@ module.exports = {
   coverageDirectory: '<rootDir>/coverage',
   testEnvironment: 'jsdom',
   moduleNameMapper: {
-    '^ngx-i18n$': '<rootDir>/src/public-api.ts',
-    '^ngx-i18n/(.*)$': '<rootDir>/src/lib/$1',
+    '^ngx-atomic-i18n$': '<rootDir>/src/public-api.ts',
+    '^ngx-atomic-i18n/(.*)$': '<rootDir>/src/lib/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/__mocks__/fileMock.js',
   },

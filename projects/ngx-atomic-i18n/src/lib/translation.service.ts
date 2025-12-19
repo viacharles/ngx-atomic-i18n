@@ -150,9 +150,9 @@ export class TranslationService {
   private info(message: string, ...details: unknown[]): void {
     if (!this.debugEnabled) return;
     if (details.length) {
-      console.info(`[ngx-i18n] ${message}`, ...details);
+      console.info(`[ngx-atomic-i18n] ${message}`, ...details);
     } else {
-      console.info(`[ngx-i18n] ${message}`);
+      console.info(`[ngx-atomic-i18n] ${message}`);
     }
   }
 
@@ -160,9 +160,9 @@ export class TranslationService {
   private warn(message: string, ...details: unknown[]): void {
     if (!this.debugEnabled) return;
     if (details.length) {
-      console.warn(`[ngx-i18n] ${message}`, ...details);
+      console.warn(`[ngx-atomic-i18n] ${message}`, ...details);
     } else {
-      console.warn(`[ngx-i18n] ${message}`);
+      console.warn(`[ngx-atomic-i18n] ${message}`);
     }
   }
 }
