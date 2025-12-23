@@ -57,7 +57,6 @@ export function provideTranslationInit(userConfig?: ProvideTranslationInitOption
         const requestLang = resolveClientRequestLang(platformId, transferState, clientRequestLang ?? baseConfig.clientRequestLang ?? null);
         const finalConfig = { ...baseConfig, clientRequestLang: requestLang } as TranslationConfig;
         const preferredLang = detectPreferredLang(finalConfig);
-        console.log('aa-preferredLang', preferredLang)
         return { ...finalConfig, customLang: preferredLang };
       },
       deps: [PLATFORM_ID, [new Optional(), TransferState], [new Optional(), CLIENT_REQUEST_LANG]],

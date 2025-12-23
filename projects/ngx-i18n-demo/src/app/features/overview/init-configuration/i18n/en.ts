@@ -23,7 +23,7 @@ const en: typeof zh_TW = {
   "supportedLangs-des-6": " parameter.\n",
   "supportedLangs-des-7": " SSR-specific. Used to record the Accept-Language from the request header by setting the CLIENT_REQUEST_LANG token in server.ts.\n",
   " - provideTranslationInit 的 ": " - from provideTranslationInit ",
-  " 參數。": " parameter.",
+  " 參數。": " parameter.\n",
   "customInitialLang-des": "One of the langDetectionOrder strategies.\nDefines the custom language source.",
   "customInitialLang-ex": "ex. () => (navigator.language?.startsWith('zh') ? 'zh-Hant' : 'en') uses the browser preference when customInitialLang is evaluated.",
   'langDetectionOrder-ex-button': 'clientRequest - server.ts example',

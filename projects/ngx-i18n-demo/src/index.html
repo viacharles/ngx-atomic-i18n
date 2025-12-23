@@ -13,7 +13,6 @@
   <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
   <script>
     (function () {
-      console.log('aa-index-0')
       const SUPPORTED_LANGS = ['en', 'zh-Hant'];
       const LANG_ALIASES = {
         'en': 'en',
@@ -32,7 +31,6 @@
         return LANG_ALIASES[key] ?? null;
       }
       const path = window.location.pathname;
-      console.log('aa-path', path)
       if (path !== '/' && path !== '/index.html') return;
       const stored = normalizeLangCode(localStorage.getItem('lang'));
       if (SUPPORTED_LANGS.includes(stored)) {
@@ -40,11 +38,9 @@
       };
       const navLang = navigator.language;
       const normalizeNavLang = normalizeLangCode(navLang);
-      console.log('aa-index-1', normalizeNavLang)
       if (normalizeNavLang) {
         localStorage.setItem('lang', normalizeNavLang);
         location.replace(`/${normalizeNavLang}`);
-        console.log('aa-index-2', normalizeNavLang)
       }
     })();
   </script>

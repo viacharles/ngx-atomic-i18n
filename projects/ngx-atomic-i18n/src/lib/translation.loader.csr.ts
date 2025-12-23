@@ -18,7 +18,8 @@ export class HttpTranslationLoader implements TranslationLoader {
     const safeBaseUrl = (/^https?:\/\//i.test(baseUrl)
       ? baseUrl
       : (baseUrl.startsWith('/') ? baseUrl : '/' + baseUrl)).replace(/[\\/]+$/, '');
-    const pathTemps = this.pathTemplateCache ? [this.pathTemplateCache, ...(tempToArray(this.pathTemplates) ?? []).filter(t => t !== this.pathTemplateCache)] : defaultConfig.pathTemplates;
+    const tempArray = tempToArray(this.pathTemplates)
+    const pathTemps = this.pathTemplateCache ? [this.pathTemplateCache, ...(tempArray ?? []).filter(t => t !== this.pathTemplateCache)] : (tempArray ?? defaultConfig.pathTemplates);
     for (const root of roots) {
       for (const temp of pathTemps) {
         let url = `${safeBaseUrl}/${temp.replace(TempToken.Root, root).replace(TempToken.Lang, lang).replace(TempToken.Namespace, namespace)}`;

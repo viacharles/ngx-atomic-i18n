@@ -21,7 +21,7 @@ const zh_TW = {
   "supportedLangs-des-6": " 參數。\n",
   "supportedLangs-des-7": " SSR 專用。藉由在 server.ts 設定 token CLIENT_REQUEST_LANG 紀錄 request header 的 accept-language \n",
   " - provideTranslationInit 的 ": " - provideTranslationInit 的 ",
-  " 參數。": " 參數。",
+  " 參數。": " 參數。\n",
   "customInitialLang-des": "langDetectionOrder 的其中一個參數。\n自訂語系來源。",
   "customInitialLang-ex": "ex. () => (navigator.language?.startsWith('zh') ? 'zh-Hant' : 'en')，代表 langDetectionOrder 使用 customInitialLang 的話會依照瀏覽器偏好。",
   'langDetectionOrder-ex-button': 'clientRequest - server.ts 範例',
