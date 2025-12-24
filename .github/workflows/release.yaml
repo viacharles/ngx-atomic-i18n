@@ -45,5 +45,11 @@ jobs:
             exit 1
           fi
 
+      - name: Debug dist metadata
+        run: |
+        node -p "require('./dist/ngx-atomic-i18n/package.json').repository"
+        node -p "require('./dist/ngx-atomic-i18n/package.json').bugs?.url"
+        node -p "require('./dist/ngx-atomic-i18n/package.json').homepage"
+
       - name: Publish to npm (OIDC)
         run: npm publish dist/ngx-atomic-i18n --access public
