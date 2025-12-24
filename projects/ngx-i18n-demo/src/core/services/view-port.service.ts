@@ -89,7 +89,7 @@ export class ViewPortService {
   }
 
   private getIsMobile(): boolean {
-    return this.lessThan(SCREEN_WIDTH.xmedium)
+    return this.lessThan(SCREEN_WIDTH.medium)
   }
 
 }

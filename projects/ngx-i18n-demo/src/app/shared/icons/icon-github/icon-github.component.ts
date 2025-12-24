@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
-  selector: 'app-icon-moon',
+  selector: 'app-icon-github',
   standalone: true,
   imports: [],
-  templateUrl: './icon-moon.component.html',
-  styleUrl: './icon-moon.component.scss',
+  templateUrl: './icon-github.component.html',
+  styleUrl: './icon-github.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IconMoonComponent {
+export class IconGithubComponent {
   sizeRem = input(1.5);
 }

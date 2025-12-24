@@ -9,11 +9,12 @@ import { IconMenuComponent } from '@demo2-shared/icons/icon-menu/icon-menu.compo
 import { IconButtonComponent } from '@demo2-shared/components/buttons/icon-button/icon-button.component';
 import { DialogService } from '@demo2-shared/systems/dialog-system/dialog.service';
 import { SideMenuPageDialogComponent } from './components/side-menu-page-dialog/side-menu-page-dialog.component';
+import { IconGithubComponent } from '@demo2-shared/icons/icon-github/icon-github.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [FormsModule, SelectComponent, TranslationPipe, IconButtonComponent, IconMenuComponent],
+  imports: [FormsModule, SelectComponent, TranslationPipe, IconButtonComponent, IconMenuComponent, IconGithubComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
@@ -33,5 +34,9 @@ export class HeaderComponent {
 
   toggleMenu(): void {
     this.dialogService.open(SideMenuPageDialogComponent, {})
+  }
+
+  openGitHub(): void {
+    window.open('https://github.com/viacharles/ngx-atomic-i18n', '_blank', 'noopener,noreferrer')
   }
 }

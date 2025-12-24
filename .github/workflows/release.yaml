@@ -6,40 +6,44 @@ on:
       - "v*.*.*"
 
 permissions:
-  content: read
-
+  contents: read
+  id-token: write
 
 jobs:
-  
   ngx-atomic-i18n-release:
     runs-on: ubuntu-latest
     environment: npm-publish
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v5
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        registry-url: "https://registry.npmjs.org/"
-        cache: npm
-    - name: Install Dependencies
-      run: npm ci
-    - name: Build Library
-      run: ng build ngx-atomic-i18n --configuration production
-    # 檢查 tag 版本是否等於 package.json version
-    - name: Verify tag matches package.json version
-      shell: bash
-      run: |
-        TAG="${GITHUB_REF_NAME#v}"
-        PKG_VERSION=$(node -p "require('projects/ngx-atomic-i18n/package.json').version")
-        echo "Tag version: $TAG"
-        echo "package.json version: $PKG_VERSION"
-        if ["$TAG != "$PKG_VERSION" ]; then
-          echo "❌ Tag version does not match package.json version"
-          exit 1
-        fi
-    - name: Publish to npm
-      run: npm publish dist/ngx-atomic-i18n --access public
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org/"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Library
+        run: npx ng build ngx-atomic-i18n --configuration production
+
+      - name: Verify tag matches package.json version
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./projects/ngx-atomic-i18n/package.json').version")"
+          echo "Tag version: $TAG"
+          echo "package.json version: $PKG_VERSION"
+          if [[ "$TAG" != "$PKG_VERSION" ]]; then
+            echo "❌ Tag version does not match package.json version"
+            exit 1
+          fi
+
+      - name: Publish to npm (OIDC)
+        run: npm publish dist/ngx-atomic-i18n --access public
