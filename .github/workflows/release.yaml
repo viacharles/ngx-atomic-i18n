@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Build Library
-        run: npx ng build ngx-atomic-i18n --configuration production
+        run: npx ng build ngx-atomic-i18n
 
       - name: Verify tag matches package.json version
         shell: bash
