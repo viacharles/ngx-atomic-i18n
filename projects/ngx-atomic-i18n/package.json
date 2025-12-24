@@ -28,9 +28,9 @@
     "url": "https://github.com/viacharles/ngx-atomic-i18n.git"
   },
   "bugs": {
-    "url": "https://git@github.com:viacharles/ngx-atomic-i18n/issues"
+    "url": "https://github.com/viacharles/ngx-atomic-i18n/issues"
   },
-  "homepage": "https://git@github.com:viacharles/ngx-atomic-i18n#readme",
+  "homepage": "https://github.com/viacharles/ngx-atomic-i18n#readme",
   "sideEffects": false,
   "devDependencies": {
     "@types/jest": "^30.0.0"
