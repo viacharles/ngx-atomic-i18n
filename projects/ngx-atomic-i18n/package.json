@@ -1,10 +1,10 @@
 {
   "name": "ngx-atomic-i18n",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Atomic, lazy-loadable i18n for Angular (SSR/SSG-friendly).",
   "peerDependencies": {
-    "@angular/common": ">=16.0.0 <19.0.0",
-    "@angular/core": ">=16.0.0 <19.0.0",
+    "@angular/common": ">=16.0.0 <22.0.0",
+    "@angular/core": ">=16.0.0 <22.0.0",
     "rxjs": "^7.8.0"
   },
   "keywords": [
