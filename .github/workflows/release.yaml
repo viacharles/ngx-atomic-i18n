@@ -53,4 +53,4 @@ jobs:
 
       - name: Publish to npm (OIDC)
         working-directory: dist/ngx-atomic-i18n
-        run: npm publish --access public
+        run: npm publish --access public --provenance
