@@ -50,6 +50,12 @@ jobs:
           node -p "require('./dist/ngx-atomic-i18n/package.json').repository"
           node -p "require('./dist/ngx-atomic-i18n/package.json').bugs?.url"
           node -p "require('./dist/ngx-atomic-i18n/package.json').homepage"
+      
+      - name: Update npm for OIDC
+        run: npm i -g npm@^11.5.1
+
+      - name: show npm version
+        run: npm --version
 
       - name: Publish to npm (OIDC)
         working-directory: dist/ngx-atomic-i18n
