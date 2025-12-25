@@ -52,4 +52,5 @@ jobs:
           node -p "require('./dist/ngx-atomic-i18n/package.json').homepage"
 
       - name: Publish to npm (OIDC)
-        run: npm publish dist/ngx-atomic-i18n --access public
+        working-directory: dist/ngx-atomic-i18n
+        run: npm publish --access public
