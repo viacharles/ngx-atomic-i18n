@@ -2,13 +2,12 @@ import { AfterViewInit, Component, inject, Type, ViewChild, ViewContainerRef } f
 import { DialogModel } from '../dialog.model';
 import { DialogService } from '../dialog.service';
 import { DialogPortalComponent } from './dialog-portal/dialog-portal.component';
-import { JsonPipe } from '@angular/common';
 export interface DialogComponentWithAnimation extends Type<any> {
   animationTrigger?: string;
 }
 @Component({
   selector: 'app-dialog-host',
-  imports: [DialogPortalComponent, JsonPipe],
+  imports: [DialogPortalComponent],
   templateUrl: './dialog-host.component.html',
   styleUrl: './dialog-host.component.scss',
   standalone: true,

@@ -25,7 +25,7 @@ export class CodeBlockComponent {
   constructor() {
     effect(() => {
       this.highlightedCode.set(hljs.highlight(this.code(), { language: this.language }).value);
-    }, { allowSignalWrites: true })
+    })
   }
 
   async copyCode(): Promise<void> {

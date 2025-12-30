@@ -28,7 +28,7 @@ export class SelectComponent extends CustomNgForm {
     effect(() => {
       const name = this.options().find(o => o.value === this.valueSig())?.name;
       this.showName.set(name ?? '');
-    }, { allowSignalWrites: true })
+    })
   }
 
   openDropdown(selectEl: HTMLElement): void {

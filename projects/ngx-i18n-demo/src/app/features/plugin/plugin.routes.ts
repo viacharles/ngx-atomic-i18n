@@ -4,11 +4,12 @@ import { PluginPaths } from '../../shared/enums/routes.enum';
 export const PluginRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./ts-to-json/ts-to-json.component').then(m => m.TsToJsonComponent),
+    redirectTo: PluginPaths.EmitI18nJsonAssets,
+    pathMatch: 'full',
   },
   {
-    path: PluginPaths.TsToJson,
-    loadComponent: () => import('./ts-to-json/ts-to-json.component').then(m => m.TsToJsonComponent),
-    title: PluginPaths.TsToJson,
+    path: PluginPaths.EmitI18nJsonAssets,
+    loadComponent: () => import('./emit-i18n-json-assets/emit-i18n-json-assets.component').then(m => m.EmitI18nJsonAssetsComponent),
+    title: PluginPaths.EmitI18nJsonAssets,
   },
 ];

@@ -6,12 +6,12 @@ export enum FeaturePaths {
 
 export enum OverviewPaths {
   GettingStarted = 'getting-started',
-  Methods = 'methods',
+  Methods = 'methods-api',
   InitConfigurationOptions = 'init-configuration-options',
   CompConfigurationOptions = 'comp-configuration-options',
   Formatting = 'formatting',
 }
 
 export enum PluginPaths {
-  TsToJson = 'ts-to-json'
+  EmitI18nJsonAssets = 'emit-i18n-json-assets'
 }

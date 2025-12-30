@@ -3,6 +3,7 @@
 @use "mixins" as m;
 
 @include m.page-with-sticky-titles();
+@include m.tag();
 
 .web-type-form {
   display: grid;
@@ -11,26 +12,6 @@
 
   &>app-select {
     margin: 0 0.4rem;
-  }
-}
-
-
-.tag {
-  position: relative;
-  display: inline-block;
-  background-color: light-dark(var(--white), var(--reddish-purple-50));
-  color: c.$primary-500;
-  padding: 4px 8px;
-  border-radius: 10px 4px;
-  font-size: 16px;
-  margin: 0.1rem;
-  margin-right: 10px;
-  border: 1px solid c.$tag-outline;
-
-  app-icon-star {
-    position: absolute;
-    top: -5px;
-    left: -10px;
   }
 }
 

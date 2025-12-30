@@ -1,0 +1,6 @@
+@if (toast()) {
+<li class="{{toast()!.type}}">
+  {{toast()!.content |t}}
+  <app-icon-cross (click)="toastService.close(toast()!.id)"></app-icon-cross>
+</li>
+}

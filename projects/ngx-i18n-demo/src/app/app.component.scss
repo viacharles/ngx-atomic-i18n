@@ -1,17 +1,8 @@
-// @use "variables" as v;
+@use "variables" as v;
+@use "sass:map";
 
-::ng-deep app-spinner,
-p {
+app-toast-host {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  // z-index: map-get(v.$z-index, "globalLoading");
-  z-index: 1;
-
-  svg {
-    width: 50px;
-    height: 50px;
-  }
+  bottom: 2rem;
+  z-index: map.get(v.$z-index, snackbar);
 }

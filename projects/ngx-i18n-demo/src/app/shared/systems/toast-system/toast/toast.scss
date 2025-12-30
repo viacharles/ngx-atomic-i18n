@@ -1,0 +1,50 @@
+@use "colors" as c;
+
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 250px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.3rem;
+  animation: fadeInUp 0.3s ease forwards;
+
+  // type
+  &.success {
+    background-color: c.$primary-300;
+    color: c.$bg;
+  }
+
+  &.error {
+    background-color: c.$error-50;
+    color: c.$icon-font;
+  }
+
+  &.info {
+    background-color: c.$secondary-500;
+    color: c.$icon-font;
+  }
+
+  &.warning {
+    background-color: c.$tertiary-500;
+    color: c.$icon-font;
+  }
+}
+
+app-icon-cross {
+  cursor: pointer;
+}
+
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

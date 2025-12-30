@@ -194,7 +194,7 @@ export function toObservable<T>(signal: Signal<T>): Observable<T> {
   const injector = inject(Injector);
   return new Observable(subscribe => {
     subscribe.next(signal());
-    const stop = runInInjectionContext(injector, () => effect(() => subscribe.next(signal()), { allowSignalWrites: true }));
+    const stop = runInInjectionContext(injector, () => effect(() => subscribe.next(signal())));
     return () => stop.destroy();
   });
 }

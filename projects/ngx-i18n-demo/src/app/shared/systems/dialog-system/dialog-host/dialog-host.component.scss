@@ -1,3 +1,4 @@
+@use "sass:map";
 @use "variables" as *;
 
 .backdrop {
@@ -10,7 +11,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: map-get($z-index , model);
+  z-index: map.get($z-index , model);
   background-color: rgba(0, 0, 0, 0.3);
 
   &.transparentBackdrop {

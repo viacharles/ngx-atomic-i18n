@@ -1,0 +1,11 @@
+@use "colors" as c;
+@use "variables" as v;
+@use "mixins" as m;
+
+@include m.page-with-sticky-titles();
+
+.warn {
+  padding: 0.5rem;
+  background-color: c.$tag-bg;
+  border-radius: 8px;
+}

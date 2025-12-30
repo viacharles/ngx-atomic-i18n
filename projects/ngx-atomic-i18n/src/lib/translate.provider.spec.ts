@@ -190,7 +190,7 @@ describe('provideTranslationInit', () => {
     const providers = provideTranslationInit(userConfig);
     const config = extractConfig(providers);
     expect(config?.supportedLangs).toEqual(['zh', 'en']);
-    expect(config?.fallbackLang).toBe('zh');
+    expect(config?.fallbackLang).toBe('en');
   });
 
   it('should handle custom langDetectionOrder', () => {

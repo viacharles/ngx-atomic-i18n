@@ -1,0 +1,3 @@
+{
+  "intro": "能用 ts 來做翻譯資源而做的工具。\n它會全專案搜尋\"i18n\"資料夾，將裡面的<lang>.ts文件都轉成 json 存進 assets 裡對應的路徑 assets/i18n/<namespace>/</lang>.json\n優點:\n1. 有型別安全，少 key ts 自動跟你說，用過的人就知道好用\n2. 開發時翻譯資源是放在namespace<feature>資料夾裡，符合standalone，微服務概念，方便管理。"
+}

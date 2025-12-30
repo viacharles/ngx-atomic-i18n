@@ -1,0 +1,35 @@
+@if (translationService.readySignal()) {
+<div #pageElem>
+  <h1>{{ PluginPaths.EmitI18nJsonAssets| t }}</h1>
+  <section>
+    <h2 class="title" id="0"><span>#</span> {{"intro.title"|t}}</h2>
+    <p>{{'intro.des'|t}}</p>
+    <section>
+      <h3 class="subTitle config-attr" id="0-0">{{ 'intro.advantage.title' | t }}</h3>
+      <p class="desc">{{ 'intro.advantage.des' | t }}</p>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="0-0">{{ 'intro.weakpoint.title' | t }}</h3>
+      <p class="desc">{{ 'intro.weakpoint.des-1' | t }}</p>
+      <p class="desc ">2. <span class="warn">{{ 'intro.weakpoint.des-2' | t }}</span></p>
+      <p>{{"路徑範例"|t}}</p>
+      <app-code-block [hasExpandBtn]="true" [code]="'intro.weakpoint.example' | t"></app-code-block>
+    </section>
+  </section>
+  <section>
+    <h2 class="title" id="1"><span>#</span> {{"setup.title"|t}}</h2>
+    <app-code-block [code]="'setup.example' | t"></app-code-block>
+  </section>
+  <section>
+    <h2 class="title" id="2"><span>#</span> {{"parameters.title"|t}}</h2>
+    <section>
+      <h3 class="subTitle config-attr" id="2-0">{{ 'parameters.src.title' | t }}</h3>
+      <p class="desc">{{ 'parameters.src.des' | t }}</p>
+    </section>
+    <section>
+      <h3 class="subTitle config-attr" id="2-1">{{ 'parameters.out.title' | t }}</h3>
+      <p class="desc">{{ 'parameters.out.des' | t }}</p>
+    </section>
+  </section>
+</div>
+}

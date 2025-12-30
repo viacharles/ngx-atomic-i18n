@@ -1,0 +1,10 @@
+@use "variables" as v;
+@use "sass:map";
+
+ul {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: map.get(v.$z-index, snackbar);
+}

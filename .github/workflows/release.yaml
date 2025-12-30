@@ -3,7 +3,8 @@ name: Release(npm)
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "ngx-atomic-i18n-v*.*.*"
+      - "emit-i18n-json-assets-v*.*.*"
 
 permissions:
   contents: read
@@ -11,6 +12,8 @@ permissions:
 
 jobs:
   ngx-atomic-i18n-release:
+
+    if: startsWith(github.ref_name, 'ngx-atomic-i18n-v')
     runs-on: ubuntu-latest
     environment: npm-publish
 
@@ -50,7 +53,7 @@ jobs:
           node -p "require('./dist/ngx-atomic-i18n/package.json').repository"
           node -p "require('./dist/ngx-atomic-i18n/package.json').bugs?.url"
           node -p "require('./dist/ngx-atomic-i18n/package.json').homepage"
-      
+
       - name: Update npm for OIDC
         run: npm i -g npm@^11.5.1
 
@@ -59,4 +62,48 @@ jobs:
 
       - name: Publish to npm (OIDC)
         working-directory: dist/ngx-atomic-i18n
+        run: npm publish --access public --provenance
+
+  emit-i18n-json-assets-release:
+
+    if: startsWith(github.ref_name, 'emit-i18n-json-assets-v')
+    runs-on: ubuntu-latest
+    environment: npm-publish
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org/"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify tag matches CLI package.json version
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./packages/emit-i18n-json-assets/package.json').version")"
+          echo "Tag version: $TAG"
+          echo "CLI package.json version: $PKG_VERSION"
+          if [[ "$TAG" != "$PKG_VERSION" ]]; then
+            echo "❌ Tag version does not match CLI package.json version"
+            exit 1
+          fi
+
+      - name: Update npm for OIDC
+        run: npm i -g npm@^11.5.1
+
+      - name: show npm version
+        run: npm --version
+
+      - name: Publish emit-i18n-json-assets to npm (OIDC)
+        working-directory: packages/emit-i18n-json-assets
         run: npm publish --access public --provenance

@@ -1,10 +1,18 @@
-import { EnvironmentInjector, Injectable, Injector, TemplateRef, Type, ViewContainerRef } from '@angular/core';
+import {
+  EnvironmentInjector,
+  Injectable,
+  Injector,
+  TemplateRef,
+  Type,
+  ViewContainerRef,
+} from '@angular/core';
 import { DialogModel } from './dialog.model';
 import { DIALOG_DATA } from './dialog.token';
 import { DialogTriggerStatus } from './dialog.trigger';
 import { DialogConfig } from './dialog.type';
 import { DialogList } from './dialog-list.model';
 import { DescribeDialogComponent } from './components/describe-dialog/describe-dialog.component';
+
 
 @Injectable({
   providedIn: 'root',

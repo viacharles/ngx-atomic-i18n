@@ -1,6 +1,10 @@
 <app-header [isMobile]="viewportService.isMobileSig()"></app-header>
-isMobileSig: {{viewportService.isMobileSig()}}
 <div class="layout-main">
+  <app-icon-button class="source-icon" (click)="openSourceDialog()">
+    <span class="source-count">{{i18nSourceService.namespaceCount}}</span>
+    <app-icon-list-left></app-icon-list-left>
+  </app-icon-button>
+
   <app-side-nav></app-side-nav>
   <main>
     <div class="left">

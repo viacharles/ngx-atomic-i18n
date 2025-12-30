@@ -1,0 +1,19 @@
+<header>
+  <b>{{'已載入的 Namespace'|t}}</b>
+  <app-icon-cross (click)="dialogRef.close()"></app-icon-cross>
+</header>
+<ul class="container">
+  @for(lang of (i18nSourceService.sources | keyvalue: null); track lang.key) {
+  <li>
+    <p>{{lang.key}}</p>
+    <ul>
+      @for(item of (lang.value | keyvalue: null); track item.key) {
+      <li class="tag">
+        {{item.key}}: {{item.key | t}}
+        <app-icon-cross (click)="removeTranslation(lang.key, item.key)"></app-icon-cross>
+      </li>
+      }
+    </ul>
+  </li>
+  }
+</ul>

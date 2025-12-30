@@ -11,7 +11,10 @@
 
 
 <div class="row">
-  <app-icon-github [sizeRem]="2" (click)="openGitHub()"></app-icon-github>
-  <app-select [options]="langOptions" [(ngModel)]="currentLang" (ngModelChange)="changeLang()"
+  <app-icon-button (click)="openGitHub()">
+    <app-icon-github [sizeRem]="2"></app-icon-github>
+  </app-icon-button>
+
+  <app-select [options]=" langOptions" [(ngModel)]="currentLang" (ngModelChange)="changeLang()"
     [placeholder]="'請選擇語言' | t"></app-select>
 </div>

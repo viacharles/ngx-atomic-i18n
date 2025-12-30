@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, input, Output } from '@angular/core';
 import { ALIGN } from '@demo2-shared/enums/common.enum';
-import { IconCrossComponent } from '@demo2-shared/icons/icon-cross/icon-cross.component';
+import { IconCrossComponent } from '@demo2-shared/components/icons/icon-cross/icon-cross.component';
 import { DialogModel } from '../../dialog.model';
 
 @Component({

@@ -50,7 +50,7 @@ describe('translate.util (pure functions)', () => {
       expect(detectPreferredLang(config)).toBe('en');
     });
     it('should detect language from localStorage', () => {
-      Object.defineProperty(global, 'window', { value: {}, configurable: true }); // 模擬有 window
+      const originalLocalStorage = global.localStorage;
       Object.defineProperty(global, 'localStorage', {
         value: {
           getItem: jest.fn().mockReturnValue('en'),
@@ -68,15 +68,15 @@ describe('translate.util (pure functions)', () => {
         langDetectionOrder: ['localStorage', 'customLang'],
       };
       expect(detectPreferredLang(config)).toBe('en');
-      // 恢復原 window、localStorage
-      delete (global as any).window;
-      delete (global as any).localStorage;
+      if (originalLocalStorage !== undefined) {
+        Object.defineProperty(global, 'localStorage', { value: originalLocalStorage, configurable: true });
+      } else {
+        delete (global as any).localStorage;
+      }
     });
     it('should detect language from url', () => {
-      Object.defineProperty(global, 'window', {
-        value: { location: { pathname: '/zh-Hant/foo/bar' } },
-        configurable: true,
-      });
+      const originalPathname = window.location.pathname;
+      window.history.pushState({}, '', '/zh-Hant/foo/bar');
       const config: TranslationConfig = {
         supportedLangs: ['en', 'zh-Hant'],
         fallbackLang: 'en',
@@ -86,7 +86,7 @@ describe('translate.util (pure functions)', () => {
         langDetectionOrder: ['url', 'customLang'],
       };
       expect(detectPreferredLang(config)).toBe('zh-Hant');
-      delete (global as any).window;
+      window.history.pushState({}, '', originalPathname || '/');
     });
     it('should detect language from browser', () => {
       Object.defineProperty(global, 'navigator', {
@@ -256,6 +256,7 @@ describe('translate.util (injection context)', () => {
 
   describe('toObservable', () => {
     it('should emit signal value', fakeAsync(() => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       runInInjectionContext(injector, () => {
         const s = signal(1);
         const obs = toObservable(s);
@@ -268,6 +269,7 @@ describe('translate.util (injection context)', () => {
         expect(values).toEqual([1, 2]);
         sub.unsubscribe();
       });
+      warnSpy.mockRestore();
     }));
   });
 })
@@ -443,7 +445,7 @@ describe('parseICU (edge cases)', () => {
 describe('toObservable (error cases)', () => {
   it('should throw error when called outside injection context', () => {
     const s = signal(1);
-    expect(() => toObservable(s)).toThrow('inject() must be called from an injection context');
+    expect(() => toObservable(s)).toThrow('NG0203');
   });
 
 });

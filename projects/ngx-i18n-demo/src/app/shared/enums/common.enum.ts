@@ -44,3 +44,10 @@ export enum PAGE_STATUS {
   NORMAL = 'normal',
   DEFAULT = 'default',
 }
+
+export enum MSG_TYPE {
+  INFO = 'info',
+  SUCCESS = 'success',
+  WARNING = 'warning',
+  ERROR = 'error',
+}

@@ -1,0 +1,29 @@
+@use "colors" as c;
+@use "variables" as v;
+@use "mixins" as m;
+@use "sass:map";
+
+:host {
+  max-width: 600px;
+  max-height: 80%;
+  background-color: c.$bg;
+  padding: 1rem;
+  border-radius: map.get(v.$border-radius, lg);
+}
+
+@include m.tag();
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.container {
+  overflow: auto;
+  height: 700px;
+}
+
+app-icon-cross {
+  cursor: pointer;
+}

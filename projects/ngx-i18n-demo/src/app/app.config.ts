@@ -1,11 +1,11 @@
-import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, isDevMode, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, TitleStrategy, withInMemoryScrolling } from '@angular/router';
 
 import { appRoutes } from './app.routes';
-import { provideClientHydration } from '@angular/platform-browser';
 import { provideTranslationInit } from 'ngx-atomic-i18n';
 import { provideHttpClient } from '@angular/common/http';
 import { AppTitleService } from '../core/services/app-title.service';
+import { I18nSourceService } from '@demo2-shared/services/i18n-source';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,7 +16,10 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
         scrollPositionRestoration: 'enabled',
       })),
-    provideClientHydration(),
+    // provideClientHydration(),
+    provideEnvironmentInitializer(() => {
+      inject(I18nSourceService)
+    }),
     provideTranslationInit({
       supportedLangs: ['en', 'zh-Hant'],
       enablePageFallback: true,

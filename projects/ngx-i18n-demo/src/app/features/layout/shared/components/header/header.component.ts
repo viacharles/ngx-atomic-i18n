@@ -5,11 +5,11 @@ import { Lang } from '@demo2-shared/enums/lang.enum';
 import { enumToOptions } from '@demo2-shared/utils/common.util';
 import { TranslationPipe, TranslationService } from 'ngx-atomic-i18n';
 import { SelectComponent } from 'projects/ngx-i18n-demo/src/app/shared/systems/form-system/components/selects/select/select.component';
-import { IconMenuComponent } from '@demo2-shared/icons/icon-menu/icon-menu.component';
+import { IconMenuComponent } from '@demo2-shared/components/icons/icon-menu/icon-menu.component';
 import { IconButtonComponent } from '@demo2-shared/components/buttons/icon-button/icon-button.component';
 import { DialogService } from '@demo2-shared/systems/dialog-system/dialog.service';
 import { SideMenuPageDialogComponent } from './components/side-menu-page-dialog/side-menu-page-dialog.component';
-import { IconGithubComponent } from '@demo2-shared/icons/icon-github/icon-github.component';
+import { IconGithubComponent } from '@demo2-shared/components/icons/icon-github/icon-github.component';
 
 @Component({
   selector: 'app-header',

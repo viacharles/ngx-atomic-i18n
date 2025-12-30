@@ -96,9 +96,10 @@ describe('FsTranslationLoader', () => {
       .toThrow('[SSR i18n] common.json for en not found in any i18nRoot');
   });
 
-  it('should fallback to node:fs when fsModule not provided', async () => {
+  it('should load from real fs when fsModule is provided', async () => {
     // 使用 real fs 模組寫入檔案
     const fs = await import('node:fs/promises');
+    const fsSync = await import('node:fs');
     const path = await import('node:path');
     const tmp = await import('node:os');
     const tmpDir = await fs.mkdtemp(path.join(tmp.tmpdir(), 'test-i18n-'));
@@ -107,7 +108,10 @@ describe('FsTranslationLoader', () => {
     await fs.mkdir(path.dirname(testFilePath), { recursive: true });
     await fs.writeFile(testFilePath, JSON.stringify({ hello: 'real fs fallback' }), 'utf8');
 
-    const loader = new FsTranslationLoader({ baseDir: tmpDir }, defaultConfig.pathTemplates);
+    const loader = new FsTranslationLoader(
+      { baseDir: tmpDir, fsModule: fsSync },
+      defaultConfig.pathTemplates
+    );
     const result = await loader.load(['i18n'], 'common', 'en');
     expect(result).toEqual({ hello: 'real fs fallback' });
 

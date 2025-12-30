@@ -87,7 +87,7 @@ describe('HttpTranslationLoader', () => {
     const result = await custom.load(['root1'], 'ns', 'en');
     expect(result).toEqual({ ok: true });
     const calledUrl = (httpMock.get.mock.calls[0][0]) as string;
-    expect(calledUrl).toContain('?v=vh1');
+    expect(calledUrl).toContain('&v=vh1');
   });
 
   it('should use default pathTemplates when none provided', async () => {

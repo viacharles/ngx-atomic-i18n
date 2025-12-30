@@ -72,7 +72,7 @@
             "prerender": {
               "routesFile": "projects/ngx-i18n-demo/prerender-routes.txt"
             },
-            "ssr": true
+            "ssr": false
           },
           "configurations": {
             "production": {

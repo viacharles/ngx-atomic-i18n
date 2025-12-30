@@ -8,7 +8,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SetUpConfigForm } from './shared/get-start.type';
 import { StoreObjectName } from 'projects/ngx-i18n-demo/src/core/types/indexedDB.type';
 import { CodeBlockComponent } from '@demo2-shared/components/code-block/code-block.component';
-import { IconStarComponent } from '@demo2-shared/icons/icon-star/icon-star.component';
+import { IconStarComponent } from '@demo2-shared/components/icons/icon-star/icon-star.component';
 import { GetStartText } from './shared/get-start.text';
 import { PageBase } from '@demo2-shared/base/page-base/page-base';
 import { enumToOptions } from '@demo2-shared/utils/common.util';

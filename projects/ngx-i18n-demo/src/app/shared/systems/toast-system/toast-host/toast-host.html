@@ -1,0 +1,5 @@
+<ul>
+  @for(toast of toastService.list; track toast.id) {
+  <app-toast [toast]="toast"></app-toast>
+  }
+</ul>

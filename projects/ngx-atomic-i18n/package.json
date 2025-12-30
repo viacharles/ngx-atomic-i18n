@@ -19,7 +19,10 @@
     "ssg"
   ],
   "license": "MIT",
-  "author": "charles viacharles@gmail.com",
+  "author": {
+    "name": "Charles",
+    "email": "viacharles@gmail.com"
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },

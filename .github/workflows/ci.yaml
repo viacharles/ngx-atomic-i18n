@@ -10,10 +10,10 @@ permissions:
 
 jobs:
 
-  i18n-lib-test-build: 
+  i18n-lib-test-build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository 
+    - name: Checkout repository
       uses: actions/checkout@v5
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -21,16 +21,16 @@ jobs:
         node-version: 20
         cache: npm
     - name: Install
-      run:  npm ci 
+      run:  npm ci
     - name: Test
       run: npm run test:coverage
     - name: Build Library
       run: ng build ngx-atomic-i18n
 
-  i18n-demo-test-build:
+  i18n-demo-build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository 
+    - name: Checkout repository
       uses: actions/checkout@v5
     - name: Setup Node.js
       uses: actions/setup-node@v4

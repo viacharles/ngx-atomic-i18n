@@ -42,6 +42,7 @@ app-header {
       app-anchor-list {
         position: fixed;
         height: calc(100% - 60px);
+        padding-right: 2rem;
         overflow: auto;
       }
 
@@ -72,4 +73,28 @@ app-footer {
   min-height: 100px;
   width: 100%;
   border-top: 1px solid c.$outline-100;
+}
+
+.source-icon {
+  position: fixed;
+  top: 4rem;
+  right: 1rem;
+  z-index: map-get($z-index, fixed);
+
+  .source-count {
+    position: absolute;
+    top: 0rem;
+    right: 0rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.1rem;
+    padding: 0.2rem;
+    border-radius: 20px;
+    background-color: c.$icon-font;
+    color: c.$bg;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: map-get($z-index, fixed);
+  }
 }
