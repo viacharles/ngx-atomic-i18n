@@ -13,34 +13,39 @@
   <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
   <script>
     (function () {
-      const SUPPORTED_LANGS = ['en', 'zh-Hant'];
+      const SUPPORTED_LANGS = ['en', 'zh-Hant', 'ja', 'ko', 'es'];
       const LANG_ALIASES = {
         'en': 'en',
-        'en-US': 'en',
-        'en-GB': 'en',
+        'en-us': 'en',
+        'en-gb': 'en',
 
         'zh': 'zh-Hant',
-        'zh-TW': 'zh-Hant',
-        'zh-Hant': 'zh-Hant',
-        'zh-HK': 'zh-Hant',
+        'zh-tw': 'zh-Hant',
+        'zh-hant': 'zh-Hant',
+        'zh-hk': 'zh-Hant',
       };
 
       const normalizeLangCode = (raw) => {
         if (!raw) return null;
-        const key = raw.trim();
-        return LANG_ALIASES[key] ?? null;
-      }
+        const key = raw.trim().toLowerCase();
+        const aliasMatch = LANG_ALIASES[key];
+        if (aliasMatch) return aliasMatch;
+        return SUPPORTED_LANGS.find((lang) => {
+          const normalized = lang.toLowerCase();
+          return key === normalized || key.startsWith(`${normalized}-`);
+        }) ?? null;
+      };
       const path = window.location.pathname;
       if (path !== '/' && path !== '/index.html') return;
       const stored = normalizeLangCode(localStorage.getItem('lang'));
       if (SUPPORTED_LANGS.includes(stored)) {
         window.location.replace(`/${stored}`);
-      };
-      const navLang = navigator.language;
-      const normalizeNavLang = normalizeLangCode(navLang);
-      if (normalizeNavLang) {
-        localStorage.setItem('lang', normalizeNavLang);
-        location.replace(`/${normalizeNavLang}`);
+      }
+      const navLangs = navigator.languages?.length ? navigator.languages : [navigator.language];
+      const matchedLang = navLangs.map(normalizeLangCode).find(Boolean);
+      if (matchedLang) {
+        localStorage.setItem('lang', matchedLang);
+        location.replace(`/${matchedLang}`);
       }
     })();
   </script>
