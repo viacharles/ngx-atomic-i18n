@@ -153,4 +153,23 @@ describe('HttpTranslationLoader', () => {
     const result2 = await customLoader.load(['root1'], 'ns', 'en');
     expect(result2).toEqual({ hello: 'cached-again' });
   });
+
+  it('should fall back to default pathTemplates when input is undefined', async () => {
+    httpMock.get.mockReturnValueOnce(of({ ok: true }));
+    const loader = new HttpTranslationLoader(httpMock, undefined as any, undefined as any);
+    const result = await loader.load(['root1'], 'ns', 'en');
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (httpMock.get.mock.calls[0][0]) as string;
+    expect(calledUrl).toContain('root1/ns/en.json');
+  });
+
+  it('should use cached template even when template list is undefined', async () => {
+    httpMock.get.mockReturnValueOnce(of({ ok: true }));
+    const loader = new HttpTranslationLoader(httpMock, undefined as any, undefined as any);
+    (loader as any).pathTemplateCache = 't1/{{namespace}}/{{lang}}.json';
+    const result = await loader.load(['root1'], 'ns', 'en');
+    expect(result).toEqual({ ok: true });
+    const calledUrl = (httpMock.get.mock.calls[0][0]) as string;
+    expect(calledUrl).toContain('t1/ns/en.json');
+  });
 });

@@ -112,6 +112,7 @@ describe('TranslationCoreService', () => {
 
       Object.defineProperty(global, 'localStorage', { value: orig, configurable: true });
     });
+
   });
 
   describe('readySignal', () => {
@@ -333,6 +334,9 @@ describe('TranslationCoreService', () => {
       // add some missing keys for both languages to verify namespace clearing
       (service as any)._missingKeyCache.add('en:a:v1:miss1');
       (service as any)._missingKeyCache.add('zh-Hant:a:v1:miss2');
+      const cache = (service as any)._formatterCache;
+      cache.set('en:a:fmt', { format: () => 'en' });
+      cache.set('zh-Hant:a:fmt', { format: () => 'zh' });
 
       service.clearLang('en');
 
@@ -340,6 +344,8 @@ describe('TranslationCoreService', () => {
       expect(service.hasResourceBundle('zh-Hant', 'a')).toBe(true);
       expect((service as any)._missingKeyCache.has('en:a:v1:miss1')).toBe(false);
       expect((service as any)._missingKeyCache.has('zh-Hant:a:v1:miss2')).toBe(true);
+      expect(cache.has('en:a:fmt')).toBe(false);
+      expect(cache.has('zh-Hant:a:fmt')).toBe(true);
     });
 
     it('clearNamespace should delegate to removeResourceBundle', () => {
@@ -399,6 +405,17 @@ describe('TranslationCoreService', () => {
       (service as any).handleNewTranslations({ foo: 'bar' }, 'en', 'test');
       expect((service as any)._missingKeyCache.size).toBe(0);
     });
+
+    it('should evict formatter cache entries for namespace when handleNewTranslations is called', () => {
+      const cache = (service as any)._formatterCache;
+      cache.set('en:test:old', { format: () => 'old' });
+      cache.set('en:other:keep', { format: () => 'keep' });
+
+      (service as any).handleNewTranslations({ foo: 'bar' }, 'en', 'test');
+
+      expect(cache.has('en:test:old')).toBe(false);
+      expect(cache.has('en:other:keep')).toBe(true);
+    });
   });
 
   describe('addResource', () => {
@@ -429,6 +446,17 @@ describe('TranslationCoreService', () => {
       service.addResourceBundle('en', 'test', {});
       service.removeResourceBundle('en', 'test');
       expect(service.hasResourceBundle('en', 'test')).toBe(false);
+    });
+
+    it('should only clear missing keys for the removed namespace', () => {
+      service.addResourceBundle('en', 'test', {});
+      (service as any)._missingKeyCache.add('en:test:key');
+      (service as any)._missingKeyCache.add('en:other:key');
+
+      service.removeResourceBundle('en', 'test');
+
+      expect((service as any)._missingKeyCache.has('en:test:key')).toBe(false);
+      expect((service as any)._missingKeyCache.has('en:other:key')).toBe(true);
     });
   });
 
@@ -574,6 +602,16 @@ describe('TranslationCoreService', () => {
   });
 
   describe('logging helpers', () => {
+    it('should log zero keys when json is not an object', () => {
+      (service as any).debugEnabled = true;
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
+
+      (service as any).handleNewTranslations('not-object' as any, 'en', 'ns', undefined);
+
+      expect(infoSpy).toHaveBeenCalled();
+      infoSpy.mockRestore();
+    });
+
     it('should log with and without details when debug enabled', () => {
       (service as any).debugEnabled = true;
       const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => { });
