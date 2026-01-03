@@ -25,7 +25,7 @@ jobs:
     - name: Test
       run: npm run test:coverage
     - name: Build Library
-      run: ngx ng build ngx-atomic-i18n
+      run: npx ng build ngx-atomic-i18n
 
   i18n-demo-build:
     runs-on: ubuntu-latest
@@ -40,5 +40,5 @@ jobs:
     - name: Install
       run:  npm ci
     - name: Build i18n Demo
-      run: npm run i18n-build:once:ngx-i18n-demo && ngx ng build ngx-i18n-demo
+      run: npm run i18n-build:once:ngx-i18n-demo && npx ng build ngx-i18n-demo
 
