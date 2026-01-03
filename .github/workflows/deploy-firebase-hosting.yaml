@@ -27,7 +27,7 @@ jobs:
       - name: Build (SSG)
         run: |
           npm run i18n-build:once:ngx-i18n-demo
-          ng build ngx-i18n-demo
+          ngx ng build ngx-i18n-demo
 
       # 用 OIDC -> WIF 登入 Google（無 key）
       - id: auth
