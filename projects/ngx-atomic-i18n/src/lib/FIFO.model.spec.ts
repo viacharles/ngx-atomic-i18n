@@ -30,11 +30,25 @@ describe('FIFOCache', () => {
         expect(cache.has('c')).toBe(true);
     });
 
+    it('should not refresh recency when key is missing', () => {
+        const cache = new FIFOCache<string, number>(2);
+        cache.set('a', 1);
+        expect(cache.get('missing')).toBeUndefined();
+        expect(cache.has('a')).toBe(true);
+    });
+
     it('should update value if key exists (cover line 9)', () => {
         const cache = new FIFOCache<string, number>(2);
         cache.set('a', 1);
         cache.set('a', 2); // 這裡會觸發 delete 再 set
         expect(cache.get('a')).toBe(2);
+        expect(cache.size).toBe(1);
+    });
+
+    it('should skip eviction when oldest key is falsy', () => {
+        const cache = new FIFOCache<number, number>(0);
+        cache.set(0, 1);
+        expect(cache.has(0)).toBe(true);
         expect(cache.size).toBe(1);
     });
 

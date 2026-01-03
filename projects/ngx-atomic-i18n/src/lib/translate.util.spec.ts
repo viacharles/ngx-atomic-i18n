@@ -411,6 +411,52 @@ describe('detectPreferredLang (SSR scenarios)', () => {
   });
 });
 
+describe('detectPreferredLang (browser scenarios)', () => {
+  it('should read language from url when window is available', () => {
+    const originalPath = globalThis.window.location.pathname;
+    globalThis.window.history.pushState({}, '', '/zh-Hant/home');
+
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      langDetectionOrder: ['url', 'fallback'],
+    };
+
+    expect(detectPreferredLang(config)).toBe('zh-Hant');
+
+    globalThis.window.history.pushState({}, '', originalPath || '/');
+  });
+
+  it('should read language from localStorage when window is available', () => {
+    const originalWindow = (globalThis as any).window;
+    const originalLocalStorage = global.localStorage;
+    (globalThis as any).window = { location: { pathname: '/' } };
+    Object.defineProperty(global, 'localStorage', {
+      value: {
+        getItem: jest.fn(() => 'en'),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+      },
+      configurable: true,
+    });
+
+    const config: TranslationConfig = {
+      supportedLangs: ['en', 'zh-Hant'],
+      fallbackLang: 'en',
+      i18nRoots: ['i18n'],
+      fallbackNamespace: 'common',
+      langDetectionOrder: ['localStorage', 'fallback'],
+    };
+
+    expect(detectPreferredLang(config)).toBe('en');
+
+    (global as any).window = originalWindow;
+    Object.defineProperty(global, 'localStorage', { value: originalLocalStorage, configurable: true });
+  });
+});
+
 describe('parseICU (edge cases)', () => {
   it('should handle missing parameter in template replacement', () => {
     const template = 'Hello {{name}} and {{missing}}!';
