@@ -2,7 +2,7 @@ name: Deploy Firebase Hosting (OIDC)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 permissions:
   contents: read
