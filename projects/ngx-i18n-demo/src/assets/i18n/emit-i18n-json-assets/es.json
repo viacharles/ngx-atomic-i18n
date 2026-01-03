@@ -1,0 +1,32 @@
+{
+  "intro": {
+    "title": "Introducción",
+    "des": "Una herramienta creada para gestionar recursos de traducción con TypeScript.\nBusca en todo el proyecto carpetas llamadas \"i18n\" y convierte todos los archivos <namespace>/i18n/<lang>.ts a JSON, guardándolos en assets/i18n/<namespace>/<lang>.json.",
+    "advantage": {
+      "title": "Ventajas",
+      "des": "1. Tipado seguro: si falta una key, TypeScript te lo indica. ¡Quien lo usa sabe lo útil que es!\n2. Durante el desarrollo, los recursos viven dentro del namespace (feature), lo que encaja con el enfoque standalone/microservicios y facilita la gestión."
+    },
+    "weakpoint": {
+      "title": "Desventajas",
+      "des-1": "1. No se gestionan traducciones directamente como JSON. Si solo modificas TS, la UI no reflejará los cambios al instante; debes ejecutar este CLI para regenerar el JSON.\n",
+      "des-2": "2. Solo puedes usar las rutas por defecto del paquete.\nLa ruta de recursos TS se restringe a i18n/<lang>.ts dentro de cada carpeta feature (namespace).\nLos recursos JSON se restringen a assets/i18n/<namespace>/<lang>.json.",
+      "example": "<project-root>\n└─ projects/\n    └─ project-A/\n        └─ src/\n            ├─ app/\n            │   └─ features/\n            │        └─ feature-A/\n            │            └─ i18n/\n            │                ├─ en.ts\n            │                └─ zh-Hant.ts\n            │\n            └─ assets/\n                └─ i18n/\n                    └─ feature-A/\n                        ├─ en.json\n                        └─ zh-Hant.json\n\nRelación:\n- i18n/<lang>.ts → assets/i18n/<namespace>/<lang>.json\n- namespace = feature-A"
+    }
+  },
+  "路徑範例": "Ejemplo de ruta",
+  "setup": {
+    "title": "Instalación",
+    "example": "// Comando de instalación\nnpm install -D emit-i18n-json-assets\n\n// Ejemplo en package.json > scripts\n\"scripts\": {\n  \"emit-i18n-json-assets\": \"emit-i18n-json-assets --src=projects/project-A/src/app --out=projects/project-A/src/assets/i18n\"\n}"
+  },
+  "parameters": {
+    "title": "Descripción de parámetros",
+    "src": {
+      "title": "--src",
+      "des": "Especifica la ruta fuente de los recursos TS."
+    },
+    "out": {
+      "title": "--out",
+      "des": "Especifica la ruta de salida de los recursos JSON."
+    }
+  }
+}

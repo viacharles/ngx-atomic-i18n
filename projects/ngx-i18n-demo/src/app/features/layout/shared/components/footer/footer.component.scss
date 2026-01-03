@@ -1,4 +1,5 @@
 @use "mixins" as *;
+@use "colors" as c;
 
 :host {
   display: flex;
@@ -6,6 +7,12 @@
   padding: 1rem 2rem 1rem 1rem;
 }
 
+p {
+  margin-top: 0.5rem;
+  margin-right: 1rem;
+  color: c.$outline;
+  font-size: 0.8rem;
+}
 
 app-icon-button {
   margin-left: 0.5rem;

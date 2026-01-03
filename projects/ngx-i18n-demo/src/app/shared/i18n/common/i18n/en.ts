@@ -4,6 +4,10 @@ const en: typeof zh_TW = {
   // 語言
   '中文 (ZH)': 'Chinese (ZH)',
   '英文 (EN)': 'English (EN)',
+  '日文 (JA)': 'Japanese (JA)',
+  '韓文 (KO)': 'Korean (KO)',
+  '西班牙文 (ES)': 'Spanish (ES)',
+
   // menu
   overview: 'Overview',
   'operational-testing': 'Operational testing',

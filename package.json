@@ -10,8 +10,6 @@
     "ssg:preview:ngx-i18n-demo": "npx http-server dist/ngx-i18n-demo/browser -p 8080 -c-1",
     "i18n-build:watch:ngx-i18n-demo": "emit-i18n-json-assets --src=projects/ngx-i18n-demo/src/app --out=projects/ngx-i18n-demo/src/assets/i18n --watch",
     "i18n-build:once:ngx-i18n-demo": "emit-i18n-json-assets --src=projects/ngx-i18n-demo/src/app --out=projects/ngx-i18n-demo/src/assets/i18n",
-    "start:ngx-i18n-demo": "ng serve ngx-i18n-demo ",
-    "start:ngx-i18n-demo:with-i18n": "npm run i18n-build:ngx-i18n-demo && ng serve ngx-i18n-demo",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

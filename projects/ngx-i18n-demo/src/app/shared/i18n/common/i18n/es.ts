@@ -1,0 +1,42 @@
+import en from "./en";
+
+const es: typeof en = {
+  // 語言
+  '中文 (ZH)': 'Chino (ZH)',
+  '英文 (EN)': 'Inglés (EN)',
+  '日文 (JA)': 'Japonés (JA)',
+  '韓文 (KO)': 'Coreano (KO)',
+  '西班牙文 (ES)': 'Español (ES)',
+  // menu
+  overview: 'Resumen',
+  'operational-testing': 'Pruebas operativas',
+  'getting-started': 'Introducción',
+  'methods-api': 'Métodos',
+  'init-configuration-options': 'Configuración inicial - provideTranslationInit()',
+  'comp-configuration-options': 'Configuración de componente - provideTranslation()',
+  formatting: 'Formato',
+
+  // button
+  '說明': 'Info',
+  '展開': 'Expandir',
+  '收合': 'Contraer',
+  '複製': 'Copiar',
+  '已複製': 'Copiado',
+
+  // namespace
+  'common': 'Global (fallback)',
+  'select': 'Campo de selección (componente atómico)',
+  'get-start': 'Introducción (Página)',
+  'formatter': 'Formato (Página)',
+  'comp-configuration': 'Configuración de componentes - provideTranslation() (Página)',
+  'init-configuration': 'Configuración inicial - provideTranslationInit() (Página)',
+  'methods': 'Métodos (Página)',
+  'emit-i18n-json-assets': 'emit-i18n-json-assets (Página)',
+  'source-dialog': 'source-dialog (componente atómico)',
+
+  // toast
+  '載入翻譯': 'Idioma - {{lang}} - Namespace - {{namespace}} - Cargado',
+  '刪除翻譯': 'Idioma - {{lang}} - Namespace - {{namespace}} - Eliminado'
+};
+
+export default es;

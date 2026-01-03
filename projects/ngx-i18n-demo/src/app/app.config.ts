@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
       inject(I18nSourceService)
     }),
     provideTranslationInit({
-      supportedLangs: ['en', 'zh-Hant'],
+      supportedLangs: ['en', 'zh-Hant', 'ja', 'ko', 'es'],
       enablePageFallback: true,
       loader: {
         fsOptions: {

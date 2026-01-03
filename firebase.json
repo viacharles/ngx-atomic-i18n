@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "i18n-demo",
+    "public": "dist/ngx-i18n-demo/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
