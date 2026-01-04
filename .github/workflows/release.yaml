@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME#v}"
+          TAG="${GITHUB_REF_NAME#ngx-atomic-i18n-v}"
           PKG_VERSION="$(node -p "require('./projects/ngx-atomic-i18n/package.json').version")"
           echo "Tag version: $TAG"
           echo "package.json version: $PKG_VERSION"
@@ -89,7 +89,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME#v}"
+          TAG="${GITHUB_REF_NAME#emit-i18n-json-assets-v}"
           PKG_VERSION="$(node -p "require('./packages/emit-i18n-json-assets/package.json').version")"
           echo "Tag version: $TAG"
           echo "CLI package.json version: $PKG_VERSION"
