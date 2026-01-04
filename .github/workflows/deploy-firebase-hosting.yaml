@@ -48,7 +48,7 @@ jobs:
         uses: sws2apps/firebase-deployment@v3.7.0
         with:
           workloadIdentityProvider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          serviceAccount: ${{var.GCP_SERVICE_ACCOUNT}}
+          serviceAccount: ${{vars.GCP_SERVICE_ACCOUNT}}
           project: ${{ vars.FIREBASE_PROJECT_ID }}
           hosting: true
           functions: false
