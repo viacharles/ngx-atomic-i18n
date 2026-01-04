@@ -51,5 +51,5 @@ jobs:
           serviceAccount: ${{vars.GCP_SERVICE_ACCOUNT}}
           project: ${{ vars.FIREBASE_PROJECT_ID }}
           hosting: true
-          functions: false
+          node-version: 20
 
