@@ -58,7 +58,7 @@ jobs:
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
       - name: Deploy to Firebase Hosting(WIF)
-        use: sws2apps/firebase-deployment@v3.7.0
+        uses: sws2apps/firebase-deployment@v3.7.0
         with:
           workloadIdentityProvider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           serviceAccount: ${{var.GCP_SERVICE_ACCOUNT}}
