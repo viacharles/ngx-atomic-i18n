@@ -3,6 +3,15 @@ name: Deploy Firebase Hosting (OIDC)
 on:
   push:
     branches: [ "master" ]
+<<<<<<< Updated upstream
+=======
+    paths:
+      - "projects/ngx-i18n-demo/**"
+      - ".github/workflows/deploy-firebase-hosting.yaml"
+      - "firebase.json"
+      - ".firebaserc"
+  workflow_dispatch:
+>>>>>>> Stashed changes
 
 permissions:
   contents: read
@@ -48,8 +57,12 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
-      - name: Deploy to Firebase Hosting
-        run: |
-          npm i -g firebase-tools
-          firebase --version
-          firebase deploy --only hosting --project "${{ vars.FIREBASE_PROJECT_ID }}"
+      - name: Deploy to Firebase Hosting(WIF)
+        use: sws2apps/firebase-deployment@v3.7.0
+        with:
+          workloadIdentityProvider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          serviceAccount: ${{var.GCP_SERVICE_ACCOUNT}}
+          project: ${{ vars.FIREBASE_PROJECT_ID }}
+          hosting: true
+          functions: false
+
