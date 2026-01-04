@@ -3,9 +3,4 @@
 .select {
   @include m.field();
   cursor: pointer;
-
-  input {
-    cursor: pointer;
-    width: 100%;
-  }
 }
