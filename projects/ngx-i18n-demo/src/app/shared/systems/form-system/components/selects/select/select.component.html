@@ -2,6 +2,6 @@
   @if(title()) {
   <legend>{{title()}}</legend>
   }
-  <input [value]="this.showName() | t" [placeholder]="placeholder()|t">
+  <input [value]="this.showName() | t" [placeholder]="placeholder()|t" readonly inputmode="none">
   <em class="icon-arrow-down1"></em>
 </fieldset>
