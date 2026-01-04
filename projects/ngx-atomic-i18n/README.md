@@ -1,24 +1,18 @@
-# NgxComponentTranslate
+# ngx-atomic-i18n
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.0.
+> Runtime i18n for Angular (standalone-friendly), with lazy namespace loading + SSR/SSG support.
 
-## Code scaffolding
+![logo](https://raw.githubusercontent.com/viacharles/ngx-atomic-i18n/master/docs/images/favicon-16x16.png) Demo & Tutorial: [https://i18n-demo.viacharles.net/](https://i18n-demo.viacharles.net/)
 
-Run `ng generate component component-name --project ngx-atomic-i18n` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ngx-atomic-i18n`.
-> Note: Don't forget to add `--project ngx-atomic-i18n` or else it will be added to the default project in your `angular.json` file. 
+## Features
 
-## Build
+- ✅ Runtime language switching (no rebuild per locale)
+- ✅ Namespace-based translations (load only what the current route/component needs)
+- ✅ Lazy loading + caching (avoid repeated HTTP fetches)
+- ✅ SSR/SSG compatible initialization
+- ✅ Optional preloading to avoid flashing translation keys
+- ✅ (Optional) ICU-style formatting (plural / params) *(if enabled in your setup)*
 
-Run `ng build ngx-atomic-i18n` to build the project. The build artifacts will be stored in the `dist/` directory.
+<!-- Optional: logo (use absolute URL if you want it to show on npm) -->
+[![ngx-atomic-i18n screenshot](https://raw.githubusercontent.com/viacharles/ngx-atomic-i18n/master/docs/images/index-screen.png)](https://i18n-demo.viacharles.net/)
 
-## Publishing
-
-After building your library with `ng build ngx-atomic-i18n`, go to the dist folder `cd dist/ngx-atomic-i18n` and run `npm publish`.
-
-## Running unit tests
-
-Run `ng test ngx-atomic-i18n` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

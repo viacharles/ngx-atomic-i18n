@@ -1,6 +1,6 @@
 {
   "name": "emit-i18n-json-assets",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI to convert i18n .ts/.json files into JSON assets: <out>/<namespace>/<lang>.json (supports centralized & decentralized layouts, with watch mode).",
   "license": "MIT",
   "type": "module",

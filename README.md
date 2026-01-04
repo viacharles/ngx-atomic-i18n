@@ -2,7 +2,11 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
 
+<<<<<<< Updated upstream
 ## Development server
+=======
+![logo](https://raw.githubusercontent.com/viacharles/ngx-atomic-i18n/master/docs/images/favicon-16x16.png) Demo & Tutorial: [https://i18n-demo.viacharles.net/](https://i18n-demo.viacharles.net/)
+>>>>>>> Stashed changes
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
