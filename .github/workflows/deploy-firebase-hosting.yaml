@@ -3,6 +3,10 @@ name: Deploy Firebase Hosting (OIDC)
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - "projects/ngx-i18n-demo/**"
+      - ".github/workflows/deploy-firebase-hosting.yaml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -10,6 +14,7 @@ permissions:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,17 +33,6 @@ jobs:
         run: |
           npm run i18n-build:once:ngx-i18n-demo
           npx ng build ngx-i18n-demo
-
-      - name: Debug context (repo/ref/vars)
-        run: |
-          echo "repo=${{ github.repository }}"
-          echo "ref=${{ github.ref }}"
-          echo "ref_name=${{ github.ref_name }}"
-          echo "sha=${{ github.sha }}"
-          echo "actor=${{ github.actor }}"
-          echo "GCP_WORKLOAD_IDENTITY_PROVIDER=${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}"
-          echo "GCP_SERVICE_ACCOUNT=${{ vars.GCP_SERVICE_ACCOUNT }}"
-          echo "FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID }}"
 
       # 用 OIDC -> WIF 登入 Google（無 key）
       - id: auth
