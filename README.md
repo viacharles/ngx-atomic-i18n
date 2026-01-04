@@ -2,7 +2,7 @@
 
 > Runtime i18n for Angular (standalone-friendly), with lazy namespace loading + SSR/SSG support.
 
-[![logo](https://raw.githubusercontent.com/viacharles/ngx-atomic-i18n/master/docs/images/favicon-32x32.png)]Demo & Tutorial: [https://i18n-demo.viacharles.net/](https://i18n-demo.viacharles.net/)
+![logo](https://raw.githubusercontent.com/viacharles/ngx-atomic-i18n/master/docs/images/favicon-16x16.png)Demo & Tutorial: [https://i18n-demo.viacharles.net/](https://i18n-demo.viacharles.net/)
 
 ## Features
 
