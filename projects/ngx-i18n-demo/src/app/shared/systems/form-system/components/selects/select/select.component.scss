@@ -3,4 +3,8 @@
 .select {
   @include m.field();
   cursor: pointer;
+
+  span {
+    text-wrap: nowrap;
+  }
 }
