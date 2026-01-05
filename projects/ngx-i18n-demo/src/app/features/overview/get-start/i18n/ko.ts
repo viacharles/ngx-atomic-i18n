@@ -72,14 +72,14 @@ const ko: typeof en = {
     jsonArchitecture: `// Translation Data
     assets/i18n/get-start/zh-Hant.json
     {
-    title: "Main Title",
-    section1: {
-      title: "Title for Section 1",
-      subTitle: "Subtitle for Section 1"
+    "title": "Main Title",
+    "section1": {
+      "title": "Title for Section 1",
+      "subTitle": "Subtitle for Section 1"
     },
-    footer: {
-      title: "Footer Title",
-      subTitle: "Footer Subtitle"
+    "footer": {
+      "title": "Footer Title",
+      "subTitle": "Footer Subtitle"
     }
   }
 
