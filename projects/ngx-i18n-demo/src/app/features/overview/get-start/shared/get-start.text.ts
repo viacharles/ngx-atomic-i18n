@@ -5,12 +5,8 @@ import { TranslationService } from "ngx-atomic-i18n";
 export class GetStartText {
   initConfig: WritableSignal<string> = signal('');
   readonly initConfigCode: Signal<string> = computed(() => this.initConfig());
-  installCLI = `    // npm
-    npm install @ngx-atomic-i18n;
-    // yarn
-    yarn add @npx-i18n;
-    // pnpm
-    pnpm add @npx-i18n;
+  installCLI = `
+    npm install ngx-atomic-i18n
     `;
   sourceLoadProvider = signal('');
   supportedLangText = 'getStart.config.supportedLangHint';

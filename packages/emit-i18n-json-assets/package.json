@@ -5,8 +5,16 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "emit-i18n-json-assets": "./bin/emit-i18n-json-assets.mjs"
+    "emit-i18n-json-assets": "bin/emit-i18n-json-assets.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viacharles/ngx-atomic-i18n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/viacharels/ngx-atomic-i18n/issues"
+  },
+  "homepage": "https://github.com/viacharles/ngx-atomic-i18n#readme",
   "files": [
     "bin",
     "README.md",
@@ -29,8 +37,5 @@
     "chokidar": "^3.6.0",
     "esbuild": "^0.23.0",
     "minimist": "^1.2.8"
-  },
-  "devDependencies": {
-    "emit-i18n-json-assets": "^0.1.0"
   }
 }

@@ -70,14 +70,14 @@ const zh_TW = {
     // 翻譯資料
     assets/i18n/get-start/zh-Hant.json
   {
-    title: "大標題",
-    section1: {
-      title: "第一段標題",
-      subTitle: "第一段副標題"
+    "title": "大標題",
+    "section1": {
+      "title": "第一段標題",
+      "subTitle": "第一段副標題"
     },
-    footer: {
-      title: "結尾標題",
-      subTitle: "結尾副標題"
+    "footer": {
+      "title": "結尾標題",
+      "subTitle": "結尾副標題"
     }
   }
 
