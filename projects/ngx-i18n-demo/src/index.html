@@ -45,7 +45,7 @@
       const matchedLang = navLangs.map(normalizeLangCode).find(Boolean);
       if (matchedLang) {
         localStorage.setItem('lang', matchedLang);
-        location.replace(`/${matchedLang}`);
+        location.replace(`/${matchedLang}/overview/getting-started`);
       }
     })();
   </script>
