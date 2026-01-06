@@ -1,12 +1,6 @@
 import en from "./en";
 
 const ko: typeof en = {
-  // 語言
-  '中文 (ZH)': '중국어 (ZH)',
-  '英文 (EN)': '영어 (EN)',
-  '日文 (JA)': '일본어 (JA)',
-  '韓文 (KO)': '한국어 (KO)',
-  '西班牙文 (ES)': '스페인어 (ES)',
   // menu
   overview: '개요',
   'operational-testing': '운영 테스트',

@@ -1,12 +1,6 @@
 import en from "./en";
 
 const ja: typeof en = {
-  // 語言
-  '中文 (ZH)': '中国語 (ZH)',
-  '英文 (EN)': '英語 (EN)',
-  '日文 (JA)': '日本語 (JA)',
-  '韓文 (KO)': '韓国語 (KO)',
-  '西班牙文 (ES)': 'スペイン語 (ES)',
   // menu
   overview: '概要',
   'operational-testing': '運用テスト',

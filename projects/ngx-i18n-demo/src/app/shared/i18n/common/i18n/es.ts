@@ -1,12 +1,6 @@
 import en from "./en";
 
 const es: typeof en = {
-  // 語言
-  '中文 (ZH)': 'Chino (ZH)',
-  '英文 (EN)': 'Inglés (EN)',
-  '日文 (JA)': 'Japonés (JA)',
-  '韓文 (KO)': 'Coreano (KO)',
-  '西班牙文 (ES)': 'Español (ES)',
   // menu
   overview: 'Resumen',
   'operational-testing': 'Pruebas operativas',
