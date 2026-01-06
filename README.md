@@ -16,3 +16,5 @@
 <!-- Optional: logo (use absolute URL if you want it to show on npm) -->
 [![ngx-atomic-i18n screenshot](https://raw.githubusercontent.com/viacharles/ngx-atomic-i18n/master/docs/images/index-screen.png)](https://i18n-demo.viacharles.net/)
 
+If this project helps you, consider giving it a ⭐️
+
