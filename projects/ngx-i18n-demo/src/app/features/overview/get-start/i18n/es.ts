@@ -21,7 +21,7 @@ const es: typeof en = {
   '體積最小化': 'Tamaño de bundle mínimo',
   '效能最佳化': 'Rendimiento optimizado',
   '不閃 key': 'Sin parpadeo de keys',
-  '開始使用': 'Empezar',
+  '開始使用': 'Empieza en 10 minutos',
   '安裝': 'Instalación',
   '請在專案根目錄下 CLI 指令，下載安裝本套件:': 'Ejecuta el comando CLI en la raíz del proyecto para instalar:',
   'CLI 安裝指令': 'Comando de instalación CLI',

@@ -21,7 +21,7 @@ const en: typeof zh_TW = {
   '體積最小化': 'Minimized bundle size',
   '效能最佳化': 'Optimized performance',
   '不閃 key': 'No key-flashing',
-  '開始使用': 'Get started',
+  '開始使用': 'Get started in 10 minutes',
   '安裝': 'Install',
   '請在專案根目錄下 CLI 指令，下載安裝本套件:': 'Run the CLI command at the project root to install:',
   'CLI 安裝指令': 'CLI install command',
